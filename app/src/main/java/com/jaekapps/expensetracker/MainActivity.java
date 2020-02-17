@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (passwordTextInputEditText.getText().toString().length() > 15) {
 
-                        if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
+                        if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
                             emailAddressTextInputEditText.setError("Please, provide a valid email address.");
                             loggingInDialogBox.dismiss();
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
                         passwordTextInputLayout.setPasswordVisibilityToggleEnabled(true);
 
-                        if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
+                        if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
                             emailAddressTextInputEditText.setError("Please, provide a valid email address.");
                             loggingInDialogBox.dismiss();

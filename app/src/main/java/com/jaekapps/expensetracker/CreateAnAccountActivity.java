@@ -34,11 +34,9 @@ public class CreateAnAccountActivity extends AppCompatActivity {
     private CreateNewUser createNewUser;
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private FirebaseDatabase firebaseDatabase;
     private LoginStateConfigActivity loginStateConfigActivity;
     private TextInputEditText usernameTextInputEditText, passwordTextInputEditText, emailAddressTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
-    private Toolbar toolbar;
     private SigningUpDialogBox signingUpDialogBox;
 
     private boolean checkIfEmailAddressIsValid(String email) {
@@ -164,14 +162,14 @@ public class CreateAnAccountActivity extends AppCompatActivity {
         createNewUser = new CreateNewUser();
         emailAddressTextInputEditText = findViewById(R.id.emailAddressTextInputEditText);
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("User");
         loginStateConfigActivity = new LoginStateConfigActivity(this);
         passwordTextInputEditText = findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
         passwordTextInputLayout.setCounterMaxLength(15);
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         usernameTextInputEditText = findViewById(R.id.usernameTextInputEditText);
 
@@ -263,8 +261,6 @@ public class CreateAnAccountActivity extends AppCompatActivity {
                             usernameStatus = false;
 
                         } else {
-
-                            usernameStatus = true;
 
                             if (emailAddressStatus && passwordStatus) {
 
