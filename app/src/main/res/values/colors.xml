@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#3949AB</color>
+    <color name="colorAccent">#3F51B5</color>
+    <color name="colorWelcomeScreenText">#FFFFFF</color>
+    <color name="colorSignInButton">#03A9F4</color>
+    <color name="colorAllButtonText">#FFFFFF</color>
+    <color name="colorSignUpButton">#64DD17</color>
+    <color name="colorResetPasswordButton">#E53935</color>
+</resources>

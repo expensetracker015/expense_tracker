@@ -1,0 +1,28 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SignInButtonTheme" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:backgroundTint">@color/colorSignInButton</item>
+        <item name="android:textColor">@color/colorAllButtonText</item>
+    </style>
+
+    <style name="ForgotPasswordButtonTheme" parent="Widget.AppCompat.Button.Borderless">
+
+    </style>
+
+    <style name="SignUpButtonTheme" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:backgroundTint">@color/colorSignUpButton</item>
+        <item name="android:textColor">@color/colorAllButtonText</item>
+    </style>
+
+    <style name="ResetPasswordButtonTheme" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:backgroundTint">@color/colorResetPasswordButton</item>
+        <item name="android:textColor">@color/colorAllButtonText</item>
+    </style>
+
+</resources>

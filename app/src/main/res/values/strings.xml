@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Expense Tracker</string>
+    <string name="app_logo">App Logo</string>
+    <string name="loginScreenAppName">Expense Tracker</string>
+    <string name="emailAddressTextInputEditTextHint">Email</string>
+    <string name="passwordTextInputEditTextHint">Password</string>
+    <string name="signInButtonText">Sign In</string>
+    <string name="forgotPasswordButtonText">Forgot Password?</string>
+    <string name="orText">OR</string>
+    <string name="signUpUsingEmailButtonText">SIGN UP USING EMAIL</string>
+    <string name="signInUsingGoogle">SIGN IN USING GOOGLE</string>
+    <string name="emailAddressInformation">Please, provide email address to reset the password</string>
+    <string name="email">Email</string>
+    <string name="send_confirmation">SEND CONFIRMATION TO EMAIL</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="emailAddress">Email Address</string>
+    <string name="secured_field">Secured Field</string>
+    <string name="user">User</string>
+    <string name="please_wait">Please, wait</string>
+</resources>
