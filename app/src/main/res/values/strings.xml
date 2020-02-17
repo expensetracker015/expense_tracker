@@ -18,4 +18,5 @@
     <string name="secured_field">Secured Field</string>
     <string name="user">User</string>
     <string name="please_wait">Please, wait</string>
+    <string name="authenticating">Authenticating</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.jaekapps.expensetracker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -11,16 +12,17 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
@@ -31,13 +33,12 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
-    FirebaseUser firebaseUser;
     GoogleSignInClient googleSignInClient;
     GoogleSignInButton googleSignInButton;
     int RC_SIGN_IN = 1;
-    LoggingInDialog loggingInDialog;
+    LoggingInDialogBox loggingInDialogBox;
     LoginStateConfigActivity loginStateConfigActivity;
-    String userId;
+    public static MainActivity mainActivity;
     TextInputLayout emailAddressTextInputLayout, passwordTextInputLayout;
     TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText;
 
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void login(View view) {
+    private void login(final View view) {
 
         try {
 
@@ -96,14 +97,14 @@ public class MainActivity extends AppCompatActivity {
                 if (passwordTextInputEditText.getText().toString().isEmpty()) {
 
                     emailAddressTextInputEditText.setError("Email address is required.");
-                    loggingInDialog.dismiss();
+                    loggingInDialogBox.dismiss();
                     passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
                     passwordTextInputEditText.setError("Password is required.");
 
                 } else if (!passwordTextInputEditText.getText().toString().isEmpty()) {
 
                     emailAddressTextInputEditText.setError("Email address is required.");
-                    loggingInDialog.dismiss();
+                    loggingInDialogBox.dismiss();
 
                     if (passwordTextInputEditText.getText().toString().length() > 15) {
 
@@ -122,16 +123,16 @@ public class MainActivity extends AppCompatActivity {
 
                 if (passwordTextInputEditText.getText().toString().isEmpty()) {
 
-                    if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
+                    if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
                         emailAddressTextInputEditText.setError("Please, provide a valid email address.");
-                        loggingInDialog.dismiss();
+                        loggingInDialogBox.dismiss();
                         passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
                         passwordTextInputEditText.setError("Password is required.");
 
                     } else {
 
-                        loggingInDialog.dismiss();
+                        loggingInDialogBox.dismiss();
                         passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
                         passwordTextInputEditText.setError("Password is required.");
 
@@ -144,13 +145,13 @@ public class MainActivity extends AppCompatActivity {
                         if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
                             emailAddressTextInputEditText.setError("Please, provide a valid email address.");
-                            loggingInDialog.dismiss();
+                            loggingInDialogBox.dismiss();
                             passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
                             passwordTextInputEditText.setError("Password length can not be more than 15 characters.");
 
                         } else {
 
-                            loggingInDialog.dismiss();
+                            loggingInDialogBox.dismiss();
                             passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
                             passwordTextInputEditText.setError("Password length can not be more than 15 characters.");
 
@@ -160,19 +161,41 @@ public class MainActivity extends AppCompatActivity {
 
                         passwordTextInputLayout.setPasswordVisibilityToggleEnabled(true);
 
-                        if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
+                        if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
                             emailAddressTextInputEditText.setError("Please, provide a valid email address.");
-                            loggingInDialog.dismiss();
+                            loggingInDialogBox.dismiss();
 
                         } else {
 
-                            hideTheKeyboard(view);
                             String email_address = emailAddressTextInputEditText.getText().toString();
                             String password = passwordTextInputEditText.getText().toString();
-                            Log.i("Email address", email_address);
-                            Log.i("Password", password);
-                            loginStateConfigActivity.writeLogInStatus(true);
+
+                            firebaseAuth.signInWithEmailAndPassword(email_address, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+
+                                    if (task.isSuccessful()) {
+
+                                        hideTheKeyboard(view);
+                                        loggingInDialogBox.dismiss();
+                                        loginStateConfigActivity.writeLogInStatus(true);
+                                        Toast.makeText(MainActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
+                                        finish();
+
+                                    } else {
+                                        
+                                        hideTheKeyboard(view);
+                                        loggingInDialogBox.dismiss();
+                                        Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        emailAddressTextInputEditText.getText().clear();
+                                        passwordTextInputEditText.getText().clear();
+
+                                    }
+
+                                }
+                            });
 
                         }
 
@@ -206,12 +229,12 @@ public class MainActivity extends AppCompatActivity {
         emailAddressTextInputLayout = findViewById(R.id.emailAddressTextInputLayout);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
         databaseReference = firebaseDatabase.getReference("User");
         forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
-        loggingInDialog = new LoggingInDialog();
+        loggingInDialogBox = new LoggingInDialogBox();
         loginStateConfigActivity = new LoginStateConfigActivity(this);
+        mainActivity = this;
         passwordTextInputEditText = findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
@@ -219,13 +242,10 @@ public class MainActivity extends AppCompatActivity {
         signInButton = findViewById(R.id.signInButton);
         signUpButton = findViewById(R.id.signUpButton);
 
-        try {
+        if (loginStateConfigActivity.readLoginStatus()) {
 
-            userId = firebaseUser.getUid();
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
+            startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
+            finish();
 
         }
 
@@ -241,9 +261,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //signInUsingGoogle();
-                startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
-                finish();
+                signInUsingGoogle();
 
             }
         });
@@ -271,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (checkInternetConnection()) {
 
-                    loggingInDialog.show(getSupportFragmentManager(), "Logging In");
+                    loggingInDialogBox.show(getSupportFragmentManager(), "Logging In");
                     login(v);
 
                 } else {
