@@ -34,10 +34,10 @@ public class CreateAnAccountActivity extends AppCompatActivity {
     private CreateNewUser createNewUser;
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private LoginStateConfigActivity loginStateConfigActivity;
+    private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private TextInputEditText usernameTextInputEditText, passwordTextInputEditText, emailAddressTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
-    private SigningUpDialogBox signingUpDialogBox;
+    private SignUpDialogBox signUpDialogBox;
 
     private boolean checkIfEmailAddressIsValid(String email) {
 
@@ -164,7 +164,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("User");
-        loginStateConfigActivity = new LoginStateConfigActivity(this);
+        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         passwordTextInputEditText = findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
@@ -177,7 +177,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
             getSupportActionBar().setTitle("Create An Account");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+            //getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         } catch (NullPointerException e) {
 
@@ -186,6 +186,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
         }
 
         passwordTextInputEditText.addTextChangedListener(new TextWatcher() {
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -202,6 +203,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
 
             }
+
         });
 
     }
@@ -271,8 +273,8 @@ public class CreateAnAccountActivity extends AppCompatActivity {
                                     String password = passwordTextInputEditText.getText().toString();
                                     createNewUser.setUsername(username);
                                     createNewUser.setEmail_address(emailAddress);
-                                    signingUpDialogBox = new SigningUpDialogBox();
-                                    signingUpDialogBox.show(getSupportFragmentManager(), "signing_up");
+                                    signUpDialogBox = new SignUpDialogBox();
+                                    signUpDialogBox.show(getSupportFragmentManager(), "signing_up");
                                     hideTheKeyboard(getCurrentFocus().getRootView());
                                     firebaseAuth.createUserWithEmailAndPassword(emailAddress, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                         @Override
@@ -286,8 +288,8 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
                                                         if (task.isSuccessful()) {
 
-                                                            signingUpDialogBox.dismiss();
-                                                            loginStateConfigActivity.writeLogInStatus(true);
+                                                            signUpDialogBox.dismiss();
+                                                            signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(true);
                                                             MainActivity.mainActivity.finish();
                                                             Toast.makeText(CreateAnAccountActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
                                                             startActivity(new Intent(getApplicationContext(), HomeScreenActivity.class));
@@ -295,7 +297,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
                                                         } else {
 
-                                                            signingUpDialogBox.dismiss();
+                                                            signUpDialogBox.dismiss();
                                                             Toast.makeText(CreateAnAccountActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
                                                         }
@@ -305,7 +307,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
                                             } else {
 
-                                                signingUpDialogBox.dismiss();
+                                                signUpDialogBox.dismiss();
                                                 Toast.makeText(CreateAnAccountActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
                                             }

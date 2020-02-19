@@ -8,16 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class SigningUpDialogBox extends DialogFragment {
+public class LogInDialogBox extends DialogFragment {
 
-    SigningUpDialogBox() {}
+    LogInDialogBox() {}
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
         android.app.ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle(getString(R.string.authenticating));
+        progressDialog.setTitle("Logging In");
         progressDialog.setMessage(getString(R.string.please_wait));
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
