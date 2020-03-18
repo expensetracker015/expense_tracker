@@ -4,7 +4,7 @@
     <string name="loginScreenAppName">Expense Tracker</string>
     <string name="emailAddressTextInputEditTextHint">Email</string>
     <string name="passwordTextInputEditTextHint">Password</string>
-    <string name="signInButtonText">Sign In</string>
+    <string name="signInButtonText">SIGN IN USING EMAIL</string>
     <string name="forgotPasswordButtonText">Forgot Password?</string>
     <string name="orText">OR</string>
     <string name="signUpUsingEmailButtonText">SIGN UP USING EMAIL</string>
@@ -19,4 +19,7 @@
     <string name="user">User</string>
     <string name="please_wait">Please, wait</string>
     <string name="authenticating">Authenticating</string>
+    <string name="welcome_to_expense_tracker">Welcome To Expense Tracker</string>
+    <string name="you_just_took_the_first_step_towards">You just took the first step towards</string>
+    <string name="managing_your_money_let_s_start">managing your money. Let\'s start.</string>
 </resources>

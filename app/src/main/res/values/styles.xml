@@ -4,9 +4,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
 
-    <style name="SignInButtonTheme" parent="Widget.AppCompat.Button.Colored">
+    <style name="SignInUsingEmailButtonTheme" parent="Widget.AppCompat.Button.Colored">
         <item name="android:backgroundTint">@color/colorSignInButton</item>
         <item name="android:textColor">@color/colorAllButtonText</item>
     </style>
@@ -15,7 +16,7 @@
 
     </style>
 
-    <style name="SignUpButtonTheme" parent="Widget.AppCompat.Button.Colored">
+    <style name="SignUpUsingEmailButtonTheme" parent="Widget.AppCompat.Button.Colored">
         <item name="android:backgroundTint">@color/colorSignUpButton</item>
         <item name="android:textColor">@color/colorAllButtonText</item>
     </style>

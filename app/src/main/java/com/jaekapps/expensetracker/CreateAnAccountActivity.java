@@ -177,7 +177,6 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
             getSupportActionBar().setTitle("Create An Account");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         } catch (NullPointerException e) {
 
@@ -252,6 +251,7 @@ public class CreateAnAccountActivity extends AppCompatActivity {
                             if ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) || (character >= 91 && character <= 96) || (character >= 123 && character <= 126)) {
 
                                 specialCharFound = true;
+                                break;
 
                             }
 

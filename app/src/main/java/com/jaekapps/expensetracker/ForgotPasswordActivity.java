@@ -52,7 +52,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
             getSupportActionBar().setTitle("Forgot Password");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         } catch (NullPointerException e) {
 

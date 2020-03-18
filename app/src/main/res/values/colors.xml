@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#3949AB</color>
     <color name="colorAccent">#3F51B5</color>
-    <color name="colorWelcomeScreenText">#FFFFFF</color>
+    <color name="colorWelcomeScreenText">#000000</color>
     <color name="colorSignInButton">#03A9F4</color>
     <color name="colorAllButtonText">#FFFFFF</color>
     <color name="colorSignUpButton">#64DD17</color>
