@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,7 +31,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignInUsingEmailActivity extends AppCompatActivity {
 
-    AppCompatButton forgotPasswordButton, signInButton;
+    AppCompatButton forgotPasswordButton;
+    CardView signInButton;
     DatabaseReference databaseReference;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
@@ -187,6 +189,8 @@ public class SignInUsingEmailActivity extends AppCompatActivity {
                                         hideTheKeyboard(view);
                                         logInDialogBox.dismiss();
                                         signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(true);
+                                        signInUsingGoogleConfigActivity.writeSignInUsingGoogleStatus(false);
+                                        MainActivity.mainActivity.finish();
                                         Toast.makeText(SignInUsingEmailActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(SignInUsingEmailActivity.this, HomeScreenActivity.class));
                                         finish();
@@ -245,7 +249,7 @@ public class SignInUsingEmailActivity extends AppCompatActivity {
 
         try {
 
-            getSupportActionBar().setTitle("Forgot Password");
+            getSupportActionBar().setTitle("Sign in using email");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         } catch (NullPointerException e) {

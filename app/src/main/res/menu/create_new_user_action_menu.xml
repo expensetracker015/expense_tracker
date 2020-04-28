@@ -5,7 +5,7 @@
     <item
         android:id="@+id/saveInformation"
         android:title=""
-        android:icon="@drawable/create_new_user"
+        android:icon="@drawable/done"
         app:showAsAction="ifRoom">
 
     </item>

@@ -15,13 +15,13 @@ class SignInUsingGoogleConfigActivity {
 
     void writeSignInUsingGoogleStatus(boolean status) {
 
-        sharedPreferences.edit().putBoolean("login_status", status).apply();
+        sharedPreferences.edit().putBoolean("sign_in_using_google", status).apply();
 
     }
 
     boolean readSignInUsingGoogleStatus() {
 
-        return sharedPreferences.getBoolean("login_status", false);
+        return sharedPreferences.getBoolean("sign_in_using_google", false);
 
     }
 }

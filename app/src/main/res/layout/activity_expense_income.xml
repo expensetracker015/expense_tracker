@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.jaekapps.expensetracker.ExpenseIncomeActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <GridLayout
+        android:id="@+id/expenseIncomeGridLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/appBarLayout"
+        android:columnCount="3"
+        android:rowCount="1">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/expenseCardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:layout_columnWeight="1"
+            android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/comfortaa_bold"
+                android:text="@string/expense_category"
+                android:textColor="#FFFFFF">
+
+            </TextView>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/incomeCardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:layout_columnWeight="1"
+            android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:fontFamily="@font/comfortaa_bold"
+                android:text="@string/income_category"
+                android:textColor="#FFFFFF">
+
+            </TextView>
+
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/expenseIncomeGridLayout"
+        android:columnCount="1"
+        android:rowCount="2">
+
+        <RelativeLayout
+            android:id="@+id/subcategoryRelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_column="0"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:background="@color/colorExpenseIncomeCategoryCardView">
+
+            <View
+                android:id="@+id/lineView"
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:background="#FFFFFF" >
+
+            </View>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/lineView"
+                android:layout_above="@id/subcategoryLinearLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/amountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_gravity="end"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:text="@string/zero"
+                        android:textColor="#FFFFFF"
+                        android:textSize="60sp">
+
+                    </TextView>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/subcategoryLinearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/subcategoryTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/subcategory"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/itemNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/add_item"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp">
+
+                </TextView>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <GridLayout
+            android:id="@+id/calcGridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:columnCount="4"
+            android:rowCount="4">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sevenCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="0"
+                android:layout_row="0"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/seven"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/eightCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/eight"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/nineCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="2"
+                android:layout_row="0"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/nine"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/todayCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="3"
+                android:layout_row="0"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/labelTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:text="@string/today"
+                        android:textSize="16sp"
+                        android:textColor="#000000">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/todaysDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                    </TextView>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/sixCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="2"
+                android:layout_row="1"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/six"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fiveCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/five"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fourCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/four"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/addCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="3"
+                android:layout_row="1"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/plus"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/backspace">
+
+                </ImageView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/oneCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="0"
+                android:layout_row="2"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/one"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/twoCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="1"
+                android:layout_row="2"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/two"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/threeCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="2"
+                android:layout_row="2"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/three"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/subtractCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="3"
+                android:layout_row="2"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/minus"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/backspace">
+
+                </ImageView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/dotCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="0"
+                android:layout_row="3"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/dot"
+                    android:textSize="40sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/zeroCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="1"
+                android:layout_row="3"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/zero"
+                    android:textSize="30sp">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cancelCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="2"
+                android:layout_row="3"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/backspace"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/backspace">
+
+                </ImageView>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/equalOrOkCardView"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                android:layout_column="3"
+                android:layout_row="3"
+                android:layout_columnWeight="1"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:text="@string/equal"
+                    android:textSize="30sp"
+                    android:textColor="#000000">
+
+                </TextView>
+
+            </androidx.cardview.widget.CardView>
+
+        </GridLayout>
+
+    </GridLayout>
+
+</RelativeLayout>

@@ -13,17 +13,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignInUsingEmailActivity"></activity>
-        <activity android:name=".HomeScreenActivity" />
-        <activity android:name=".CreateAnAccountActivity" />
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".AddItemCategoryActivity"
+            android:theme="@style/AppTheme.AddItemCategoryActivity"/>
+        <activity
+            android:name=".ExpenseIncomeActivity"
+            android:theme="@style/AppTheme.ExpenseIncomeActivity"/>
+        <activity
+            android:name=".SplashScreenActivity"
+            android:theme="@style/AppTheme.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SignInUsingEmailActivity"
+            android:theme="@style/AppTheme.SignInUsingEmailActivity" />
+        <activity
+            android:name=".HomeScreenActivity"
+            android:theme="@style/AppTheme.HomeScreenActivity" />
+        <activity
+            android:name=".CreateAnAccountActivity"
+            android:theme="@style/AppTheme.CreateAnAccountActivity" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:theme="@style/AppTheme.ForgotPasswordActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"

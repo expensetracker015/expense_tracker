@@ -3,7 +3,7 @@ package com.jaekapps.expensetracker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
+import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,20 +29,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
 
-    AppCompatButton signInUsingEmailButton, signUpUsingEmailButton;
-    CreateNewUser createNewUser;
+    CardView signInUsingEmailButton, signUpUsingEmailButton;
     DatabaseReference databaseReference;
-    FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
-    FirebaseUser firebaseUser;
-    GoogleSignInClient googleSignInClient;
     GoogleSignInButton googleSignInButton;
-    int RC_SIGN_IN = 1;
-    SignInDialogBox signInDialogBox;
-    SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
-    SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
+    int currentMonth, currentYear;
+    String month;
+    private CreateNewUser createNewUser;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+    private GoogleSignInClient googleSignInClient;
+    private int RC_SIGN_IN = 1;
+    private SignInDialogBox signInDialogBox;
+    private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
+    private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     public static MainActivity mainActivity;
 
     private boolean checkInternetConnection() {
@@ -70,6 +74,62 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void findMonth(int currentMonth) {
+
+        switch (currentMonth) {
+
+            case 1:
+                month = "Jan";
+                break;
+
+            case 2:
+                month = "Feb";
+                break;
+
+            case 3:
+                month = "Mar";
+                break;
+
+            case 4:
+                month = "Apr";
+                break;
+
+            case 5:
+                month = "May";
+                break;
+
+            case 6:
+                month = "June";
+                break;
+
+            case 7:
+                month = "July";
+                break;
+
+            case 8:
+                month = "Aug";
+                break;
+
+            case 9:
+                month = "Sep";
+                break;
+
+            case 10:
+                month = "Oct";
+                break;
+
+            case 11:
+                month = "Nov";
+                break;
+
+            case 12:
+                month = "Dec";
+                break;
+
+        }
+
+    }
+
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -84,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     firebaseUser = firebaseAuth.getCurrentUser();
                     createNewUser.setEmail_address(firebaseUser.getEmail());
                     createNewUser.setUsername(firebaseUser.getDisplayName());
-                    databaseReference.child(firebaseUser.getUid()).setValue(createNewUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    databaseReference.child(firebaseUser.getUid()).child("Account_Details").setValue(createNewUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
@@ -149,7 +209,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Calendar calendar = Calendar.getInstance();
         createNewUser = new CreateNewUser();
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentMonth = currentMonth + 1;
+        currentYear = calendar.get(Calendar.YEAR);
+        findMonth(currentMonth);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("User");

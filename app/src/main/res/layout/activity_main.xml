@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        app:cardCornerRadius="15dp">
+        app:cardCornerRadius="17dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -27,8 +27,8 @@
                 app:cardCornerRadius="10dp">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
                     android:src="@drawable/home_screen_logo"
                     android:layout_gravity="center">
 
@@ -60,12 +60,13 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:layout_gravity="center"
-        android:backgroundTint="@color/colorPrimary"
         app:cardCornerRadius="10dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="370dp"
-            android:layout_height="180dp"
+            android:layout_width="330dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
             android:src="@drawable/welcome_screen_logo">
 
         </androidx.appcompat.widget.AppCompatImageView>
@@ -106,18 +107,40 @@
 
     </TextView>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <androidx.cardview.widget.CardView
         android:id="@+id/signInUsingEmailButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:layout_marginTop="25dp"
-        android:drawableStart="@drawable/sign_up_button_icon"
-        android:text="@string/signInButtonText"
-        style="@style/SignInUsingEmailButtonTheme">
+        android:layout_gravity="center"
+        android:backgroundTint="@color/colorSignInButton"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
-    </androidx.appcompat.widget.AppCompatButton>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="7dp"
+            android:layout_gravity="start"
+            android:src="@drawable/sign_in_using_email">
+
+        </androidx.appcompat.widget.AppCompatImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="@string/signInButtonText"
+            android:textColor="@color/colorAllButtonText"
+            android:textStyle="bold">
+
+        </TextView>
+
+    </androidx.cardview.widget.CardView>
 
     <com.shobhitpuri.custombuttons.GoogleSignInButton
         android:id="@+id/googleSignInButton"
@@ -132,353 +155,39 @@
 
     </com.shobhitpuri.custombuttons.GoogleSignInButton>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <androidx.cardview.widget.CardView
         android:id="@+id/signUpUsingEmailButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:drawableStart="@drawable/sign_up_button_icon"
-        android:text="@string/signUpUsingEmailButtonText"
-        style="@style/SignUpUsingEmailButtonTheme">
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/colorSignUpButton"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
 
-    </androidx.appcompat.widget.AppCompatButton>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="7dp"
+            android:layout_gravity="start"
+            android:src="@drawable/sign_up_using_email">
 
-    <!--
-    <LinearLayout
-        android:id="@+id/launchPageLayout"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="vertical"
-        android:background="@color/colorPrimary"
-        android:gravity="center">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp">
-
-            <ImageView
-                android:layout_width="63dp"
-                android:layout_height="60dp"
-                android:src="@drawable/expense_tracker_launcher_icon"
-                android:contentDescription="@string/app_logo">
-
-            </ImageView>
-
-        </androidx.cardview.widget.CardView>
+        </androidx.appcompat.widget.AppCompatImageView>
 
         <TextView
-            android:id="@+id/attendanceManagerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_gravity="center"
             android:fontFamily="@font/comfortaa_bold"
-            android:text="@string/loginScreenAppName"
-            android:textColor="@color/colorWelcomeScreenText"
-            android:textSize="24sp">
+            android:text="@string/signUpUsingEmailButtonText"
+            android:textColor="@color/colorAllButtonText"
+            android:textStyle="bold">
 
         </TextView>
 
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="175dp">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/userInputLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/login_screen_shape">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailAddressTextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="30dp"
-                    android:hint="@string/emailAddressTextInputEditTextHint"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/emailAddressTextInputEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:inputType="textEmailAddress">
-
-                    </com.google.android.material.textfield.TextInputEditText>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passwordTextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="15dp"
-                    android:hint="@string/passwordTextInputEditTextHint"
-                    app:passwordToggleEnabled="true"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passwordTextInputEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:inputType="textPassword">
-
-                    </com.google.android.material.textfield.TextInputEditText>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/signInButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginTop="15dp"
-                    android:text="@string/signInButtonText"
-                    style="@style/SignInButtonTheme">
-
-                </androidx.appcompat.widget.AppCompatButton>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/forgotPasswordButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:text="@string/forgotPasswordButtonText"
-                    style="@style/ForgotPasswordButtonTheme">
-
-                </androidx.appcompat.widget.AppCompatButton>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_below="@id/userInputLayout"
-                android:layout_toStartOf="@id/orTextView"
-                android:layout_marginTop="23dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
-                android:background="?android:attr/listDivider"/>
-
-            <TextView
-                android:id="@+id/orTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_below="@id/userInputLayout"
-                android:layout_centerHorizontal="true"
-                android:text="@string/orText"
-                android:textSize="20sp"
-                android:textStyle="bold">
-
-            </TextView>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_below="@id/userInputLayout"
-                android:layout_toEndOf="@id/orTextView"
-                android:layout_marginTop="23dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="?android:attr/listDivider" />
-
-            <LinearLayout
-                android:id="@+id/createAccountLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/orTextView"
-                android:layout_marginTop="15dp"
-                android:orientation="vertical">
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/signUpButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:drawableStart="@drawable/sign_up_button_icon"
-                    android:text="@string/signUpUsingEmailButtonText"
-                    style="@style/SignUpButtonTheme">
-
-                </androidx.appcompat.widget.AppCompatButton>
-
-                <com.shobhitpuri.custombuttons.GoogleSignInButton
-                    android:id="@+id/googleSignInButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
-                    android:text="@string/signInUsingGoogle"
-                    app:isDarkTheme="true" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-    </ScrollView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/appLogoCardView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        app:cardCornerRadius="10dp">
-
-        <ImageView
-            android:layout_width="67dp"
-            android:layout_height="65dp"
-            android:src="@drawable/expense_tracker_launcher_icon"
-            android:contentDescription="@string/app_logo">
-
-        </ImageView>
-
     </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/expenseTrackerTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/appLogoCardView"
-        android:fontFamily="@font/comfortaa_bold"
-        android:text="@string/loginScreenAppName"
-        android:textColor="@color/colorLoginScreenAppNameText"
-        android:textSize="24sp">
-
-    </TextView>
-
-    <LinearLayout
-        android:id="@+id/logInLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/expenseTrackerTextView"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/login_screen_shape">
-
-        <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"
-            android:src="@drawable/user"
-            android:contentDescription="@string/username">
-
-        </ImageView>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailAddressTextInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            android:hint="@string/emailAddressTextInputEditTextHint"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emailAddressTextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textEmailAddress">
-
-            </com.google.android.material.textfield.TextInputEditText>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/passwordTextInputLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp"
-            android:hint="@string/passwordTextInputEditTextHint"
-            app:passwordToggleEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/passwordTextInputEditText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textPassword">
-
-            </com.google.android.material.textfield.TextInputEditText>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/signInButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/signInButtonText"
-            style="@style/SignInButtonTheme">
-
-        </androidx.appcompat.widget.AppCompatButton>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/forgotPasswordButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:text="@string/forgotPasswordButtonText"
-            style="@style/ForgotPasswordButtonTheme">
-
-        </androidx.appcompat.widget.AppCompatButton>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/signUpButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:text="@string/signUpButtonText"
-            style="@style/SignUpButtonTheme">
-
-        </androidx.appcompat.widget.AppCompatButton>
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/googleSignInButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="45dp">
-
-        </com.google.android.gms.common.SignInButton>
-
-    </LinearLayout>
-    -->
 
 </LinearLayout>

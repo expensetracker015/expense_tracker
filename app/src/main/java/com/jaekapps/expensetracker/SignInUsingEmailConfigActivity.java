@@ -3,9 +3,7 @@ package com.jaekapps.expensetracker;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-class SignInUsingEmailConfigActivity {
+public class SignInUsingEmailConfigActivity {
 
     private SharedPreferences sharedPreferences;
 
@@ -15,15 +13,15 @@ class SignInUsingEmailConfigActivity {
 
     }
 
-    void writeSignInUsingEmailStatus(boolean status) {
+    public void writeSignInUsingEmailStatus(boolean status) {
 
-        sharedPreferences.edit().putBoolean("login_status", status).apply();
+        sharedPreferences.edit().putBoolean("sign_in_using_email", status).apply();
 
     }
 
-    boolean readSignInUsingEmailStatus() {
+    public boolean readSignInUsingEmailStatus() {
 
-        return sharedPreferences.getBoolean("login_status", false);
+        return sharedPreferences.getBoolean("sign_in_using_email", false);
 
     }
 

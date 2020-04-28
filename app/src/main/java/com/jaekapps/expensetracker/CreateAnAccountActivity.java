@@ -25,19 +25,27 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Calendar;
+
 public class CreateAnAccountActivity extends AppCompatActivity {
 
+    int currentMonth, currentYear;
+    String month;
+    private BEIAmount beiAmount;
     private boolean emailAddressStatus = false, passwordStatus = false, usernameStatus = false;
     private CreateNewUser createNewUser;
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
+    private FirebaseUser firebaseUser;
     private TextInputEditText usernameTextInputEditText, passwordTextInputEditText, emailAddressTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
     private SignUpDialogBox signUpDialogBox;
+    private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
+    private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
 
     private boolean checkIfEmailAddressIsValid(String email) {
 
@@ -139,6 +147,62 @@ public class CreateAnAccountActivity extends AppCompatActivity {
 
     }
 
+    private void findMonth(int currentMonth) {
+
+        switch (currentMonth) {
+
+            case 1:
+                month = "Jan";
+                break;
+
+            case 2:
+                month = "Feb";
+                break;
+
+            case 3:
+                month = "Mar";
+                break;
+
+            case 4:
+                month = "Apr";
+                break;
+
+            case 5:
+                month = "May";
+                break;
+
+            case 6:
+                month = "June";
+                break;
+
+            case 7:
+                month = "July";
+                break;
+
+            case 8:
+                month = "Aug";
+                break;
+
+            case 9:
+                month = "Sep";
+                break;
+
+            case 10:
+                month = "Oct";
+                break;
+
+            case 11:
+                month = "Nov";
+                break;
+
+            case 12:
+                month = "Dec";
+                break;
+
+        }
+
+    }
+
     private void hideTheKeyboard(View view) {
 
         try {
@@ -159,23 +223,30 @@ public class CreateAnAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_an_account);
 
+        beiAmount = new BEIAmount();
+        Calendar calendar = Calendar.getInstance();
         createNewUser = new CreateNewUser();
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentMonth = currentMonth + 1;
+        currentYear = calendar.get(Calendar.YEAR);
         emailAddressTextInputEditText = findViewById(R.id.emailAddressTextInputEditText);
+        findMonth(currentMonth);
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("User");
-        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         passwordTextInputEditText = findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
         passwordTextInputLayout.setCounterMaxLength(15);
+        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
+        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         usernameTextInputEditText = findViewById(R.id.usernameTextInputEditText);
 
         try {
 
-            getSupportActionBar().setTitle("Create An Account");
+            getSupportActionBar().setTitle("Sign up using email");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         } catch (NullPointerException e) {
@@ -236,90 +307,91 @@ public class CreateAnAccountActivity extends AppCompatActivity {
                 } else {
 
                     checkEmailAddress();
+                    boolean specialCharFound = false;
 
-                    if (usernameTextInputEditText.getText().toString().contains(" ")) {
+                    for (Character character : usernameTextInputEditText.getText().toString().toCharArray()) {
 
-                        usernameTextInputEditText.setError("Username can not contain space.");
+                        if ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) || (character >= 91 && character <= 96) || (character >= 123 && character <= 126)) {
+
+                            specialCharFound = true;
+                            break;
+
+                        }
+
+                    }
+
+                    if (specialCharFound) {
+
+                        usernameTextInputEditText.setError("Username can not contain special characters.");
                         usernameStatus = false;
 
                     } else {
 
-                        boolean specialCharFound = false;
+                        if (emailAddressStatus && passwordStatus) {
 
-                        for (Character character : usernameTextInputEditText.getText().toString().toCharArray()) {
+                            if (checkInternetConnection()) {
 
-                            if ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) || (character >= 91 && character <= 96) || (character >= 123 && character <= 126)) {
+                                String username = usernameTextInputEditText.getText().toString();
+                                String emailAddress = emailAddressTextInputEditText.getText().toString();
+                                String password = passwordTextInputEditText.getText().toString();
+                                createNewUser.setUsername(username);
+                                createNewUser.setEmail_address(emailAddress);
+                                beiAmount.setBalance("0");
+                                beiAmount.setExpense("0");
+                                beiAmount.setIncome("0");
+                                signUpDialogBox = new SignUpDialogBox();
+                                signUpDialogBox.show(getSupportFragmentManager(), "signing_up");
+                                hideTheKeyboard(getCurrentFocus().getRootView());
+                                firebaseAuth.createUserWithEmailAndPassword(emailAddress, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
 
-                                specialCharFound = true;
-                                break;
+                                        if (task.isSuccessful()) {
 
-                            }
+                                            firebaseUser = firebaseAuth.getCurrentUser();
+                                            databaseReference.child(firebaseUser.getUid()).child("Account_Details").setValue(createNewUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
 
-                        }
+                                                    if (task.isSuccessful()) {
 
-                        if (specialCharFound) {
+                                                        databaseReference.child(firebaseUser.getUid()).child("BEIAmount").child(String.valueOf(currentYear)).child(month).setValue(beiAmount).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
 
-                            usernameTextInputEditText.setError("Username can not contain special characters.");
-                            usernameStatus = false;
+                                                                if (task.isSuccessful()) {
 
-                        } else {
+                                                                    signUpDialogBox.dismiss();
+                                                                    signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(true);
+                                                                    signInUsingGoogleConfigActivity.writeSignInUsingGoogleStatus(false);
+                                                                    MainActivity.mainActivity.finish();
+                                                                    Toast.makeText(CreateAnAccountActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+                                                                    startActivity(new Intent(getApplicationContext(), HomeScreenActivity.class));
+                                                                    finish();
 
-                            if (emailAddressStatus && passwordStatus) {
+                                                                }
 
-                                if (checkInternetConnection()) {
-
-                                    String username = usernameTextInputEditText.getText().toString();
-                                    String emailAddress = emailAddressTextInputEditText.getText().toString();
-                                    String password = passwordTextInputEditText.getText().toString();
-                                    createNewUser.setUsername(username);
-                                    createNewUser.setEmail_address(emailAddress);
-                                    signUpDialogBox = new SignUpDialogBox();
-                                    signUpDialogBox.show(getSupportFragmentManager(), "signing_up");
-                                    hideTheKeyboard(getCurrentFocus().getRootView());
-                                    firebaseAuth.createUserWithEmailAndPassword(emailAddress, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                            if (task.isSuccessful()) {
-
-                                                databaseReference.child(firebaseAuth.getCurrentUser().getUid()).setValue(createNewUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                                        if (task.isSuccessful()) {
-
-                                                            signUpDialogBox.dismiss();
-                                                            signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(true);
-                                                            MainActivity.mainActivity.finish();
-                                                            Toast.makeText(CreateAnAccountActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
-                                                            startActivity(new Intent(getApplicationContext(), HomeScreenActivity.class));
-                                                            finish();
-
-                                                        } else {
-
-                                                            signUpDialogBox.dismiss();
-                                                            Toast.makeText(CreateAnAccountActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-
-                                                        }
+                                                            }
+                                                        });
 
                                                     }
-                                                });
 
-                                            } else {
+                                                }
+                                            });
 
-                                                signUpDialogBox.dismiss();
-                                                Toast.makeText(CreateAnAccountActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                        } else {
 
-                                            }
+                                            signUpDialogBox.dismiss();
+                                            Toast.makeText(CreateAnAccountActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
 
                                         }
-                                    });
 
-                                } else {
+                                    }
+                                });
 
-                                    Toast.makeText(this, "Please, check your internet connection", Toast.LENGTH_SHORT).show();
+                            } else {
 
-                                }
+                                Toast.makeText(this, "Please, check your internet connection", Toast.LENGTH_SHORT).show();
 
                             }
 

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/subheader_1"
+        android:title="@string/home">
+
+        <menu>
+
+            <group
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/home"
+                    android:title="@string/home"
+                    android:icon="@drawable/home">
+
+                </item>
+
+                <item
+                    android:id="@+id/statistics"
+                    android:title="@string/statistics"
+                    android:icon="@drawable/statistics">
+
+                </item>
+
+            </group>
+
+        </menu>
+
+    </item>
+
+    <item
+        android:id="@+id/subheader_2"
+        android:title="@string/budgets">
+
+        <menu>
+
+            <group
+                android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/budgets"
+                    android:title="@string/budgets"
+                    android:icon="@drawable/budgets">
+
+                </item>
+
+                <item
+                    android:id="@+id/calendar"
+                    android:title="@string/calendar"
+                    android:icon="@drawable/calendar">
+
+                </item>
+
+                <item
+                    android:id="@+id/chart"
+                    android:title="@string/chart"
+                    android:icon="@drawable/chart">
+
+                </item>
+
+                <item
+                    android:id="@+id/goals"
+                    android:title="@string/goals"
+                    android:icon="@drawable/goals">
+
+                </item>
+
+                <item
+                    android:id="@+id/shopping_lists"
+                    android:title="@string/shopping_lists"
+                    android:icon="@drawable/shopping_lists">
+
+                </item>
+
+            </group>
+
+        </menu>
+
+    </item>
+
+    <group
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/help"
+            android:title="@string/help"
+            android:icon="@drawable/help">
+
+        </item>
+
+        <item
+            android:id="@+id/settings"
+            android:title="@string/settings"
+            android:icon="@drawable/settings">
+
+        </item>
+
+        <item
+            android:id="@+id/sign_out"
+            android:title="@string/sign_out"
+            android:icon="@drawable/sign_out">
+
+        </item>
+
+    </group>
+
+</menu>
