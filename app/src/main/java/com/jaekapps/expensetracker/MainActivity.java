@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,48 +29,117 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.shobhitpuri.custombuttons.GoogleSignInButton;
 
 import java.util.Calendar;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    CardView signInUsingEmailButton, signUpUsingEmailButton;
-    DatabaseReference databaseReference;
-    FirebaseDatabase firebaseDatabase;
-    GoogleSignInButton googleSignInButton;
-    int currentMonth, currentYear;
-    String month;
+    private BEIAmount beiAmount;
+    private CardView signInUsingEmailButton, signUpUsingEmailButton;
     private CreateNewUser createNewUser;
+    private DatabaseReference userDBReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+    private GoogleSignInButton googleSignInButton;
     private GoogleSignInClient googleSignInClient;
-    private int RC_SIGN_IN = 1;
-    private SignInDialogBox signInDialogBox;
+    private int currentYear, GOOGLE_SIGN_IN = 1;
+    private SignInOrSignUpModeConfigActivity signInOrSignUpModeConfigActivity;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
-    public static MainActivity mainActivity;
+    private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
+    private String month, userId;
+    private UserIdConfigActivity userIdConfigActivity;
+
+    private boolean checkIfUserIdContainsSpecChar(String userId) {
+
+        boolean specialCharFound = false;
+
+        for (Character character : userId.toCharArray()) {
+
+            if ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) || (character >= 91 && character <= 96) || (character >= 123 && character <= 126)) {
+
+                specialCharFound = true;
+                break;
+
+            }
+
+        }
+
+        return specialCharFound;
+    }
 
     private boolean checkInternetConnection() {
 
         boolean internetConnected = false;
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
-        if (networkInfo != null && networkInfo.isConnected()) {
+        if (connectivityManager != null) {
 
-            if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-                internetConnected = true;
+            if (networkInfo != null && networkInfo.isConnected()) {
 
-            } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
 
-                internetConnected = true;
+                    internetConnected = true;
+
+                } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+
+                    internetConnected = true;
+
+                }
 
             }
 
         }
 
         return internetConnected;
+    }
 
+    private String convertToUserId(char[] userId) {
+
+        int i;
+        String userID;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (i = 0; i < userId.length; i++) {
+
+            if (!(userId[i] >= 33 && userId[i] <= 47) && !(userId[i] >= 58 && userId[i] <= 64) && !(userId[i] >= 91 && userId[i] <= 96) && !(userId[i] >= 123 && userId[i] <= 126)) {
+
+                stringBuilder.append(userId[i]);
+
+            }
+
+        }
+
+        userID = stringBuilder.toString();
+        return userID;
+    }
+
+    private String extractUserId(char[] email_id) {
+
+        int i, pos = 0;
+        String userId;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (i = 0; i < email_id.length; i++) {
+
+            if (email_id[i] == '@') {
+
+                pos = i;
+
+            }
+
+        }
+
+        for (i = 0; i < pos; i++) {
+
+            stringBuilder.append(email_id[i]);
+
+        }
+
+        userId = stringBuilder.toString();
+        return userId;
     }
 
     private void findMonth(int currentMonth) {
@@ -130,54 +198,170 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void goToHomeScreenActivity() {
 
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        signInDialogBox = new SignInDialogBox();
-        signInDialogBox.show(getSupportFragmentManager(), "progress_dialog");
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+        showToast("Successfully signed in.");
+        signInUsingEmailOrGoogleDialogBox.dismiss();
+        signInUsingEmailConfigActivity.setSignInUsingEmailStatus(false);
+        signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(true);
+        userIdConfigActivity.setUserID(userId);
+        startActivity(new Intent(this, HomeScreenActivity.class));
+        finish();
+    }
 
-                if (task.isSuccessful()) {
+    private void initialization() {
 
-                    firebaseUser = firebaseAuth.getCurrentUser();
-                    createNewUser.setEmail_address(firebaseUser.getEmail());
-                    createNewUser.setUsername(firebaseUser.getDisplayName());
-                    databaseReference.child(firebaseUser.getUid()).child("Account_Details").setValue(createNewUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+        beiAmount = new BEIAmount();
+        Calendar calendar = Calendar.getInstance();
+        currentYear = calendar.get(Calendar.YEAR);
+        createNewUser = new CreateNewUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        googleSignInButton = findViewById(R.id.googleSignInButton);
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        currentMonth = currentMonth + 1;
+        findMonth(currentMonth);
+        signInUsingEmailButton = findViewById(R.id.signInUsingEmailButton);
+        signUpUsingEmailButton = findViewById(R.id.signUpUsingEmailButton);
+        signInOrSignUpModeConfigActivity = new SignInOrSignUpModeConfigActivity(this);
+        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
+        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
+        signInUsingEmailOrGoogleDialogBox = new SignInUsingEmailOrGoogleDialogBox();
+        userDBReference = FirebaseDatabase.getInstance().getReference("User");
+        userIdConfigActivity = new UserIdConfigActivity(this);
+    }
 
-                            if (task.isSuccessful()) {
+    private void initializeOnClickListener() {
 
-                                signInDialogBox.dismiss();
-                                signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(false);
-                                signInUsingGoogleConfigActivity.writeSignInUsingGoogleStatus(true);
-                                Toast.makeText(MainActivity.this, "Successfully signed in", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
-                                finish();
+        googleSignInButton.setOnClickListener(this);
+        signInUsingEmailButton.setOnClickListener(this);
+        signUpUsingEmailButton.setOnClickListener(this);
+    }
+
+    private void showTheGoogleAccounts() {
+
+        Intent googleSignInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(googleSignInIntent, GOOGLE_SIGN_IN);
+    }
+
+    private void showToast(String message) {
+
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
+    }
+
+    private void signInUsingGoogle(GoogleSignInAccount account) {
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        signInUsingEmailOrGoogleDialogBox.show(getSupportFragmentManager(), "dialog box");
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        if (task.isSuccessful()) {
+
+                            if (Objects.requireNonNull(Objects.requireNonNull(task.getResult())
+                                    .getAdditionalUserInfo())
+                                    .isNewUser()) {
+
+                                firebaseUser = firebaseAuth.getCurrentUser();
+
+                                if (firebaseUser != null) {
+
+                                    beiAmount.setBalance("0");
+                                    beiAmount.setExpense("0");
+                                    beiAmount.setIncome("0");
+                                    createNewUser.setEmail_address(firebaseUser.getEmail());
+                                    createNewUser.setUsername(firebaseUser.getDisplayName());
+                                    userId = extractUserId(Objects.requireNonNull(firebaseUser.getEmail()).toCharArray());
+
+                                    if (checkIfUserIdContainsSpecChar(userId)) {
+
+                                        userId = convertToUserId(userId.toCharArray());
+
+                                    }
+
+                                    userDBReference.child(userId)
+                                            .child("Account_Details")
+                                            .setValue(createNewUser)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                    if (task.isSuccessful()) {
+
+                                                        userDBReference.child(userId)
+                                                                .child("BEIAmount")
+                                                                .child(String.valueOf(currentYear))
+                                                                .child(month)
+                                                                .setValue(beiAmount)
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                                        if (task.isSuccessful()) {
+
+                                                                            goToHomeScreenActivity();
+
+                                                                        } else {
+
+                                                                            showToast("Failed to sign in - " + Objects.requireNonNull(task.getException()).getMessage());
+                                                                            signInUsingEmailOrGoogleDialogBox.dismiss();
+
+                                                                        }
+
+                                                                    }
+                                                                });
+
+                                                    } else {
+
+                                                        showToast("Failed to sign in - " + Objects.requireNonNull(task.getException()).getMessage());
+                                                        signInUsingEmailOrGoogleDialogBox.dismiss();
+
+                                                    }
+
+                                                }
+                                            });
+
+                                }
+
+                            } else {
+
+                                firebaseUser = firebaseAuth.getCurrentUser();
+
+                                if (firebaseUser != null) {
+
+                                    userId = extractUserId(Objects.requireNonNull(firebaseUser.getEmail()).toCharArray());
+
+                                    if (checkIfUserIdContainsSpecChar(userId)) {
+
+                                        userId = convertToUserId(userId.toCharArray());
+
+                                    }
+
+                                    goToHomeScreenActivity();
+
+                                }
 
                             }
 
+                        } else {
+
+                            showToast("Failed to sign in - " + Objects.requireNonNull(task.getException()).getMessage());
+                            signInUsingEmailOrGoogleDialogBox.dismiss();
+
                         }
-                    });
 
-                } else {
-
-                    signInDialogBox.dismiss();
-                    Toast.makeText(MainActivity.this, "Failed to sign in", Toast.LENGTH_SHORT).show();
-
-                }
-
-            }
-        });
-
-    }
-
-    private void signInUsingGoogle() {
-
-        Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+                    }
+                });
 
     }
 
@@ -185,20 +369,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == GOOGLE_SIGN_IN) {
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            task.addOnCompleteListener(new OnCompleteListener<GoogleSignInAccount>() {
+                @Override
+                public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
 
-            try {
+                    if (task.isSuccessful()) {
 
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
+                        try {
 
-            } catch (ApiException e) {
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
 
-                e.printStackTrace();
+                            if (account != null) {
 
-            }
+                                signInUsingGoogle(account);
+
+                            }
+
+                        } catch (ApiException e) {
+
+                            e.printStackTrace();
+
+                        }
+
+                    }
+
+                }
+            });
 
         }
 
@@ -209,69 +408,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Calendar calendar = Calendar.getInstance();
-        createNewUser = new CreateNewUser();
-        currentMonth = calendar.get(Calendar.MONTH);
-        currentMonth = currentMonth + 1;
-        currentYear = calendar.get(Calendar.YEAR);
-        findMonth(currentMonth);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("User");
-        googleSignInButton = findViewById(R.id.googleSignInButton);
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        mainActivity = this;
-        signInDialogBox = new SignInDialogBox();
-        signInUsingEmailButton = findViewById(R.id.signInUsingEmailButton);
-        signUpUsingEmailButton = findViewById(R.id.signUpUsingEmailButton);
-        signInDialogBox = new SignInDialogBox();
-        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
-        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
+        initialization();
+        initializeOnClickListener();
+    }
 
-        if (signInUsingEmailConfigActivity.readSignInUsingEmailStatus() || signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus()) {
+    @Override
+    public void onClick(View view) {
 
-            startActivity(new Intent(MainActivity.this, HomeScreenActivity.class));
-            finish();
+        switch (view.getId()) {
 
-        }
-
-        googleSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case R.id.googleSignInButton:
 
                 if (checkInternetConnection()) {
 
-                    signInUsingGoogle();
+                    showTheGoogleAccounts();
 
                 } else {
 
-                    Toast.makeText(MainActivity.this, "Please, check your internet connection", Toast.LENGTH_SHORT).show();
+                    showToast("Please, check your internet connection.");
 
                 }
 
-            }
-        });
+                break;
 
-        signInUsingEmailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            case R.id.signInUsingEmailButton:
+                signInOrSignUpModeConfigActivity.setModeOfSignIn("Sign In");
+                startActivity(new Intent(this, SignInOrSignUpActivity.class));
+                break;
 
-                startActivity(new Intent(MainActivity.this, SignInUsingEmailActivity.class));
-
-            }
-        });
-        signUpUsingEmailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                startActivity(new Intent(MainActivity.this, CreateAnAccountActivity.class));
-
-            }
-        });
+            case R.id.signUpUsingEmailButton:
+                signInOrSignUpModeConfigActivity.setModeOfSignIn("Sign Up");
+                startActivity(new Intent(this, SignInOrSignUpActivity.class));
+                break;
+        }
 
     }
 }

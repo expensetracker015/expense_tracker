@@ -4,26 +4,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
         <item name="popupTheme">@style/PopUpMenuTheme</item>
-    </style>
-
-    <style name="AppTheme.AddItemCategoryActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-    </style>
-
-    <style name="AppTheme.CreateAnAccountActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-    </style>
-
-    <style name="AppTheme.ExpenseIncomeActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-    </style>
-
-    <style name="AppTheme.ForgotPasswordActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.HomeScreenActivity">
@@ -35,33 +16,36 @@
     </style>
 
     <style name="AppTheme.MainActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-    </style>
-
-    <style name="AppTheme.SignInUsingEmailActivity">
-        <item name="android:navigationBarColor">@color/colorNavigationBar</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="AppTheme.SplashScreenActivity">
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="CancelOrOkButtonTheme" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
     <style name="ForgotPasswordButtonTheme" parent="Widget.AppCompat.Button.Borderless">
 
     </style>
 
+    <style name="DatePickerDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_down_date_dialog</item>
+        <item name="android:windowExitAnimation">@anim/slide_up_date_dialog</item>
+    </style>
+
+    <style name="ForgotPasswordDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
+        <item name="android:windowExitAnimation">@anim/slide_down_dialog</item>
+    </style>
+
     <style name="IncomeProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:indeterminate">false</item>
     </style>
-
-    <declare-styleable name="RoundedHorizontalProgressBar">
-        <attr name="backgroundColor" format="color"/>
-        <attr name="progressColor" format="color"/>
-        <attr name="isRounded" format="boolean"/>
-    </declare-styleable>
 
     <style name="PopUpMenuTheme" parent="Theme.AppCompat.Light">
         <item name="android:background">#FFFFFF</item>
@@ -73,6 +57,16 @@
     <style name="ResetPasswordButtonTheme" parent="Widget.AppCompat.Button.Colored">
         <item name="android:backgroundTint">@color/colorResetPasswordButton</item>
         <item name="android:textColor">@color/colorAllButtonText</item>
+    </style>
+
+    <declare-styleable name="RoundedHorizontalProgressBar">
+        <attr name="backgroundColor" format="color"/>
+        <attr name="progressColor" format="color"/>
+        <attr name="isRounded" format="boolean"/>
+    </declare-styleable>
+
+    <style name="SignInUsingEmailOrGoogleDialogBoxProgressBarTheme" parent="Widget.AppCompat.ProgressBar">
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
 </resources>

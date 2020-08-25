@@ -15,42 +15,52 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/PopUpMenuTheme">
 
-        <LinearLayout
-            android:id="@+id/calendarDropDownLinearLayout"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/calendarCardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:padding="7dp">
+            android:foreground="?android:attr/selectableItemBackground"
+            android:orientation="horizontal"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardElevation="0dp">
 
-            <TextView
-                android:id="@+id/monthNameTextView"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/comfortaa_bold"
-                android:textSize="18sp"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold">
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
 
-            </TextView>
+                <TextView
+                    android:id="@+id/monthNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/comfortaa_bold"
+                    android:textSize="17sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:src="@drawable/arrow_drop_down">
+                </TextView>
 
-            </androidx.appcompat.widget.AppCompatImageView>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/arrow_drop_down">
 
-        </LinearLayout>
+                </androidx.appcompat.widget.AppCompatImageView>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
-        android:id="@+id/fragmentContainer"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar">

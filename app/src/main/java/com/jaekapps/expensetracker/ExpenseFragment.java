@@ -1,7 +1,6 @@
 package com.jaekapps.expensetracker;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,57 +9,51 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExpenseFragment extends Fragment {
+public class ExpenseFragment extends Fragment implements ExpenseItemRecyclerAdapter.ExpenseItemClickListener {
 
     private int[] expenseCategoryItemIconId = {
-
-            R.drawable.food,
-            R.drawable.bills,
-            R.drawable.transportation,
-            R.drawable.house,
-            R.drawable.car,
-            R.drawable.education,
-            R.drawable.book,
-            R.drawable.office,
-            R.drawable.entertainment,
-            R.drawable.shopping,
-            R.drawable.cloth,
-            R.drawable.insurance,
-            R.drawable.tax,
-            R.drawable.telephone,
-            R.drawable.cigarette,
-            R.drawable.health,
-            R.drawable.sports,
-            R.drawable.baby,
-            R.drawable.pet,
-            R.drawable.beauty,
-            R.drawable.electronics,
-            R.drawable.wine,
-            R.drawable.vegetables,
-            R.drawable.gift,
-            R.drawable.social,
-            R.drawable.travel,
-            R.drawable.others,
-
+            R.drawable.food_dark,
+            R.drawable.bills_dark,
+            R.drawable.transportation_dark,
+            R.drawable.home_dark,
+            R.drawable.car_dark,
+            R.drawable.entertainment_dark,
+            R.drawable.shopping_dark,
+            R.drawable.cloth_dark,
+            R.drawable.insurance_dark,
+            R.drawable.tax_dark,
+            R.drawable.phone_dark,
+            R.drawable.cigarette_dark,
+            R.drawable.health_dark,
+            R.drawable.sports_dark,
+            R.drawable.baby_dark,
+            R.drawable.pet_dark,
+            R.drawable.beauty_dark,
+            R.drawable.electronics_dark,
+            R.drawable.wine_dark,
+            R.drawable.vegetables_dark,
+            R.drawable.gift_dark,
+            R.drawable.social_dark,
+            R.drawable.travel_dark,
+            R.drawable.education_dark,
+            R.drawable.book_dark,
+            R.drawable.office_dark,
+            R.drawable.others_dark,
     };
     private List<Integer> expenseCategoryListItemIconId = new ArrayList<>();
     private List<String> expenseCategoryListItemName = new ArrayList<>();
     private String[] expenseCategoryItemNames = {
-
             "Food",
             "Bills",
             "Transportation",
             "Home",
             "Car",
-            "Education",
-            "Book",
-            "Office",
             "Entertainment",
             "Shopping",
             "Clothing",
@@ -71,7 +64,7 @@ public class ExpenseFragment extends Fragment {
             "Health",
             "Sports",
             "Baby",
-            "Pets",
+            "Pet",
             "Beauty",
             "Electronics",
             "Wine",
@@ -79,11 +72,19 @@ public class ExpenseFragment extends Fragment {
             "Gift",
             "Social",
             "Travel",
+            "Education",
+            "Book",
+            "Office",
             "Others",
-
     };
+    ExpenseFragmentListener expenseFragmentListener;
 
     ExpenseFragment() {}
+
+    public interface ExpenseFragmentListener {
+
+        void selectItemFromExpenseCategory(String item_name);
+    }
 
     @Nullable
     @Override
@@ -91,7 +92,7 @@ public class ExpenseFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.expense_fragment, container, false);
         RecyclerView expenseRecyclerView = view.findViewById(R.id.expenseRecyclerView);
-        expenseRecyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 4));
+        expenseRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         expenseRecyclerView.setHasFixedSize(true);
         expenseCategoryListItemIconId.clear();
         expenseCategoryListItemName.clear();
@@ -103,20 +104,38 @@ public class ExpenseFragment extends Fragment {
 
         }
 
-        ExpenseItemRecyclerAdapter expenseItemRecyclerAdapter = new ExpenseItemRecyclerAdapter(expenseCategoryListItemIconId, expenseCategoryListItemName);
+        ExpenseItemRecyclerAdapter expenseItemRecyclerAdapter = new ExpenseItemRecyclerAdapter(view.getContext(), expenseCategoryListItemIconId, expenseCategoryListItemName);
         expenseRecyclerView.setAdapter(expenseItemRecyclerAdapter);
-        expenseItemRecyclerAdapter.setOnClickListener(new ExpenseItemRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, List<String> expenseCategoryListItemName) {
-
-                Intent intent = new Intent();
-                intent.putExtra("item_name", expenseCategoryListItemName.get(position));
-                getActivity().setResult(Activity.RESULT_OK, intent);
-                getActivity().finish();
-
-            }
-        });
+        expenseItemRecyclerAdapter.setOnClickListener(this);
         return view;
+    }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        try  {
+
+            expenseFragmentListener = (ExpenseFragmentListener) context;
+
+        } catch (Exception e) {
+
+            throw new ClassCastException(context.toString() + " must implement ExpenseFragmentListener!");
+
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        expenseFragmentListener = null;
+    }
+
+    @Override
+    public void selectItemFromExpenseCategory(int position, List<String> expenseCategoryListItemName) {
+
+        expenseFragmentListener.selectItemFromExpenseCategory(expenseCategoryListItemName.get(position));
     }
 }

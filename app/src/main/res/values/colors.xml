@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#3949AB</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#3F51B5</color>
     <color name="colorWelcomeScreenText">#000000</color>
-    <color name="colorSignInButton">#03A9F4</color>
+    <color name="colorSignInButton">#4CAF50</color>
     <color name="colorAllButtonText">#FFFFFF</color>
-    <color name="colorSignUpButton">#64DD17</color>
-    <color name="colorResetPasswordButton">#E53935</color>
+    <color name="colorSignUpButton">#FF5722</color>
+    <color name="colorResetPasswordButton">#9C27B0</color>
     <color name="colorNavigationBar">#FFFFFF</color>
-    <color name="colorExpenseIncomeCategoryCardView">#3F51B5</color>
-    <color name="colorDatePickerDialog">#3F51B5</color>
+    <color name="colorExpenseIncomeCategoryCardView">#2196F3</color>
+    <color name="colorDatePickerDialog">#2196F3</color>
     <color name="colorTabIndicator">#FFFFFF</color>
 </resources>

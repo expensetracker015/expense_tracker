@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,42 +14,151 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
+import java.util.Objects;
 
-public class ExpenseIncomeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class ExpenseIncomeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
-    BEIAmount beiAmount;
-    boolean beiAmountYear, beiAmountMonth, dateFound, itemFound, monthFound, yearFound;
-    CardView expenseCardView, incomeCardView;
-    CategorySharedPreferences categorySharedPreferences;
-    char[] amount;
-    DatabaseReference beiAmountDatabaseReference, beiAmountMonthDatabaseReference, beiAmountYearDatabaseReference, categoryDatabaseReference, dateDatabaseReference, monthDatabaseReference, userDatabaseReference, userIdDatabaseReference, yearDatabaseReference;
-    DatePickerDialog datePickerDialog;
-    FirebaseAuth firebaseAuth;
-    FirebaseDatabase firebaseDatabase;
-    FirebaseUser firebaseUser;
-    GridLayout calcGridLayout;
-    HomeScreenFragment homeScreenFragment;
-    int currentDay, currentMonth, currentYear, in, length, selectedDay, selectedMonth, selectedYear;
-    LinearLayout subcategoryLinearLayout;
-    SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
-    SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
-    String balance, category, currentItemAmount, date, expense, income, itemName, month, previousItemAmount, text, userId;
-    TextView amountTextView, itemNameTextView, labelTextView, subcategoryTextView, todaysDateTextView;
+    int length;
+    private BEIAmount beiAmount;
+    private boolean itemFound;
+    private CardView addCardView, cancelCardView, dotCardView, eightCardView, equalOrOkCardView, expenseCardView, fiveCardView,
+            fourCardView, incomeCardView, nineCardView, oneCardView, sevenCardView, sixCardView, subcategoryCardView,
+            subtractCardView, threeCardView, todayCardView, twoCardView, zeroCardView;
+    private CategorySharedPreferences categorySharedPreferences;
+    private char[] amount;
+    private DatabaseReference userDBReference;
+    private DatePickerDialog datePickerDialog;
+    private int currentDay, currentMonth, currentYear, in, selectedDay, selectedMonth, selectedYear;
+    private String balance, currentItemAmount, date, expense, income, month, previousItemAmount, text, totalAmount, userId;
+    private TextView amountTextView, itemNameTextView, labelTextView, subcategoryTextView, todaysDateTextView;
+    String category;
+
+    private boolean checkCategoryAndItemName() {
+
+        boolean status = false;
+
+        if (categorySharedPreferences.readCategoryName().equals("")) {
+
+            showToast("Please, select Expense or Income.");
+
+        } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")) {
+
+            if (itemNameTextView.getText().equals("ADD ITEM")) {
+
+                showToast("Please, select an item.");
+
+            } else {
+
+                status = true;
+
+            }
+
+        }
+
+        return status;
+    }
+
+    private String addCurAmAndPreAm(float currentItemAmount, float previousItemAmount) {
+
+        return  String.valueOf(currentItemAmount + previousItemAmount);
+    }
+
+    private String calculateTotalAmount(String currentItemAmount, String previousItemAmount) {
+
+        String totalAmount;
+
+        if (currentItemAmount.contains(".")) {
+
+            totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
+
+        } else {
+
+            if (previousItemAmount.contains(".")) {
+
+                totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
+
+            } else {
+
+                totalAmount = String.valueOf(Long.parseLong(currentItemAmount) + Long.parseLong(previousItemAmount));
+
+            }
+
+        }
+
+        return totalAmount;
+    }
+
+    private String findMonth(int currentMonth) {
+
+        String month = "";
+
+        switch (currentMonth) {
+
+            case 1:
+                month = "Jan";
+                break;
+
+            case 2:
+                month = "Feb";
+                break;
+
+            case 3:
+                month = "Mar";
+                break;
+
+            case 4:
+                month = "Apr";
+                break;
+
+            case 5:
+                month = "May";
+                break;
+
+            case 6:
+                month = "June";
+                break;
+
+            case 7:
+                month = "July";
+                break;
+
+            case 8:
+                month = "Aug";
+                break;
+
+            case 9:
+                month = "Sep";
+                break;
+
+            case 10:
+                month = "Oct";
+                break;
+
+            case 11:
+                month = "Nov";
+                break;
+
+            case 12:
+                month = "Dec";
+                break;
+
+        }
+
+        return month;
+    }
 
     private void addAmountToTextView(String number) {
 
@@ -56,7 +166,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             text = "";
             amount = amountTextView.getText().toString().toCharArray();
-            int flag = 0, operatorPos = 0, pos = 0;
+            int operatorPos = 0;
 
             for (in = 0; in < amount.length; in++) {
 
@@ -71,73 +181,11 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (amount[operatorPos] == '+' || amount[operatorPos] == '-') {
 
-                for (in = operatorPos + 1; in < amount.length; in++) {
-
-                    if (amount[in] == '.') {
-
-                        pos = in;
-                        break;
-
-                    }
-
-                }
-
-                if (amount[pos] == '.') {
-
-                    for (in = pos + 1; in < amount.length; in++) {
-
-                        flag++;
-
-                    }
-
-                    if (flag != 3) {
-
-                        text = amountTextView.getText().toString() + number;
-                        amountTextView.setText(text);
-
-                    }
-
-                } else {
-
-                    text = amountTextView.getText() + number;
-                    amountTextView.setText(text);
-
-                }
+                checkIfDotIsPresentOrNot(amount, operatorPos + 1, number);
 
             } else {
 
-                for (in = 0; in < amount.length; in++) {
-
-                    if (amount[in] == '.') {
-
-                        pos = in;
-                        break;
-
-                    }
-
-                }
-
-                if (amount[pos] == '.') {
-
-                    for (in = pos + 1; in < amount.length; in++) {
-
-                        flag++;
-
-                    }
-
-                    if (flag != 3) {
-
-                        text = amountTextView.getText() + number;
-                        amountTextView.setText(text);
-
-                    }
-
-                } else {
-
-                    text = amountTextView.getText() + number;
-                    amountTextView.setText(text);
-
-                }
+                checkIfDotIsPresentOrNot(amount, 0, number);
 
             }
 
@@ -147,12 +195,6 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
             amountTextView.setText(text);
 
         }
-
-    }
-
-    private String addCurAmAndPreAm(float currentItemAmount, float previousItemAmount) {
-
-        return  String.valueOf(currentItemAmount + previousItemAmount);
 
     }
 
@@ -197,7 +239,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                 if (operatorPos != in) {
 
-                    text = amountTextView.getText() + operatorSign;
+                    text = amountTextView.getText().toString() + operatorSign;
                     amountTextView.setText(text);
 
                 } else {
@@ -212,668 +254,76 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     }
 
-    private void calculateTheAmountsAndModifyIt() {
+    private void calculateBEIIfDataTypeIsSameForExpense() {
 
-        if (selectedMonth == currentMonth) {
+        if (amountTextView.getText().toString().contains(".")) {
 
-            if (categorySharedPreferences.readCategoryName().equals("Expense")) {
+            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
+            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
+            expense = String.valueOf(totalExpense);
 
-                if (expense.equals("0")) {
+        } else {
 
-                    if (income.equals("0")) {
+            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
+            balance = String.valueOf(Long.parseLong(income) - totalExpense);
+            expense = String.valueOf(totalExpense);
 
-                        if (amountTextView.getText().toString().contains(".")) {
+        }
 
-                            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
+    }
 
-                        } else {
+    private void calculateBEIIfDataTypeIsSameForIncome() {
 
-                            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(Long.parseLong(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
+        if (amountTextView.getText().toString().contains(".")) {
 
-                        }
+            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
+            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
+            income = String.valueOf(totalIncome);
 
-                        updateTheBEIAmount(balance, expense, income);
+        } else {
 
-                    } else if (income.contains(".")) {
+            long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
+            balance = String.valueOf(totalIncome - Long.parseLong(expense));
+            income = String.valueOf(totalIncome);
 
-                        if (amountTextView.getText().toString().contains(".")) {
+        }
 
-                            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
+    }
 
-                        } else {
+    private void checkIfDotIsPresentOrNot(char[] amount, int index, String number) {
 
-                            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                            expense = String.valueOf(totalExpense);
-                            balance = String.valueOf(Float.parseFloat(income) - Float.parseFloat(expense));
+        int flag = 0, pos = 0;
 
-                        }
+        for (in = index; in < amount.length; in++) {
 
-                        updateTheBEIAmount(balance, expense, income);
+            if (amount[in] == '.') {
 
-                    } else {
+                pos = in;
+                break;
 
-                        if (amountTextView.getText().toString().contains(".")) {
+            }
 
-                            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
+        }
 
-                        } else {
+        if (amount[pos] == '.') {
 
-                            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(Long.parseLong(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
+            for (in = pos + 1; in < amount.length; in++) {
 
-                        }
+                flag++;
 
-                        updateTheBEIAmount(balance, expense, income);
+            }
 
-                    }
+            if (flag != 3) {
 
-                } else if (expense.contains(".")) {
-
-                    float totalExpense;
-
-                    if (income.equals("0")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else if (income.contains(".")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    }
-
-                } else {
-
-                    if (income.equals("0")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(Long.parseLong(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else if (income.contains(".")) {
-
-                        float totalExpense;
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        } else {
-
-                            long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(Long.parseLong(income) - totalExpense);
-                            expense = String.valueOf(totalExpense);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    }
-
-                }
-
-            } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                if (expense.equals("0")) {
-
-                    if (income.equals("0")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Long.parseLong(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else if (income.contains(".")) {
-
-                        float totalIncome;
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Long.parseLong(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    }
-
-                } else if (expense.contains(".")) {
-
-                    float totalIncome;
-
-                    if (income.equals("0")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else if (income.contains(".")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    }
-
-                } else {
-
-                    if (income.equals("0")) {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Long.parseLong(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else if (income.contains(".")) {
-
-                        float totalIncome;
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    } else {
-
-                        if (amountTextView.getText().toString().contains(".")) {
-
-                            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                            income = String.valueOf(totalIncome);
-
-                        } else {
-
-                            long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
-                            balance = String.valueOf(totalIncome - Long.parseLong(expense));
-                            income = String.valueOf(totalIncome);
-
-                        }
-
-                        updateTheBEIAmount(balance, expense, income);
-
-                    }
-
-                }
+                text = amountTextView.getText().toString() + number;
+                amountTextView.setText(text);
 
             }
 
         } else {
 
-            switch (selectedMonth) {
-
-                case 1:
-                    month = "Jan";
-                    break;
-
-                case 2:
-                    month = "Feb";
-                    break;
-
-                case 3:
-                    month = "Mar";
-                    break;
-
-                case 4:
-                    month = "Apr";
-                    break;
-
-                case 5:
-                    month = "May";
-                    break;
-
-                case 6:
-                    month = "June";
-                    break;
-
-                case 7:
-                    month = "July";
-                    break;
-
-                case 8:
-                    month = "Aug";
-                    break;
-
-                case 9:
-                    month = "Sep";
-                    break;
-
-                case 10:
-                    month = "Oct";
-                    break;
-
-                case 11:
-                    month = "Nov";
-                    break;
-
-                case 12:
-                    month = "Dec";
-                    break;
-
-            }
-
-            userIdDatabaseReference = userDatabaseReference.child(userId);
-            beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-            beiAmountYearDatabaseReference = beiAmountDatabaseReference.child(String.valueOf(selectedYear));
-            beiAmountMonthDatabaseReference = beiAmountYearDatabaseReference.child(month);
-            beiAmountMonthDatabaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        beiAmount = dataSnapshot.getValue(BEIAmount.class);
-                        balance = beiAmount.getBalance();
-                        expense = beiAmount.getExpense();
-                        income = beiAmount.getIncome();
-
-                        if (categorySharedPreferences.readCategoryName().equals("Expense")) {
-
-                            if (expense.contains(".")) {
-
-                                if (income.contains(".")) {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    } else {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                } else {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    } else {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    }
-
-                                }
-
-                            } else {
-
-                                if (income.contains(".")) {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    } else {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                } else {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    } else {
-
-                                        long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
-                                        balance = String.valueOf(Long.parseLong(income) - totalExpense);
-                                        expense = String.valueOf(totalExpense);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                }
-
-                            }
-
-                        } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                            if (expense.contains(".")) {
-
-                                if (income.contains(".")) {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    } else {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                } else {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    } else {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                }
-
-                            } else {
-
-                                if (income.contains(".")) {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    } else {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                } else {
-
-                                    if (amountTextView.getText().toString().contains(".")) {
-
-                                        float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    } else {
-
-                                        long totalIncome = Long.parseLong(income) + Long.parseLong(amountTextView.getText().toString());
-                                        balance = String.valueOf(totalIncome - Long.parseLong(expense));
-                                        income = String.valueOf(totalIncome);
-
-                                    }
-
-                                    updateTheBEIAmount(balance, expense, income);
-
-                                }
-
-                            }
-
-                        }
-
-                    } else {
-
-                        if (categorySharedPreferences.readCategoryName().equals("Expense")) {
-
-                            if (amountTextView.getText().toString().contains(".")) {
-
-                                float totalExpense = Float.parseFloat(amountTextView.getText().toString());
-                                balance = String.valueOf(0 - totalExpense);
-                                expense = String.valueOf(totalExpense);
-                                income = "0.0";
-
-                            } else {
-
-                                long totalExpense = Long.parseLong(amountTextView.getText().toString());
-                                balance = String.valueOf(0 - totalExpense);
-                                expense = String.valueOf(totalExpense);
-                                income = "0";
-
-                            }
-
-                            updateTheBEIAmount(balance, expense, income);
-
-                        } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                            if (amountTextView.getText().toString().contains(".")) {
-
-                                float totalIncome = Float.parseFloat(amountTextView.getText().toString());
-                                balance = String.valueOf(totalIncome);
-                                income = String.valueOf(totalIncome);
-                                expense = "0.0";
-
-                            } else {
-
-                                long totalIncome = Long.parseLong(amountTextView.getText().toString());
-                                balance = String.valueOf(totalIncome);
-                                income = String.valueOf(totalIncome);
-                                expense = "0";
-
-                            }
-
-                            updateTheBEIAmount(balance, expense, income);
-
-                        }
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+            text = amountTextView.getText().toString() + number;
+            amountTextView.setText(text);
 
         }
 
@@ -881,20 +331,10 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     private void checkIfDotIsPresentBeforeOrAfterOfOperator(char[] amount, int operatorPos) {
 
-        if (amount[operatorPos - 1] == '.') {
+        if (amount[operatorPos - 1] == '.' || operatorPos == amount.length - 1 ||amount[amount.length - 1] == '.') {
 
             amountTextView.setText("0");
-            Toast.makeText(ExpenseIncomeActivity.this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
-
-        } else if (operatorPos == amount.length - 1) {
-
-            amountTextView.setText("0");
-            Toast.makeText(ExpenseIncomeActivity.this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
-
-        } else if (amount[amount.length - 1] == '.') {
-
-            amountTextView.setText("0");
-            Toast.makeText(ExpenseIncomeActivity.this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
+            showToast("Please, enter a valid amount.");
 
         } else {
 
@@ -932,14 +372,14 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 float firstNo = Float.parseFloat(firstNoString);
                 float secondNo = Float.parseFloat(secondNoString);
                 float addition = firstNo + secondNo;
-                text = String.valueOf(addition) + operatorSign;
+                text = addition + operatorSign;
 
             } else {
 
                 long firstNo = Long.parseLong(firstNoString);
                 long secondNo = Long.parseLong(secondNoString);
                 long addition = firstNo + secondNo;
-                text = String.valueOf(addition) + operatorSign;
+                text = addition + operatorSign;
 
             }
 
@@ -955,7 +395,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 if (firstNo < secondNo) {
 
                     text = "0";
-                    Toast.makeText(ExpenseIncomeActivity.this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
+                    showToast("Please, enter valid amount.");
 
                 } else {
 
@@ -967,7 +407,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     } else {
 
-                        text = String.valueOf(subtraction) + operatorSign;
+                        text = subtraction + operatorSign;
 
                     }
 
@@ -981,7 +421,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 if (firstNo < secondNo) {
 
                     text = "0";
-                    Toast.makeText(ExpenseIncomeActivity.this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
+                    showToast("Please, enter valid amount.");
 
                 } else {
 
@@ -993,7 +433,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     } else {
 
-                        text = String.valueOf(subtraction) + operatorSign;
+                        text = subtraction + operatorSign;
 
                     }
 
@@ -1007,50 +447,98 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     }
 
-    private void updateBEIAndCategoryAmount(String balance, String category, String currentItemAmount, String date, String expense, String income, String itemName, String month, String previousItemAmount, String year) {
+    private void initialization() {
 
-        String totalAmount;
+        addCardView = findViewById(R.id.addCardView);
+        amountTextView = findViewById(R.id.amountTextView);
+        beiAmount = new BEIAmount();
+        Calendar calendar = Calendar.getInstance();
+        cancelCardView = findViewById(R.id.cancelCardView);
+        categorySharedPreferences = new CategorySharedPreferences(this);
+        categorySharedPreferences.writeCategoryName("");
+        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentYear = calendar.get(Calendar.YEAR);
+        datePickerDialog = new android.app.DatePickerDialog(
+                this,
+                this,
+                currentYear,
+                currentMonth,
+                currentDay
+        );
+        currentMonth = currentMonth + 1;
+        date = currentMonth + "/" + currentDay;
+        dotCardView = findViewById(R.id.dotCardView);
+        eightCardView = findViewById(R.id.eightCardView);
+        equalOrOkCardView = findViewById(R.id.equalOrOkCardView);
+        expenseCardView = findViewById(R.id.expenseCardView);
+        fiveCardView = findViewById(R.id.fiveCardView);
+        fourCardView = findViewById(R.id.fourCardView);
+        incomeCardView = findViewById(R.id.incomeCardView);
+        itemNameTextView = findViewById(R.id.itemNameTextView);
+        labelTextView = findViewById(R.id.labelTextView);
+        month = findMonth(currentMonth);
+        nineCardView = findViewById(R.id.nineCardView);
+        oneCardView = findViewById(R.id.oneCardView);
+        selectedDay = currentDay;
+        selectedMonth = currentMonth;
+        selectedYear = currentYear;
+        sevenCardView = findViewById(R.id.sevenCardView);
+        sixCardView = findViewById(R.id.sixCardView);
+        subcategoryCardView = findViewById(R.id.subcategoryCardView);
+        subcategoryTextView = findViewById(R.id.subcategoryTextView);
+        subtractCardView = findViewById(R.id.subtractCardView);
+        threeCardView = findViewById(R.id.threeCardView);
+        todayCardView = findViewById(R.id.todayCardView);
+        todaysDateTextView = findViewById(R.id.todaysDateTextView);
+        todaysDateTextView.setText(date);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        if (currentItemAmount.contains(".")) {
+        if (getSupportActionBar() != null) {
 
-            if (previousItemAmount.contains(".")) {
-
-                totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
-
-            } else {
-
-                totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
-
-            }
-
-        } else {
-
-            if (previousItemAmount.contains(".")) {
-
-                totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
-
-            } else {
-
-                totalAmount = String.valueOf(Long.parseLong(currentItemAmount) + Long.parseLong(previousItemAmount));
-
-            }
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Expense-Income");
 
         }
 
-        Intent intent = new Intent();
-        intent.putExtra("balance", balance);
-        intent.putExtra("category", category);
-        intent.putExtra("date", date);
-        intent.putExtra("day_no", selectedDay);
-        intent.putExtra("expense", expense);
-        intent.putExtra("income", income);
-        intent.putExtra("item_name", itemName);
-        intent.putExtra("month", month);
-        intent.putExtra("total_amount", totalAmount);
-        intent.putExtra("year", year);
-        setResult(RESULT_OK, intent);
-        finish();
+        twoCardView = findViewById(R.id.twoCardView);
+        userDBReference = FirebaseDatabase.getInstance().getReference("User");
+        UserIdConfigActivity userIdConfigActivity = new UserIdConfigActivity(this);
+        userId = userIdConfigActivity.getUserID();
+        zeroCardView = findViewById(R.id.zeroCardView);
+    }
 
+    private void initializeOnClickListener() {
+
+        addCardView.setOnClickListener(this);
+        cancelCardView.setOnClickListener(this);
+        dotCardView.setOnClickListener(this);
+        eightCardView.setOnClickListener(this);
+        equalOrOkCardView.setOnClickListener(this);
+        expenseCardView.setOnClickListener(this);
+        fiveCardView.setOnClickListener(this);
+        fourCardView.setOnClickListener(this);
+        incomeCardView.setOnClickListener(this);
+        nineCardView.setOnClickListener(this);
+        oneCardView.setOnClickListener(this);
+        sevenCardView.setOnClickListener(this);
+        sixCardView.setOnClickListener(this);
+        subcategoryCardView.setOnClickListener(this);
+        subtractCardView.setOnClickListener(this);
+        threeCardView.setOnClickListener(this);
+        todayCardView.setOnClickListener(this);
+        twoCardView.setOnClickListener(this);
+        zeroCardView.setOnClickListener(this);
+    }
+
+    private void showToast(String message) {
+
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void updateTheBEIAmount(String balance, String expense, String income) {
@@ -1058,348 +546,159 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         beiAmount.setBalance(balance);
         beiAmount.setExpense(expense);
         beiAmount.setIncome(income);
-
-        switch (selectedMonth) {
-
-            case 1:
-                month = "Jan";
-                break;
-
-            case 2:
-                month = "Feb";
-                break;
-
-            case 3:
-                month = "Mar";
-                break;
-
-            case 4:
-                month = "Apr";
-                break;
-
-            case 5:
-                month = "May";
-                break;
-
-            case 6:
-                month = "June";
-                break;
-
-            case 7:
-                month = "July";
-                break;
-
-            case 8:
-                month = "Aug";
-                break;
-
-            case 9:
-                month = "Sep";
-                break;
-
-            case 10:
-                month = "Oct";
-                break;
-
-            case 11:
-                month = "Nov";
-                break;
-
-            case 12:
-                month = "Dec";
-                break;
-
-        }
-
-        userIdDatabaseReference = userDatabaseReference.child(userId);
-        beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-        beiAmountDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (dataSnapshot.exists()) {
-
-                    for (DataSnapshot yearDataSnapshot : dataSnapshot.getChildren()) {
-
-                        if (Integer.parseInt(yearDataSnapshot.getKey()) == selectedYear) {
-
-                            beiAmountYear = true;
-                            break;
-
-                        }
-
-                    }
-
-                    if (beiAmountYear) {
-
-                        DatabaseReference beiAmountYearDatabaseReference = beiAmountDatabaseReference.child(String.valueOf(selectedYear));
-                        beiAmountYearDatabaseReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                if (dataSnapshot.exists()) {
-
-                                    for (DataSnapshot monthDataSnapShot : dataSnapshot.getChildren()) {
-
-                                        if (monthDataSnapShot.getKey().equals(month)) {
-
-                                            beiAmountMonth = true;
-                                            break;
-
-                                        }
-
-                                    }
-
-                                    if (beiAmountMonth) {
-
-                                        updateTheCategoryAmount(beiAmount.getBalance(), beiAmount.getExpense(), beiAmount.getIncome(), month);
-
-                                    } else {
-
-                                        updateTheCategoryAmount(beiAmount.getBalance(), beiAmount.getExpense(), beiAmount.getIncome(), month);
-
-                                    }
-
-                                } else {
-
-                                    updateTheCategoryAmount(beiAmount.getBalance(), beiAmount.getExpense(), beiAmount.getIncome(), month);
-
-                                }
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    } else {
-
-                        updateTheCategoryAmount(beiAmount.getBalance(), beiAmount.getExpense(), beiAmount.getIncome(), month);
-
-                    }
-
-                } else {
-
-                    updateTheCategoryAmount(beiAmount.getBalance(), beiAmount.getExpense(), beiAmount.getIncome(), month);
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void updateTheCategoryAmount(String balance, String expense, String income, String month) {
-
-        currentItemAmount = amountTextView.getText().toString();
-        String category = categorySharedPreferences.readCategoryName() + "_Category";
-        itemName = itemNameTextView.getText().toString();
-        String date;
+        month = findMonth(selectedMonth);
+        final String category = categorySharedPreferences.readCategoryName() + "_Category";
+        final String date;
+        final String itemName = itemNameTextView.getText().toString();
 
         if (String.valueOf(selectedDay).length() == 1) {
 
-            date = "0" + selectedDay + "_" + selectedMonth + "_" + selectedYear;
+            if (String.valueOf(selectedMonth).length() == 1) {
+
+                date = "0" + selectedDay + "_" + "0" + selectedMonth + "_" + selectedYear;
+
+            } else {
+
+                date = "0" + selectedDay + "_" + selectedMonth + "_" + selectedYear;
+
+            }
 
         } else {
 
-            date = selectedDay + "_" + selectedMonth + "_" + selectedYear;
+            if (String.valueOf(selectedMonth).length() == 1) {
+
+                date = selectedDay + "_" + "0" + selectedMonth + "_" + selectedYear;
+
+            } else {
+
+                date = selectedDay + "_" + selectedMonth + "_" + selectedYear;
+
+            }
 
         }
 
-        userIdDatabaseReference = userDatabaseReference.child(userId);
-        categoryDatabaseReference = userIdDatabaseReference.child(category);
-
-        try {
-
-            categoryDatabaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        for (DataSnapshot yearDataSnapshot : dataSnapshot.getChildren()) {
-
-                            if (Integer.parseInt(yearDataSnapshot.getKey()) == selectedYear) {
-
-                                yearFound = true;
-                                break;
-
-                            }
-
-                        }
-
-                        if (yearFound) {
-
-                            yearDatabaseReference = categoryDatabaseReference.child(String.valueOf(selectedYear));
-                            yearDatabaseReference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                    if (dataSnapshot.exists()) {
-
-                                        for (DataSnapshot monthDataSnapshot : dataSnapshot.getChildren()) {
-
-                                            if (monthDataSnapshot.getKey().equals(month)) {
-
-                                                monthFound = true;
-                                                break;
-
-                                            }
-
-                                        }
-
-                                        if (monthFound) {
-
-                                            monthDatabaseReference = yearDatabaseReference.child(month);
-                                            monthDatabaseReference.addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                                    if (dataSnapshot.exists()) {
-
-                                                        for (DataSnapshot dateDataSnapshot : dataSnapshot.getChildren()) {
-
-                                                            if (dateDataSnapshot.getKey().equals(date)) {
-
-                                                                dateFound = true;
-                                                                break;
-
-                                                            }
-
-                                                        }
-
-                                                        if (dateFound) {
-
-                                                            dateDatabaseReference = monthDatabaseReference.child(date);
-                                                            dateDatabaseReference.addValueEventListener(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                                                    if (dataSnapshot.exists()) {
-
-                                                                        for (DataSnapshot itemDataSnapshot : dataSnapshot.getChildren()) {
-
-                                                                            if (itemDataSnapshot.getKey().equals(itemNameTextView.getText().toString())) {
-
-                                                                                itemFound = true;
-                                                                                break;
-
-                                                                            }
-
-                                                                        }
-
-                                                                        if (itemFound) {
-
-                                                                            dateDatabaseReference.child(itemNameTextView.getText().toString()).addValueEventListener(new ValueEventListener() {
-                                                                                @Override
-                                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                                                                    if (dataSnapshot.exists()) {
-
-                                                                                        previousItemAmount = dataSnapshot.getValue(String.class);
-                                                                                        updateBEIAndCategoryAmount(balance, category, currentItemAmount, date, expense, income, itemName, month, previousItemAmount, String.valueOf(selectedYear));
-
-                                                                                    }
-
-                                                                                }
-
-                                                                                @Override
-                                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                                                    Log.e("error", databaseError.getMessage());
-
-                                                                                }
-                                                                            });
-
-                                                                        } else {
-
-                                                                            updateBEIAndCategoryAmount(beiAmount.getBalance(), category, currentItemAmount, date, beiAmount.getExpense(), beiAmount.getIncome(), itemName, month, "0", String.valueOf(selectedYear));
-
-                                                                        }
-
-                                                                    }
-
-                                                                }
-
-                                                                @Override
-                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                                    Log.e("error", databaseError.getMessage());
-
-                                                                }
-                                                            });
-
-                                                        } else {
-
-                                                            updateBEIAndCategoryAmount(beiAmount.getBalance(), category, currentItemAmount, date, beiAmount.getExpense(), beiAmount.getIncome(), itemName, month, "0", String.valueOf(selectedYear));
-
-                                                        }
-
-                                                    }
-
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    Log.e("error", databaseError.getMessage());
-
-                                                }
-                                            });
-
-                                        } else {
-
-                                            updateBEIAndCategoryAmount(beiAmount.getBalance(), category, currentItemAmount, date, beiAmount.getExpense(), beiAmount.getIncome(), itemName, month, "0", String.valueOf(selectedYear));
-
-                                        }
-
-                                    }
-
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    Log.e("error", databaseError.getMessage());
-
-                                }
-                            });
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .child(String.valueOf(selectedYear))
+                .child(month)
+                .setValue(beiAmount)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (task.isSuccessful()) {
+
+                            updateTheItemCategoryAmount(category, date, itemName, month);
 
                         } else {
 
-                            updateBEIAndCategoryAmount(beiAmount.getBalance(), category, currentItemAmount, date, beiAmount.getExpense(), beiAmount.getIncome(), itemName, month, "0", String.valueOf(selectedYear));
+                            showToast(Objects.requireNonNull(task.getException()).getMessage());
 
                         }
 
-                    } else {
+                    }
+                });
 
-                        updateBEIAndCategoryAmount(beiAmount.getBalance(), category, currentItemAmount, date, beiAmount.getExpense(), beiAmount.getIncome(), itemName, month, "0", String.valueOf(selectedYear));
+    }
+
+    private void updateTheItemAmount(final String category, String date, String itemAmount, String itemName) {
+
+        userDBReference.child(userId)
+                .child(category)
+                .child(String.valueOf(selectedYear))
+                .child(month)
+                .child(date)
+                .child(itemName)
+                .setValue(itemAmount)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (task.isSuccessful()) {
+
+                            Intent intent = new Intent();
+                            intent.putExtra("category", category);
+                            intent.putExtra("month", month);
+                            intent.putExtra("year", String.valueOf(selectedYear));
+                            setResult(RESULT_OK, intent);
+                            finish();
+
+                        } else {
+
+                            showToast(Objects.requireNonNull(task.getException()).getMessage());
+
+                        }
+
+                    }
+                });
+    }
+
+    private void updateTheItemCategoryAmount(final String category, final String date, final String itemName, String month) {
+
+        currentItemAmount = amountTextView.getText().toString();
+        userDBReference.child(userId)
+                .child(category)
+                .child(String.valueOf(selectedYear))
+                .child(month)
+                .child(date)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+
+                                if (Objects.equals(itemSnapshot.getKey(), itemName)) {
+
+                                    itemFound = true;
+                                    previousItemAmount = itemSnapshot.getValue(String.class);
+                                    break;
+
+                                }
+
+                            }
+
+                            if (itemFound) {
+
+                                totalAmount = calculateTotalAmount(currentItemAmount, previousItemAmount);
+                                updateTheItemAmount(
+                                        category,
+                                        date,
+                                        totalAmount,
+                                        itemName
+                                );
+
+                            } else {
+
+                                updateTheItemAmount(
+                                        category,
+                                        date,
+                                        amountTextView.getText().toString(),
+                                        itemName
+                                );
+
+                            }
+
+                        } else {
+
+                            updateTheItemAmount(
+                                    category,
+                                    date,
+                                    amountTextView.getText().toString(),
+                                    itemName
+                            );
+
+                        }
 
                     }
 
-                }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    Log.e("error", databaseError.getMessage());
-
-                }
-            });
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
-
-        }
-
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
     }
 
     @Override
@@ -1412,7 +711,11 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                 try {
 
-                    itemNameTextView.setText(data.getStringExtra("item_name"));
+                    if (data != null) {
+
+                        itemNameTextView.setText(data.getStringExtra("item_name"));
+
+                    }
 
                 } catch (NullPointerException e) {
 
@@ -1431,437 +734,8 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_income);
 
-        amountTextView = findViewById(R.id.amountTextView);
-        beiAmount = new BEIAmount();
-        calcGridLayout = findViewById(R.id.calcGridLayout);
-        Calendar calendar = Calendar.getInstance();
-        categorySharedPreferences = new CategorySharedPreferences(this);
-        categorySharedPreferences.writeCategoryName("");
-        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        currentMonth = calendar.get(Calendar.MONTH);
-        currentYear = calendar.get(Calendar.YEAR);
-        datePickerDialog = DatePickerDialog.newInstance(ExpenseIncomeActivity.this, currentYear, currentMonth, currentDay);
-        expenseCardView = findViewById(R.id.expenseCardView);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-        userDatabaseReference = firebaseDatabase.getReference("User");
-        homeScreenFragment = new HomeScreenFragment();
-        incomeCardView = findViewById(R.id.incomeCardView);
-        itemNameTextView = findViewById(R.id.itemNameTextView);
-        labelTextView = findViewById(R.id.labelTextView);
-        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
-        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
-        subcategoryLinearLayout = findViewById(R.id.subcategoryLinearLayout);
-        subcategoryTextView = findViewById(R.id.subcategoryTextView);
-        currentMonth = currentMonth + 1;
-        date = String.valueOf(currentMonth) + "/" + String.valueOf(currentDay);
-        selectedDay = currentDay;
-        selectedMonth = currentMonth;
-        selectedYear = currentYear;
-
-        switch (selectedMonth) {
-
-            case 1:
-                month = "Jan";
-                break;
-
-            case 2:
-                month = "Feb";
-                break;
-
-            case 3:
-                month = "Mar";
-                break;
-
-            case 4:
-                month = "Apr";
-                break;
-
-            case 5:
-                month = "May";
-                break;
-
-            case 6:
-                month = "June";
-                break;
-
-            case 7:
-                month = "July";
-                break;
-
-            case 8:
-                month = "Aug";
-                break;
-
-            case 9:
-                month = "Sep";
-                break;
-
-            case 10:
-                month = "Oct";
-                break;
-
-            case 11:
-                month = "Nov";
-                break;
-
-            case 12:
-                month = "Dec";
-                break;
-
-        }
-
-        todaysDateTextView = findViewById(R.id.todaysDateTextView);
-        todaysDateTextView.setText(date);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        try {
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Expense-Income");
-            userId = firebaseUser.getUid();
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
-
-        }
-
-        if (signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus() || signInUsingEmailConfigActivity.readSignInUsingEmailStatus()) {
-
-            userIdDatabaseReference = userDatabaseReference.child(userId);
-            beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-            beiAmountYearDatabaseReference = beiAmountDatabaseReference.child(String.valueOf(selectedYear));
-            beiAmountMonthDatabaseReference = beiAmountYearDatabaseReference.child(month);
-            beiAmountMonthDatabaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        beiAmount = dataSnapshot.getValue(BEIAmount.class);
-                        balance = beiAmount.getBalance();
-                        expense = beiAmount.getExpense();
-                        income = beiAmount.getIncome();
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        }
-
-        expenseCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                    itemNameTextView.setText(getResources().getString(R.string.add_item));
-
-                    if (!amountTextView.getText().toString().equals("0")) {
-
-                        amountTextView.setText("0");
-
-                    }
-
-                }
-
-                categorySharedPreferences.writeCategoryName("Expense");
-                category = "Category - " + categorySharedPreferences.readCategoryName();
-                subcategoryTextView.setText(category);
-
-            }
-        });
-        incomeCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (categorySharedPreferences.readCategoryName().equals("Expense")) {
-
-                    itemNameTextView.setText(getResources().getString(R.string.add_item));
-
-                    if (!amountTextView.getText().toString().equals("0")) {
-
-                        amountTextView.setText("0");
-
-                    }
-
-                }
-
-                categorySharedPreferences.writeCategoryName("Income");
-                category = "Category - " + categorySharedPreferences.readCategoryName();
-                subcategoryTextView.setText(category);
-
-            }
-        });
-        subcategoryLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (categorySharedPreferences.readCategoryName().equals("")) {
-
-                    Toast.makeText(ExpenseIncomeActivity.this, "Please, select a category. Expense or income", Toast.LENGTH_SHORT).show();
-
-                } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                    Intent intent = new Intent(ExpenseIncomeActivity.this, AddItemCategoryActivity.class);
-                    startActivityForResult(intent, 1);
-
-                }
-
-            }
-        });
-
-        for (int i = 0; i < calcGridLayout.getChildCount(); i++) {
-
-            CardView cardView = (CardView) calcGridLayout.getChildAt(i);
-            cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if (view.getId() == R.id.todayCardView) {
-
-                        datePickerDialog.setAccentColor(getResources().getColor(R.color.colorDatePickerDialog));
-                        datePickerDialog.setTitle("Calendar");
-                        datePickerDialog.show(ExpenseIncomeActivity.this.getSupportFragmentManager(), "Date Picker Dialog");
-
-                    } else {
-
-                        if (categorySharedPreferences.readCategoryName().equals("")) {
-
-                            Toast.makeText(ExpenseIncomeActivity.this, "Please, select a category. Expense or income", Toast.LENGTH_SHORT).show();
-
-                        } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                            if (itemNameTextView.getText().equals("ADD ITEM")) {
-
-                                Toast.makeText(ExpenseIncomeActivity.this, "Please, select an item", Toast.LENGTH_SHORT).show();
-
-                            } else {
-
-                                switch (view.getId()) {
-
-                                    case R.id.dotCardView:
-
-                                        text = "";
-
-                                        if (amountTextView.getText().equals("0")) {
-
-                                            text = "0.";
-                                            amountTextView.setText(text);
-
-                                        } else {
-
-                                            int operatorPos = 0, pos = 0;
-                                            amount = amountTextView.getText().toString().toCharArray();
-
-                                            for (in = 0; in < amount.length; in++) {
-
-                                                if (amount[in] == '+' || amount[in] == '-') {
-
-                                                    operatorPos = in;
-                                                    break;
-
-                                                }
-
-                                            }
-
-                                            if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos == amount.length - 1) {
-
-                                                text = amountTextView.getText().toString() + "0.";
-                                                amountTextView.setText(text);
-
-                                            } else if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos < amount.length - 1) {
-
-                                                StringBuilder secondNoStringBuilder = new StringBuilder();
-
-                                                for (in = operatorPos + 1; in < amount.length; in++) {
-
-                                                    secondNoStringBuilder = secondNoStringBuilder.append(amount[in]);
-
-                                                }
-
-                                                String secondNo = secondNoStringBuilder.toString();
-                                                char[] secondNoArr = secondNo.toCharArray();
-
-                                                for (in = 0; in < secondNoArr.length; in++) {
-
-                                                    if (secondNoArr[in] == '.') {
-
-                                                        pos = in;
-                                                        break;
-
-                                                    }
-
-                                                }
-
-                                                if (secondNoArr[pos] != '.') {
-
-                                                    text = amountTextView.getText() + ".";
-                                                    amountTextView.setText(text);
-
-                                                }
-
-                                            } else {
-
-                                                for (in = 0; in < amount.length; in++) {
-
-                                                    if (amount[in] == '.') {
-
-                                                        pos = in;
-                                                        break;
-
-                                                    }
-
-                                                }
-
-                                                if (amount[pos] != '.') {
-
-                                                    text = amountTextView.getText() + ".";
-                                                    amountTextView.setText(text);
-
-                                                }
-
-                                            }
-
-                                        }
-
-                                        break;
-
-                                    case R.id.zeroCardView:
-                                        addAmountToTextView("0");
-                                        break;
-
-                                    case R.id.cancelCardView:
-
-                                        if (!amountTextView.getText().equals("0")) {
-
-                                            length = amountTextView.getText().length();
-
-                                            if (length == 1) {
-
-                                                text = "0";
-                                                amountTextView.setText(text);
-
-                                            } else {
-
-                                                text = "";
-                                                StringBuilder stringBuilderText = new StringBuilder();
-                                                amount = amountTextView.getText().toString().toCharArray();
-
-                                                for (in = 0; in < length - 1; in++) {
-
-                                                    stringBuilderText = stringBuilderText.append(amount[in]);
-
-                                                }
-
-                                                text = stringBuilderText.toString();
-                                                amountTextView.setText(text);
-
-                                            }
-
-                                        }
-
-                                        break;
-
-                                    case R.id.equalOrOkCardView:
-
-                                        if (amountTextView.getText().toString().equals("0") || amountTextView.getText().toString().equals("0.") || amountTextView.getText().toString().equals("0.0") || amountTextView.getText().toString().equals("0.00") || amountTextView.getText().toString().equals("0.000")) {
-
-                                            amountTextView.setText("0");
-
-                                        } else {
-
-                                            int operatorPos = 0;
-                                            text = amountTextView.getText().toString();
-                                            amount = text.toCharArray();
-
-                                            for (in = 0; in < amount.length; in++) {
-
-                                                if (amount[in] == '+' || amount[in] == '-') {
-
-                                                    operatorPos = in;
-                                                    break;
-
-                                                }
-
-                                            }
-
-                                            if (amount[operatorPos] == '+' || amount[operatorPos] == '-') {
-
-                                                checkIfDotIsPresentBeforeOrAfterOfOperator(amount, operatorPos);
-
-                                            }
-
-                                        }
-
-                                        break;
-
-                                    case R.id.oneCardView:
-                                        addAmountToTextView("1");
-                                        break;
-
-                                    case R.id.twoCardView:
-                                        addAmountToTextView("2");
-                                        break;
-
-                                    case R.id.threeCardView:
-                                        addAmountToTextView("3");
-                                        break;
-
-                                    case R.id.subtractCardView:
-                                        addOperatorToTextView("-");
-                                        break;
-
-                                    case R.id.fourCardView:
-                                        addAmountToTextView("4");
-                                        break;
-
-                                    case R.id.fiveCardView:
-                                        addAmountToTextView("5");
-                                        break;
-
-                                    case R.id.sixCardView:
-                                        addAmountToTextView("6");
-                                        break;
-
-                                    case R.id.addCardView:
-                                        addOperatorToTextView("+");
-                                        break;
-
-                                    case R.id.sevenCardView:
-                                        addAmountToTextView("7");
-                                        break;
-
-                                    case R.id.eightCardView:
-                                        addAmountToTextView("8");
-                                        break;
-
-                                    case R.id.nineCardView:
-                                        addAmountToTextView("9");
-                                        break;
-
-                                }
-
-                            }
-
-                        }
-
-                    }
-
-                }
-            });
-
-        }
-
+        initialization();
+        initializeOnClickListener();
     }
 
     @Override
@@ -1870,44 +744,6 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.create_new_user_action_menu, menu);
         return super.onCreateOptionsMenu(menu);
-
-    }
-
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-
-        monthOfYear = monthOfYear + 1;
-
-        if (dayOfMonth != currentDay) {
-
-            date = String.valueOf(monthOfYear) + "/" + String.valueOf(dayOfMonth);
-            labelTextView.setText(date);
-            todaysDateTextView.setText(String.valueOf(year));
-            selectedDay = dayOfMonth;
-            selectedMonth = monthOfYear;
-            selectedYear = year;
-
-        } else {
-
-            if (monthOfYear != currentMonth) {
-
-                date = String.valueOf(monthOfYear) + "/" + String.valueOf(dayOfMonth);
-                labelTextView.setText(date);
-                todaysDateTextView.setText(String.valueOf(year));
-                selectedDay = dayOfMonth;
-                selectedMonth = monthOfYear;
-                selectedYear = year;
-
-            } else {
-
-                date = String.valueOf(currentMonth) + "/" + String.valueOf(currentDay);
-                labelTextView.setText(getResources().getString(R.string.today));
-                todaysDateTextView.setText(date);
-
-            }
-
-        }
-
     }
 
     @Override
@@ -1921,24 +757,24 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (categorySharedPreferences.readCategoryName().equals("")) {
 
-                Toast.makeText(this, "Please, select a category. Expense or income", Toast.LENGTH_SHORT).show();
+                showToast("Please, select Expense or Income.");
 
             } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")){
 
                 if (itemNameTextView.getText().equals("ADD ITEM")) {
 
-                    Toast.makeText(this, "Please, select item", Toast.LENGTH_SHORT).show();
+                    showToast("Please, select an item.");
 
                 } else {
 
                     if (amountTextView.getText().equals("0")) {
 
-                        Toast.makeText(this, "Please, enter amount", Toast.LENGTH_SHORT).show();
+                        showToast("Please, enter amount.");
 
                     } else if (amountTextView.getText().equals("0.0") || amountTextView.getText().equals("0.00") || amountTextView.getText().equals("0.000")) {
 
                         amountTextView.setText("0");
-                        Toast.makeText(this, "Please, enter amount", Toast.LENGTH_SHORT).show();
+                        showToast("Please, enter amount.");
 
                     } else {
 
@@ -1981,89 +817,199 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                             if (amount[pos] == '.' && pos == amount.length - 1) {
 
                                 amountTextView.setText("0");
-                                Toast.makeText(this, "Please, enter valid amount", Toast.LENGTH_SHORT).show();
+                                showToast("Please, enter a valid amount.");
 
                             } else {
 
-                                if (signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus()) {
+                                month = findMonth(selectedMonth);
+                                userDBReference.child(userId)
+                                        .child("BEIAmount")
+                                        .child(String.valueOf(selectedYear))
+                                        .child(month)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                                    userIdDatabaseReference = userDatabaseReference.child(userId);
-                                    beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-                                    beiAmountDatabaseReference.addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if (snapshot.exists()) {
 
-                                            if (dataSnapshot.exists()) {
+                                                    beiAmount = snapshot.getValue(BEIAmount.class);
 
-                                                calculateTheAmountsAndModifyIt();
+                                                    if (beiAmount != null) {
 
-                                            } else {
+                                                        balance = beiAmount.getBalance();
+                                                        expense = beiAmount.getExpense();
+                                                        income = beiAmount.getIncome();
 
-                                                if (categorySharedPreferences.readCategoryName().equals("Expense")) {
+                                                        if (categorySharedPreferences.readCategoryName().equals("Expense")) {
 
-                                                    if (amountTextView.getText().toString().contains(".")) {
+                                                            if (expense.equals("0")) {
 
-                                                        float totalExpense = Float.parseFloat(amountTextView.getText().toString());
-                                                        balance = String.valueOf(0 - totalExpense);
-                                                        expense = String.valueOf(totalExpense);
-                                                        income = "0.0";
+                                                                if (income.equals("0")) {
 
-                                                    } else {
+                                                                    calculateBEIIfDataTypeIsSameForExpense();
 
-                                                        long totalExpense = Long.parseLong(amountTextView.getText().toString());
-                                                        balance = String.valueOf(0 - totalExpense);
-                                                        expense = String.valueOf(totalExpense);
-                                                        income = "0";
+                                                                } else if (income.contains(".")) {
+
+                                                                    if (amountTextView.getText().toString().contains(".")) {
+
+                                                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
+                                                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
+                                                                        expense = String.valueOf(totalExpense);
+
+                                                                    } else {
+
+                                                                        long totalExpense = Long.parseLong(expense) + Long.parseLong(amountTextView.getText().toString());
+                                                                        expense = String.valueOf(totalExpense);
+                                                                        balance = String.valueOf(Float.parseFloat(income) - Float.parseFloat(expense));
+
+                                                                    }
+
+                                                                } else {
+
+                                                                    calculateBEIIfDataTypeIsSameForExpense();
+
+                                                                }
+
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            } else if (expense.contains(".")) {
+
+                                                                float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
+                                                                balance = String.valueOf(Float.parseFloat(income) - totalExpense);
+                                                                expense = String.valueOf(totalExpense);
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            } else {
+
+                                                                if (income.equals("0")) {
+
+                                                                    calculateBEIIfDataTypeIsSameForExpense();
+
+                                                                } else if (income.contains(".")) {
+
+                                                                    float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
+                                                                    balance = String.valueOf(Float.parseFloat(income) - totalExpense);
+                                                                    expense = String.valueOf(totalExpense);
+
+                                                                } else {
+
+                                                                    calculateBEIIfDataTypeIsSameForExpense();
+
+                                                                }
+
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            }
+
+                                                        } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
+
+                                                            if (expense.equals("0")) {
+
+                                                                if (income.equals("0")) {
+
+                                                                    calculateBEIIfDataTypeIsSameForIncome();
+
+                                                                } else if (income.contains(".")) {
+
+                                                                    float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
+                                                                    balance = String.valueOf(totalIncome - Float.parseFloat(expense));
+                                                                    income = String.valueOf(totalIncome);
+
+                                                                } else {
+
+                                                                    calculateBEIIfDataTypeIsSameForIncome();
+
+                                                                }
+
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            } else if (expense.contains(".")) {
+
+                                                                float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
+                                                                balance = String.valueOf(totalIncome - Float.parseFloat(expense));
+                                                                income = String.valueOf(totalIncome);
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            } else {
+
+                                                                if (income.equals("0")) {
+
+                                                                    calculateBEIIfDataTypeIsSameForIncome();
+
+                                                                } else if (income.contains(".")) {
+
+                                                                    float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
+                                                                    balance = String.valueOf(totalIncome - Float.parseFloat(expense));
+                                                                    income = String.valueOf(totalIncome);
+
+                                                                } else {
+
+                                                                    calculateBEIIfDataTypeIsSameForIncome();
+
+                                                                }
+
+                                                                updateTheBEIAmount(balance, expense, income);
+
+                                                            }
+
+                                                        }
 
                                                     }
 
-                                                    updateTheBEIAmount(balance, expense, income);
+                                                } else {
 
-                                                } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
+                                                    if (categorySharedPreferences.readCategoryName().equals("Expense")) {
 
-                                                    if (amountTextView.getText().toString().contains(".")) {
+                                                        if (amountTextView.getText().toString().contains(".")) {
 
-                                                        float totalIncome = Float.parseFloat(amountTextView.getText().toString());
-                                                        balance = String.valueOf(totalIncome);
-                                                        income = String.valueOf(totalIncome);
-                                                        expense = "0.0";
+                                                            float totalExpense = Float.parseFloat(amountTextView.getText().toString());
+                                                            balance = String.valueOf(0 - totalExpense);
+                                                            expense = String.valueOf(totalExpense);
+                                                            income = "0.0";
 
-                                                    } else {
+                                                        } else {
 
-                                                        long totalIncome = Long.parseLong(amountTextView.getText().toString());
-                                                        balance = String.valueOf(totalIncome);
-                                                        income = String.valueOf(totalIncome);
-                                                        expense = "0";
+                                                            long totalExpense = Long.parseLong(amountTextView.getText().toString());
+                                                            balance = String.valueOf(-totalExpense);
+                                                            expense = String.valueOf(totalExpense);
+                                                            income = "0";
+
+                                                        }
+
+                                                        updateTheBEIAmount(balance, expense, income);
+
+                                                    } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
+
+                                                        if (amountTextView.getText().toString().contains(".")) {
+
+                                                            float totalIncome = Float.parseFloat(amountTextView.getText().toString());
+                                                            balance = String.valueOf(totalIncome);
+                                                            income = String.valueOf(totalIncome);
+                                                            expense = "0.0";
+
+                                                        } else {
+
+                                                            long totalIncome = Long.parseLong(amountTextView.getText().toString());
+                                                            balance = String.valueOf(totalIncome);
+                                                            income = String.valueOf(totalIncome);
+                                                            expense = "0";
+
+                                                        }
+
+                                                        updateTheBEIAmount(balance, expense, income);
 
                                                     }
-
-                                                    updateTheBEIAmount(balance, expense, income);
 
                                                 }
 
                                             }
 
-                                        }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                                } else if (signInUsingEmailConfigActivity.readSignInUsingEmailStatus()) {
-
-                                    if (selectedYear == currentYear) {
-
-                                        calculateTheAmountsAndModifyIt();
-
-                                    } else {
-
-                                        calculateTheAmountsAndModifyIt();
-
-                                    }
-
-                                }
+                                                Log.e("database_error", error.getMessage());
+                                            }
+                                        });
 
                             }
 
@@ -2078,6 +1024,402 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         }
 
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.addCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addOperatorToTextView("+");
+
+                }
+
+                break;
+
+            case R.id.cancelCardView:
+
+                if (!amountTextView.getText().equals("0")) {
+
+                    length = amountTextView.getText().length();
+
+                    if (length == 1) {
+
+                        text = "0";
+
+                    } else {
+
+                        text = "";
+                        StringBuilder stringBuilderText = new StringBuilder();
+                        amount = amountTextView.getText().toString().toCharArray();
+
+                        for (in = 0; in < length - 1; in++) {
+
+                            stringBuilderText = stringBuilderText.append(amount[in]);
+
+                        }
+
+                        text = stringBuilderText.toString();
+
+                    }
+
+                    amountTextView.setText(text);
+
+                }
+
+                break;
+
+            case R.id.dotCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    text = "";
+
+                    if (amountTextView.getText().equals("0")) {
+
+                        text = "0.";
+                        amountTextView.setText(text);
+
+                    } else {
+
+                        int operatorPos = 0, pos = 0;
+                        amount = amountTextView.getText().toString().toCharArray();
+
+                        for (in = 0; in < amount.length; in++) {
+
+                            if (amount[in] == '+' || amount[in] == '-') {
+
+                                operatorPos = in;
+                                break;
+
+                            }
+
+                        }
+
+                        if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos == amount.length - 1) {
+
+                            text = amountTextView.getText().toString() + "0.";
+                            amountTextView.setText(text);
+
+                        } else if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos < amount.length - 1) {
+
+                            StringBuilder secondNoStringBuilder = new StringBuilder();
+
+                            for (in = operatorPos + 1; in < amount.length; in++) {
+
+                                secondNoStringBuilder = secondNoStringBuilder.append(amount[in]);
+
+                            }
+
+                            String secondNo = secondNoStringBuilder.toString();
+                            char[] secondNoArr = secondNo.toCharArray();
+
+                            for (in = 0; in < secondNoArr.length; in++) {
+
+                                if (secondNoArr[in] == '.') {
+
+                                    pos = in;
+                                    break;
+
+                                }
+
+                            }
+
+                            if (secondNoArr[pos] != '.') {
+
+                                text = amountTextView.getText() + ".";
+                                amountTextView.setText(text);
+
+                            }
+
+                        } else {
+
+                            for (in = 0; in < amount.length; in++) {
+
+                                if (amount[in] == '.') {
+
+                                    pos = in;
+                                    break;
+
+                                }
+
+                            }
+
+                            if (amount[pos] != '.') {
+
+                                text = amountTextView.getText() + ".";
+                                amountTextView.setText(text);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                break;
+
+            case R.id.eightCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("8");
+
+                }
+
+                break;
+
+            case R.id.equalOrOkCardView:
+
+                if (amountTextView.getText().toString().equals("0") || amountTextView.getText().toString().equals("0.")
+                        || amountTextView.getText().toString().equals("0.0") || amountTextView.getText().toString().equals("0.00")
+                        || amountTextView.getText().toString().equals("0.000")) {
+
+                    amountTextView.setText("0");
+
+                } else {
+
+                    int operatorPos = 0;
+                    text = amountTextView.getText().toString();
+                    amount = text.toCharArray();
+
+                    for (in = 0; in < amount.length; in++) {
+
+                        if (amount[in] == '+' || amount[in] == '-') {
+
+                            operatorPos = in;
+                            break;
+
+                        }
+
+                    }
+
+                    if (amount[operatorPos] == '+' || amount[operatorPos] == '-') {
+
+                        checkIfDotIsPresentBeforeOrAfterOfOperator(amount, operatorPos);
+
+                    }
+
+                }
+
+                break;
+
+            case R.id.expenseCardView:
+
+                if (categorySharedPreferences.readCategoryName().equals("Income")) {
+
+                    itemNameTextView.setText(getResources().getString(R.string.add_item));
+
+                    if (!amountTextView.getText().toString().equals("0")) {
+
+                        amountTextView.setText("0");
+
+                    }
+
+                }
+
+                categorySharedPreferences.writeCategoryName("Expense");
+                category = "Category - " + categorySharedPreferences.readCategoryName();
+                subcategoryTextView.setText(category);
+                break;
+
+            case R.id.fiveCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("5");
+
+                }
+
+                break;
+
+            case R.id.fourCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("4");
+
+                }
+
+                break;
+
+            case R.id.incomeCardView:
+
+                if (categorySharedPreferences.readCategoryName().equals("Expense")) {
+
+                    itemNameTextView.setText(getResources().getString(R.string.add_item));
+
+                    if (!amountTextView.getText().toString().equals("0")) {
+
+                        amountTextView.setText("0");
+
+                    }
+
+                }
+
+                categorySharedPreferences.writeCategoryName("Income");
+                category = "Category - " + categorySharedPreferences.readCategoryName();
+                subcategoryTextView.setText(category);
+                break;
+
+            case R.id.nineCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("9");
+
+                }
+
+                break;
+
+            case R.id.oneCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("1");
+
+                }
+
+                break;
+
+            case R.id.sevenCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("7");
+
+                }
+
+                break;
+
+            case R.id.sixCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("6");
+
+                }
+
+                break;
+
+            case R.id.subcategoryCardView:
+
+                if (categorySharedPreferences.readCategoryName().equals("")) {
+
+                    showToast("Please, select Expense or Income.");
+
+                } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")) {
+
+                    Intent intent = new Intent(this, AddItemCategoryActivity.class);
+                    startActivityForResult(intent, 1);
+
+                }
+
+                break;
+
+            case R.id.subtractCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addOperatorToTextView("-");
+
+                }
+
+                break;
+
+            case R.id.threeCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("3");
+
+                }
+
+                break;
+
+            case R.id.todayCardView:
+                datePickerDialog.show();
+                break;
+
+            case R.id.twoCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("2");
+
+                }
+
+                break;
+
+            case R.id.zeroCardView:
+
+                if (checkCategoryAndItemName()) {
+
+                    addAmountToTextView("0");
+
+                }
+
+                break;
+
+        }
+
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        month = month + 1;
+
+        if (dayOfMonth != currentDay) {
+
+            date = month + "/" + dayOfMonth;
+            labelTextView.setText(date);
+            todaysDateTextView.setText(String.valueOf(year));
+            selectedDay = dayOfMonth;
+            selectedMonth = month;
+            selectedYear = year;
+
+        } else {
+
+            if (month != currentMonth) {
+
+                date = month + "/" + dayOfMonth;
+                labelTextView.setText(date);
+                todaysDateTextView.setText(String.valueOf(year));
+                selectedDay = dayOfMonth;
+                selectedMonth = month;
+                selectedYear = year;
+
+            } else {
+
+                if (year != currentYear) {
+
+                    date = month + "/" + dayOfMonth;
+                    labelTextView.setText(date);
+                    todaysDateTextView.setText(String.valueOf(year));
+                    selectedDay = dayOfMonth;
+                    selectedMonth = month;
+                    selectedYear = year;
+
+                } else {
+
+                    date = currentMonth + "/" + currentDay;
+                    labelTextView.setText(getResources().getString(R.string.today));
+                    todaysDateTextView.setText(date);
+                    selectedDay = currentDay;
+                    selectedMonth = currentMonth;
+                    selectedYear = currentYear;
+
+                }
+
+            }
+
+        }
 
     }
 }

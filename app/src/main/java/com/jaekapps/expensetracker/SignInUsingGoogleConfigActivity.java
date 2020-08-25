@@ -10,18 +10,15 @@ class SignInUsingGoogleConfigActivity {
     SignInUsingGoogleConfigActivity(Context context) {
 
         sharedPreferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
-
     }
 
-    void writeSignInUsingGoogleStatus(boolean status) {
-
-        sharedPreferences.edit().putBoolean("sign_in_using_google", status).apply();
-
-    }
-
-    boolean readSignInUsingGoogleStatus() {
+    boolean getSignInUsingGoogleStatus() {
 
         return sharedPreferences.getBoolean("sign_in_using_google", false);
+    }
 
+    void setSignInUsingGoogleStatus(boolean status) {
+
+        sharedPreferences.edit().putBoolean("sign_in_using_google", status).apply();
     }
 }

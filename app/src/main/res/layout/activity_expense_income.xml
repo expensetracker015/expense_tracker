@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -36,10 +37,11 @@
             android:layout_column="0"
             android:layout_row="0"
             android:layout_columnWeight="1"
-            android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
-            android:foreground="?android:attr/selectableItemBackground"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/colorExpenseIncomeCategoryCardView"
+            app:cardCornerRadius="0dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -61,10 +63,11 @@
             android:layout_row="0"
             android:layout_column="2"
             android:layout_columnWeight="1"
-            android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/colorExpenseIncomeCategoryCardView"
+            app:cardCornerRadius="0dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -109,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/lineView"
-                android:layout_above="@id/subcategoryLinearLayout">
+                android:layout_above="@id/subcategoryCardView">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -136,45 +139,55 @@
 
             </ScrollView>
 
-            <LinearLayout
-                android:id="@+id/subcategoryLinearLayout"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/subcategoryCardView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
-                android:backgroundTint="@color/colorExpenseIncomeCategoryCardView"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
-                android:orientation="vertical"
-                android:padding="10dp">
+                app:cardBackgroundColor="@color/colorExpenseIncomeCategoryCardView"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="0dp">
 
-                <TextView
-                    android:id="@+id/subcategoryTextView"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/comfortaa_bold"
-                    android:text="@string/subcategory"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp">
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-                </TextView>
+                    <TextView
+                        android:id="@+id/subcategoryTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:text="@string/subcategory"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp">
 
-                <TextView
-                    android:id="@+id/itemNameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/comfortaa_bold"
-                    android:text="@string/add_item"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp">
+                    </TextView>
 
-                </TextView>
+                    <TextView
+                        android:id="@+id/itemNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/comfortaa_bold"
+                        android:text="@string/add_item"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp">
 
-            </LinearLayout>
+                    </TextView>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
         </RelativeLayout>
 

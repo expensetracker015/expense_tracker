@@ -6,17 +6,20 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,43 +37,222 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class HomeScreenActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DatePickerDialog.OnDateSetListener {
+public class HomeScreenActivity extends AppCompatActivity implements BalanceFragment.BalanceFragmentListener,
+        CashFlowFragment.CashFlowFragmentListener, DatePickerDialogBox.DatePickerListener, HomeScreenFragment.HomeScreenFragmentListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
-    CategorySharedPreferences categorySharedPreferences;
-    DatePickerDialog datePickerDialog;
-    DatabaseReference accountDetailsDatabaseReference, beiAmountDatabaseReference, beiAmountMonthDatabaseReference;
-    DatabaseReference beiAmountYearDatabaseReference, categoryDatabaseReference, categoryYearDatabaseReference, categoryMonthDatabaseReference;
-    DatabaseReference userDatabaseReference, userIdDatabaseReference;
-    FirebaseDatabase firebaseDatabase;
-    FirebaseUser firebaseUser;
-    FrameLayout fragmentContainer;
-    int checkedItem = 0, currentDay, currentMonth, currentYear, selectedDay, selectedMonth, selectedYear;
-    LinearLayout calendarDropDownLinearLayout;
-    List<String> dateList = new ArrayList<>();
-    NavigationView navigationView;
-    TextView monthNameTextView;
-    private BEIAmount beiAmount;
+    AlertDialog dialog;
+    AlertDialog.Builder builder;
+    int currentMonth, dayOfTheWeek;
     private BudgetsFragment budgetsFragment;
+    private CardView calendarCardView;
     private CircleImageView profilePicImageView;
+    private DatabaseReference userDBReference;
+    private DatePickerDialogBox datePickerDialogBox;
+    private FirebaseUser firebaseUser;
+    private FrameLayout fragment_container;
     private DrawerLayout drawerLayout;
     private GoogleSignInClient googleSignInClient;
     private HomeScreenFragment homeScreenFragment;
+    private int currentDay,  currentYear;
+    private List<String> monthList, yearList;
+    private Menu popupMenu;
+    private NavigationView navigationView;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     private StatisticsFragment statisticsFragment;
-    private String balanceAmount, chose_category, email_address, expenseAmount, incomeAmount, month, userId, username;
-    private TextView usernameTextView, emailAddressTextView;
-    Toolbar toolbar;
+    private String chosenCategory = "", chosenMonth = "", chosenYear = "", day, email_address, month,  month_name, selected_month,
+            selected_year, userId, username;
+    private TabPosition tabPosition;
+    private TextView monthNameTextView, usernameTextView, emailAddressTextView;
 
-    private void findMonth(int currentMonth) {
+    private List<String> arrangeTheMonths(List<String> monthList) {
+
+        int i, month_no, pos = 0;
+        int[] month_nos = new int[monthList.size()];
+        String[] temp_months = new String[monthList.size()];
+        String[] months = new String[monthList.size()];
+
+        for (i = 0; i < monthList.size(); i++) {
+
+            temp_months[i] = monthList.get(i);
+
+        }
+
+        for (i = 0; i < temp_months.length; i++) {
+
+            month_no = findMonthNo(temp_months[i]);
+            month_nos[i] = month_no;
+
+        }
+
+        int [] sortedMonths = sortTheMonthNos(month_nos);
+
+        for (i = 0; i < temp_months.length; i++) {
+
+            month_no = findMonthNo(temp_months[i]);
+
+            for (int j = 0; j < sortedMonths.length; j++) {
+
+                if (month_no == sortedMonths[j]) {
+
+                    pos = j;
+
+                }
+
+            }
+
+            months[pos] = temp_months[i];
+
+        }
+        
+        monthList.clear();
+        
+        for (i = 0; i < months.length; i++) {
+            
+            monthList.add(months[i]);
+            
+        }
+        
+        return monthList;
+    }
+
+    private int findMonthNo(String month) {
+
+        int month_no;
+
+        switch (month) {
+
+            case "Jan":
+                month_no = 1;
+                break;
+
+            case "Feb":
+                month_no = 2;
+                break;
+
+            case "Mar":
+                month_no = 3;
+                break;
+
+            case "Apr":
+                month_no = 4;
+                break;
+
+            case "May":
+                month_no = 5;
+                break;
+
+            case "June":
+                month_no = 6;
+                break;
+
+            case "July":
+                month_no = 7;
+                break;
+
+            case "Aug":
+                month_no = 8;
+                break;
+
+            case "Sep":
+                month_no = 9;
+                break;
+
+            case "Oct":
+                month_no = 10;
+                break;
+
+            case "Nov":
+                month_no = 11;
+                break;
+
+            case "Dec":
+                month_no = 12;
+                break;
+
+            default:
+                month_no = 0;
+                break;
+
+        }
+
+        return month_no;
+    }
+
+    private int[] sortTheMonthNos(int[] month_nos) {
+
+        int temp;
+
+        for (int i = 0; i < month_nos.length; i++) {
+
+            for (int j = i + 1; j < month_nos.length; j++) {
+
+                if (month_nos[i] > month_nos[j]) {
+
+                    temp = month_nos[i];
+                    month_nos[i] = month_nos[j];
+                    month_nos[j] = temp;
+
+                }
+
+            }
+
+        }
+
+        return month_nos;
+    }
+
+    private String findDay(int dayOfTheWeek) {
+
+        String day = "";
+
+        switch (dayOfTheWeek) {
+
+            case 1:
+                day = "Sun";
+                break;
+
+            case 2:
+                day = "Mon";
+                break;
+
+            case 3:
+                day = "Tue";
+                break;
+
+            case 4:
+                day = "Wed";
+                break;
+
+            case 5:
+                day = "Thu";
+                break;
+
+            case 6:
+                day = "Fri";
+                break;
+
+            case 7:
+                day = "Sat";
+                break;
+
+        }
+
+        return day;
+    }
+
+    private String findMonth(int currentMonth) {
+
+        String month = "";
 
         switch (currentMonth) {
 
@@ -124,260 +306,127 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
         }
 
+        return month;
     }
 
-    private void findMonthIfChanged(int selectedMonth, int year) {
+    private void changeTheActionBarTitle(String title) {
 
-        String tempMonth = "";
+        if (getSupportActionBar() != null) {
 
-        switch (selectedMonth) {
-
-            case 1:
-                tempMonth = "Jan";
-                break;
-
-            case 2:
-                tempMonth = "Feb";
-                break;
-
-            case 3:
-                tempMonth = "Mar";
-                break;
-
-            case 4:
-                tempMonth = "Apr";
-                break;
-
-            case 5:
-                tempMonth = "May";
-                break;
-
-            case 6:
-                tempMonth = "June";
-                break;
-
-            case 7:
-                tempMonth = "July";
-                break;
-
-            case 8:
-                tempMonth = "Aug";
-                break;
-
-            case 9:
-                tempMonth = "Sep";
-                break;
-
-            case 10:
-                tempMonth = "Oct";
-                break;
-
-            case 11:
-                tempMonth = "Nov";
-                break;
-
-            case 12:
-                tempMonth = "Dec";
-                break;
-
-        }
-
-        monthNameTextView.setText(tempMonth);
-
-        if (categorySharedPreferences.readCategoryName().equals("Expense")) {
-
-            getDateOfItemsFromDatabase("Expense_Category", tempMonth, String.valueOf(selectedYear));
-
-        } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
-
-            getDateOfItemsFromDatabase("Income_Category", tempMonth, String.valueOf(selectedYear));
-
-        }
-
-        getBEIAmountFromDatabase(year, tempMonth);
-
-    }
-
-    private int findMonthNumber(String month) {
-
-        int no = 0;
-
-        switch (month) {
-
-            case "Jan":
-                no = 0;
-                break;
-
-            case "Feb":
-                no = 1;
-                break;
-
-            case "Mar":
-                no = 2;
-                break;
-
-            case "Apr":
-                no = 3;
-                break;
-
-            case "May":
-                no = 4;
-                break;
-
-            case "June":
-                no = 5;
-                break;
-
-            case "July":
-                no = 6;
-                break;
-
-            case "Aug":
-                no = 7;
-                break;
-
-            case "Sep":
-                no = 8;
-                break;
-
-            case "Oct":
-                no = 9;
-                break;
-
-            case "Nov":
-                no = 10;
-                break;
-
-            case "Dec":
-                no = 11;
-                break;
-
-        }
-
-        return no;
-
-    }
-
-    private void getBEIAmountFromDatabase(int year, String month) {
-
-        try {
-
-            beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-            beiAmountYearDatabaseReference = beiAmountDatabaseReference.child(String.valueOf(year));
-            beiAmountMonthDatabaseReference = beiAmountYearDatabaseReference.child(month);
-            beiAmountMonthDatabaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        beiAmount = dataSnapshot.getValue(BEIAmount.class);
-                        balanceAmount = beiAmount.getBalance();
-                        expenseAmount = beiAmount.getExpense();
-                        incomeAmount = beiAmount.getIncome();
-                        homeScreenFragment.setBEIAmount(balanceAmount, expenseAmount, incomeAmount);
-
-                    } else {
-
-                        homeScreenFragment.setBEIAmountForSignInUsingGoogle();
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
+            getSupportActionBar().setTitle(title);
 
         }
 
     }
 
-    private void getDateOfItemsFromDatabase(String category, String month, String year) {
+    private void hideTheCategoryMenuItems() {
 
-        try {
-
-            dateList.clear();
-            categoryDatabaseReference = userIdDatabaseReference.child(category);
-            categoryYearDatabaseReference = categoryDatabaseReference.child(year);
-            categoryMonthDatabaseReference = categoryYearDatabaseReference.child(month);
-            categoryMonthDatabaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    if (dataSnapshot.exists()) {
-
-                        for (DataSnapshot dateDataSnapshot : dataSnapshot.getChildren()) {
-
-                            String date;
-                            date = replaceUnderscoreWithSlash(dateDataSnapshot.getKey());
-                            dateList.add(date);
-
-                        }
-
-                        if (category.equals("Expense_Category")) {
-
-                            homeScreenFragment.hideTheHomeScreenFragmentLinearLayout("Expense Category", dateList);
-
-                        } else {
-
-                            homeScreenFragment.hideTheHomeScreenFragmentLinearLayout("Income Category", dateList);
-
-                        }
-
-                    } else {
-
-                        if (category.equals("Expense_Category")) {
-
-                            homeScreenFragment.showTheHomeScreenFragmentLinearLayout("Expense Category");
-
-                        } else {
-
-                            homeScreenFragment.showTheHomeScreenFragmentLinearLayout("Income Category");
-
-                        }
-
-                    }
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
-
-        }
-
+        popupMenu.findItem(R.id.expense).setVisible(false);
+        popupMenu.findItem(R.id.income).setVisible(false);
     }
 
-    private String replaceUnderscoreWithSlash(String date) {
+    private void initialization() {
 
-        char[] dateArray = date.toCharArray();
+        budgetsFragment = new BudgetsFragment();
+        Calendar calendar = Calendar.getInstance();
+        calendarCardView = findViewById(R.id.calendarCardView);
+        chosenCategory = "Expense_Category";
+        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentYear = calendar.get(Calendar.YEAR);
+        chosenYear = String.valueOf(currentYear);
+        dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        currentMonth = currentMonth + 1;
+        day = findDay(dayOfTheWeek);
+        month = findMonth(currentMonth);
+        chosenMonth = month;
+        datePickerDialogBox = new DatePickerDialogBox(
+                chosenYear,
+                day + ", " + month + " " + currentDay,
+                month,
+                String.valueOf(currentYear)
+        );
+        drawerLayout = findViewById(R.id.drawerLayout);
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        fragment_container = findViewById(R.id.fragment_container);
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        homeScreenFragment = new HomeScreenFragment(
+                "Expense_Category",
+                month,
+                String.valueOf(currentYear)
+        );
+        monthList = new ArrayList<>();
+        monthNameTextView = findViewById(R.id.monthNameTextView);
+        monthNameTextView.setText(month);
+        navigationView = findViewById(R.id.navigationView);
+        navigationView.setCheckedItem(R.id.home);
+        navigationView.setNavigationItemSelectedListener(this);
+        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
+        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
+        statisticsFragment = new StatisticsFragment(month, String.valueOf(currentYear));
+        tabPosition = new TabPosition(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        changeTheActionBarTitle("");
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this,
+                drawerLayout,
+                toolbar,
+                R.string.open_drawer,
+                R.string.close_drawer
+        );
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        userDBReference = FirebaseDatabase.getInstance().getReference("User");
+        UserIdConfigActivity userIdConfigActivity = new UserIdConfigActivity(this);
+        userId = userIdConfigActivity.getUserID();
+        View mView = navigationView.inflateHeaderView(R.layout.navigation_header);
+        emailAddressTextView = mView.findViewById(R.id.emailAddressTextView);
+        profilePicImageView = mView.findViewById(R.id.profilePicImageView);
+        usernameTextView = mView.findViewById(R.id.usernameTextView);
+        yearList = new ArrayList<>();
+    }
 
-        for (int i = 0; i < dateArray.length; i++) {
+    private void loadTheFragment(Fragment fragment) {
 
-            if (dateArray[i] == '_') {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+    }
 
-                dateArray[i] = '/';
+    private void loadTheFragmentWithSlideLeftCustomAnimation(Fragment fragment) {
 
-            }
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.fragment_slide_left_enter, R.animator.fragment_slide_left_exit)
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+    }
 
-        }
+    private void loadTheFragmentWithSlideRightCustomAnimation(Fragment fragment) {
 
-        date = String.valueOf(dateArray);
-        return date;
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.fragment_slide_right_enter, R.animator.fragment_slide_right_exit)
+                .replace(R.id.fragment_container, fragment)
+                .commit();
+    }
 
+    private void showTheCategoryMenuItems() {
+
+        popupMenu.findItem(R.id.expense).setVisible(true);
+        popupMenu.findItem(R.id.income).setVisible(true);
+    }
+
+    private void showToast(String message) {
+
+        Toast.makeText(
+                this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     @Override
@@ -390,47 +439,37 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
                 if (data != null) {
 
-                    String balance = data.getStringExtra("balance");
-                    String category = data.getStringExtra("category");
-                    String date = data.getStringExtra("date");
-                    int day_no = data.getIntExtra("day_no", 0);
-                    String expense = data.getStringExtra("expense");
-                    String income = data.getStringExtra("income");
-                    String item_name = data.getStringExtra("item_name");
-                    String month = data.getStringExtra("month");
-                    String total_amount = data.getStringExtra("total_amount");
-                    String year = data.getStringExtra("year");
-                    beiAmount.setBalance(balance);
-                    beiAmount.setExpense(expense);
-                    beiAmount.setIncome(income);
-                    userDatabaseReference.child(userId).child("BEIAmount").child(year).child(month).setValue(beiAmount).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+                    if (!chosenMonth.equals(data.getStringExtra("month")) &&
+                            !chosenYear.equals(data.getStringExtra("year"))) {
 
-                            if (task.isSuccessful()) {
+                        month_name = data.getStringExtra("month") + " " + data.getStringExtra("year");
+                        monthNameTextView.setText(month_name);
 
-                                userDatabaseReference.child(userId).child(category).child(year).child(month).child(date).child(item_name).setValue(total_amount).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
+                    } else if (!chosenMonth.equals(data.getStringExtra("month")) &&
+                            chosenYear.equals(data.getStringExtra("year"))) {
 
-                                        if (task.isSuccessful()) {
+                        monthNameTextView.setText(data.getStringExtra("month"));
 
-                                            int no = findMonthNumber(month);
-                                            datePickerDialog = DatePickerDialog.newInstance(HomeScreenActivity.this, Integer.parseInt(year), no, day_no);
-                                            monthNameTextView.setText(month);
-                                            getBEIAmountFromDatabase(Integer.parseInt(year), month);
-                                            getDateOfItemsFromDatabase(category, month, year);
-                                            Toast.makeText(HomeScreenActivity.this, "Updated successfully", Toast.LENGTH_SHORT).show();
+                    } else if (chosenMonth.equals(month) && !chosenYear.equals(data.getStringExtra("year"))) {
 
-                                        }
+                        month_name = chosenMonth + " " + data.getStringExtra("year");
+                        monthNameTextView.setText(month_name);
 
-                                    }
-                                });
+                    } else if (chosenMonth.equals(month) && chosenYear.equals(String.valueOf(currentYear))) {
 
-                            }
+                        monthNameTextView.setText(chosenMonth);
 
-                        }
-                    });
+                    }
+
+                    chosenMonth = data.getStringExtra("month");
+                    chosenYear = data.getStringExtra("year");
+                    homeScreenFragment = new HomeScreenFragment(
+                            data.getStringExtra("category"),
+                            data.getStringExtra("month"),
+                            data.getStringExtra("year")
+                    );
+                    loadTheFragment(homeScreenFragment);
+                    showToast("Updated successfully.");
 
                 }
 
@@ -438,190 +477,17 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
         }
 
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-
-            drawerLayout.closeDrawer(GravityCompat.START);
-
-        } else if (signInUsingEmailConfigActivity.readSignInUsingEmailStatus()) {
-
-            finish();
-
-        } else if (signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus()) {
-
-            finish();
-
-        } else {
-
-            super.onBackPressed();
-
-        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_drawer);
 
-        beiAmount = new BEIAmount();
-        budgetsFragment = new BudgetsFragment();
-        Calendar calendar = Calendar.getInstance();
-        calendarDropDownLinearLayout = findViewById(R.id.calendarDropDownLinearLayout);
-        categorySharedPreferences = new CategorySharedPreferences(this);
-        categorySharedPreferences.writeCategoryName("Expense");
-        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        currentMonth = calendar.get(Calendar.MONTH);
-        currentYear = calendar.get(Calendar.YEAR);
-        datePickerDialog = DatePickerDialog.newInstance(this, currentYear, currentMonth, currentDay);
-        currentMonth = currentMonth + 1;
-        selectedDay = currentDay;
-        selectedMonth = currentMonth;
-        selectedYear = currentYear;
-        drawerLayout = findViewById(R.id.drawerLayout);
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        findMonth(currentMonth);
-        userDatabaseReference = firebaseDatabase.getReference("User");
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        fragmentContainer = findViewById(R.id.fragmentContainer);
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        homeScreenFragment = new HomeScreenFragment();
-        monthNameTextView = findViewById(R.id.monthNameTextView);
-        monthNameTextView.setText(month);
-        navigationView = findViewById(R.id.navigationView);
-        navigationView.setNavigationItemSelectedListener(this);
-        View mView = navigationView.inflateHeaderView(R.layout.navigation_header);
-        profilePicImageView = mView.findViewById(R.id.profilePicImageView);
-        usernameTextView = mView.findViewById(R.id.usernameTextView);
-        emailAddressTextView = mView.findViewById(R.id.emailAddressTextView);
-        signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
-        signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
-        statisticsFragment = new StatisticsFragment();
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
-        drawerLayout.setDrawerListener(toggle);
-        toggle.syncState();
+        initialization();
 
-        try {
-
-            getSupportActionBar().setTitle("");
-            userId = firebaseUser.getUid();
-
-        } catch (NullPointerException e) {
-
-            e.printStackTrace();
-
-        }
-
-        if (signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus()) {
-
-            if (firebaseUser != null) {
-
-                try {
-
-                    emailAddressTextView.setText(firebaseUser.getEmail());
-                    usernameTextView.setText(firebaseUser.getDisplayName());
-                    Glide.with(this).load(firebaseUser.getPhotoUrl()).into(profilePicImageView);
-                    userIdDatabaseReference = userDatabaseReference.child(userId);
-                    userIdDatabaseReference = userDatabaseReference.child(userId);
-                    beiAmountDatabaseReference = userIdDatabaseReference.child("BEIAmount");
-                    beiAmountDatabaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            if (dataSnapshot.exists()) {
-
-                                getBEIAmountFromDatabase(selectedYear, month);
-
-                            } else {
-
-                                homeScreenFragment.setBEIAmountForSignInUsingGoogle();
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                    getDateOfItemsFromDatabase("Expense_Category", month, String.valueOf(selectedYear));
-
-                } catch (NullPointerException e) {
-
-                    e.printStackTrace();
-
-                }
-
-            }
-
-        } else if (signInUsingEmailConfigActivity.readSignInUsingEmailStatus()) {
-
-            if (firebaseUser != null) {
-
-                try {
-
-                    userIdDatabaseReference = userDatabaseReference.child(userId);
-                    accountDetailsDatabaseReference = userIdDatabaseReference.child("Account_Details");
-                    accountDetailsDatabaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            if (dataSnapshot.exists()) {
-
-                                CreateNewUser createNewUser = dataSnapshot.getValue(CreateNewUser.class);
-                                email_address = createNewUser.getEmail_address();
-                                username = createNewUser.getUsername();
-                                emailAddressTextView.setText(email_address);
-                                usernameTextView.setText(username);
-                                profilePicImageView.setImageResource(R.drawable.user_prof_pic);
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            Log.e("error", databaseError.getMessage());
-
-                        }
-                    });
-                    getBEIAmountFromDatabase(selectedYear, month);
-                    getDateOfItemsFromDatabase("Expense_Category", month, String.valueOf(selectedYear));
-
-                } catch (NullPointerException e) {
-
-                    e.printStackTrace();
-
-                }
-
-            }
-
-        }
-
-        calendarDropDownLinearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                datePickerDialog.setTitle("CALENDAR");
-                datePickerDialog.setAccentColor(getResources().getColor(R.color.colorDatePickerDialog));
-                datePickerDialog.showYearPickerFirst(true);
-                datePickerDialog.show(getSupportFragmentManager(), "date picker dialog");
-
-            }
-        });
-
-        if (fragmentContainer != null) {
+        if (fragment_container != null) {
 
             if (savedInstanceState != null) {
 
@@ -629,165 +495,126 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
             }
 
-            navigationView.setCheckedItem(R.id.home);
-            getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, homeScreenFragment).commit();
+            loadTheFragment(homeScreenFragment);
 
         }
 
-        homeScreenFragment.setOnItemClickListener(new HomeScreenFragment.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view) {
+        if (firebaseUser != null) {
 
-                if (view.getId() == R.id.expenseIncomeFab) {
+            if (signInUsingEmailConfigActivity.getSignInUsingEmailStatus()) {
 
-                    Intent intent = new Intent(HomeScreenActivity.this, ExpenseIncomeActivity.class);
-                    startActivityForResult(intent, 1);
+                try {
 
-                } else if (view.getId() == R.id.categoryRelativeLayout) {
+                    userDBReference.child(userId)
+                            .child("Account_Details")
+                            .addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    AlertDialog alertDialog;
-                    AlertDialog.Builder builder;
-                    String[] items = {"Expenses", "Income"};
-                    builder = new AlertDialog.Builder(HomeScreenActivity.this);
-                    builder.setTitle("Select the category");
-                    builder.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                                    if (snapshot.exists()) {
 
-                            checkedItem = i;
-                            chose_category = items[i];
+                                        CreateNewUser user = snapshot.getValue(CreateNewUser.class);
 
-                        }
-                    });
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                                        if (user != null) {
 
-                            String tempMonth = "";
+                                            email_address = user.getEmail_address();
+                                            emailAddressTextView.setText(email_address);
+                                            Glide.with(HomeScreenActivity.this).load(R.drawable.user_prof_pic).into(profilePicImageView);
+                                            username = user.getUsername();
+                                            usernameTextView.setText(username);
 
-                            switch (selectedMonth) {
+                                        }
 
-                                case 1:
-                                    tempMonth = "Jan";
-                                    break;
+                                    }
 
-                                case 2:
-                                    tempMonth = "Feb";
-                                    break;
+                                }
 
-                                case 3:
-                                    tempMonth = "Mar";
-                                    break;
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
 
-                                case 4:
-                                    tempMonth = "Apr";
-                                    break;
+                                    Log.e("database_error", error.getMessage());
+                                }
+                            });
 
-                                case 5:
-                                    tempMonth = "May";
-                                    break;
+                } catch (NullPointerException e) {
 
-                                case 6:
-                                    tempMonth = "June";
-                                    break;
-
-                                case 7:
-                                    tempMonth = "July";
-                                    break;
-
-                                case 8:
-                                    tempMonth = "Aug";
-                                    break;
-
-                                case 9:
-                                    tempMonth = "Sep";
-                                    break;
-
-                                case 10:
-                                    tempMonth = "Oct";
-                                    break;
-
-                                case 11:
-                                    tempMonth = "Nov";
-                                    break;
-
-                                case 12:
-                                    tempMonth = "Dec";
-                                    break;
-
-                            }
-
-                            if (chose_category.equals("Expenses")) {
-
-                                categorySharedPreferences.writeCategoryName("Expense");
-                                getDateOfItemsFromDatabase("Expense_Category", tempMonth, String.valueOf(selectedYear));
-
-                            } else if (chose_category.equals("Income")) {
-
-                                categorySharedPreferences.writeCategoryName("Income");
-                                getDateOfItemsFromDatabase("Income_Category", tempMonth, String.valueOf(selectedYear));
-
-                            }
-
-                        }
-                    });
-                    builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-                    alertDialog = builder.create();
-                    alertDialog.show();
+                    e.printStackTrace();
 
                 }
 
-            }
-        });
+            } else if (signInUsingGoogleConfigActivity.getSignInUsingGoogleStatus()) {
 
-    }
-
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-
-        if (year != currentYear) {
-
-            monthOfYear = monthOfYear + 1;
-
-            if (monthOfYear != currentMonth) {
-
-                selectedYear = year;
-                selectedMonth = monthOfYear;
-
-            } else {
-
-                selectedYear = year;
-                selectedMonth = monthOfYear;
+                emailAddressTextView.setText(firebaseUser.getEmail());
+                Glide.with(this).load(firebaseUser.getPhotoUrl()).into(profilePicImageView);
+                usernameTextView.setText(firebaseUser.getDisplayName());
 
             }
-
-            findMonthIfChanged(selectedMonth, selectedYear);
-
-        } else {
-
-            monthOfYear = monthOfYear + 1;
-
-            if (monthOfYear != currentMonth) {
-
-                selectedYear = year;
-                selectedMonth = monthOfYear;
-
-            } else {
-
-                selectedYear = year;
-                selectedMonth = monthOfYear;
-
-            }
-
-            findMonthIfChanged(selectedMonth, selectedYear);
 
         }
 
+        calendarCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (chosenYear.equals(String.valueOf(currentYear))) {
+
+                    if (!chosenMonth.equals(month)) {
+
+                        datePickerDialogBox = new DatePickerDialogBox(
+                                chosenYear,
+                                day + ", " + month + " " + currentDay,
+                                chosenMonth,
+                                String.valueOf(currentYear)
+                        );
+
+                    } else {
+
+                        datePickerDialogBox = new DatePickerDialogBox(
+                                chosenYear,
+                                day + ", " + month + " " + currentDay,
+                                month,
+                                String.valueOf(currentYear)
+                        );
+
+                    }
+
+                } else if (!chosenYear.equals(String.valueOf(currentYear))) {
+
+                    if (!chosenMonth.equals(month)) {
+
+                        datePickerDialogBox = new DatePickerDialogBox(
+                                chosenYear,
+                                day + ", " + month + " " + currentDay,
+                                chosenMonth,
+                                String.valueOf(currentYear)
+                        );
+
+                    } else {
+
+                        datePickerDialogBox = new DatePickerDialogBox(
+                                chosenYear,
+                                day + ", " + month + " " + currentDay,
+                                month,
+                                String.valueOf(currentYear)
+                        );
+
+                    }
+
+                }
+
+                datePickerDialogBox.show(getSupportFragmentManager(), "date picker dialog");
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.category_menu, menu);
+        popupMenu = menu;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -798,74 +625,66 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
         switch (id) {
 
             case R.id.home:
-                getSupportActionBar().setTitle("");
-                calendarDropDownLinearLayout.setVisibility(View.VISIBLE);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, homeScreenFragment).commit();
-
-                try {
-
-                    getBEIAmountFromDatabase(selectedYear, month);
-                    getDateOfItemsFromDatabase("Expense_Category", month, String.valueOf(selectedYear));
-
-                } catch (NullPointerException e) {
-
-                    e.printStackTrace();
-
-                }
-
+                calendarCardView.setVisibility(View.VISIBLE);
+                loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
+                monthNameTextView.setText(month);
+                changeTheActionBarTitle("");
+                showTheCategoryMenuItems();
                 break;
 
             case R.id.statistics:
-                getSupportActionBar().setTitle("Statistics");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, statisticsFragment).commit();
+                calendarCardView.setVisibility(View.GONE);
+                hideTheCategoryMenuItems();
+                loadTheFragmentWithSlideLeftCustomAnimation(statisticsFragment);
+                changeTheActionBarTitle("Statistics");
                 break;
 
             case R.id.budgets:
-                getSupportActionBar().setTitle("Budgets");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, budgetsFragment).commit();
+                calendarCardView.setVisibility(View.GONE);
+                hideTheCategoryMenuItems();
+                loadTheFragmentWithSlideLeftCustomAnimation(budgetsFragment);
+                changeTheActionBarTitle("Budgets");
                 break;
 
             case R.id.calendar:
-                getSupportActionBar().setTitle("Calendar");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Calendar");
                 Toast.makeText(this, "calendar", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.chart:
-                getSupportActionBar().setTitle("Chart");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Chart");
                 Toast.makeText(this, "chart", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.goals:
-                getSupportActionBar().setTitle("Goals");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Chart");
                 Toast.makeText(this, "goals", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.shopping_lists:
-                getSupportActionBar().setTitle("Shopping Lists");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Shopping Lists");
                 Toast.makeText(this, "shopping lists", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.help:
-                getSupportActionBar().setTitle("Help");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Help");
                 Toast.makeText(this, "help", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.settings:
-                getSupportActionBar().setTitle("Settings");
-                calendarDropDownLinearLayout.setVisibility(View.GONE);
+                calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Settings");
                 Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.sign_out:
 
-                if (signInUsingGoogleConfigActivity.readSignInUsingGoogleStatus()) {
+                if (signInUsingGoogleConfigActivity.getSignInUsingGoogleStatus()) {
 
                     googleSignInClient.signOut().addOnCompleteListener(HomeScreenActivity.this, new OnCompleteListener<Void>() {
                         @Override
@@ -873,26 +692,26 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
                             if (task.isSuccessful()) {
 
-                                signInUsingGoogleConfigActivity.writeSignInUsingGoogleStatus(false);
-                                Toast.makeText(HomeScreenActivity.this, "Successfully signed out", Toast.LENGTH_SHORT).show();
+                                showToast("Successfully signed out.");
+                                signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
                                 startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
                                 finish();
 
                             } else {
 
-                                Toast.makeText(HomeScreenActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                showToast(Objects.requireNonNull(task.getException()).getMessage());
 
                             }
 
                         }
                     });
 
-                } else if (signInUsingEmailConfigActivity.readSignInUsingEmailStatus()) {
+                } else if (signInUsingEmailConfigActivity.getSignInUsingEmailStatus()) {
 
                     FirebaseAuth.getInstance().signOut();
-                    signInUsingEmailConfigActivity.writeSignInUsingEmailStatus(false);
-                    signInUsingGoogleConfigActivity.writeSignInUsingGoogleStatus(false);
-                    Toast.makeText(HomeScreenActivity.this, "Successfully signed out", Toast.LENGTH_SHORT).show();
+                    showToast("Successfully signed out.");
+                    signInUsingEmailConfigActivity.setSignInUsingEmailStatus(false);
+                    signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
                     startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
                     finish();
 
@@ -904,6 +723,503 @@ public class HomeScreenActivity extends AppCompatActivity implements NavigationV
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.expense) {
+
+            chosenCategory = "Expense_Category";
+            homeScreenFragment = new HomeScreenFragment(
+                    "Expense_Category",
+                    chosenMonth,
+                    chosenYear
+            );
+            loadTheFragment(homeScreenFragment);
+
+        } else if (item.getItemId() == R.id.income) {
+
+            chosenCategory = "Income_Category";
+            homeScreenFragment = new HomeScreenFragment(
+                    "Income_Category",
+                    chosenMonth,
+                    chosenYear
+            );
+            loadTheFragment(homeScreenFragment);
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public void cancel() {
+
+        datePickerDialogBox.dismiss();
+    }
+
+    @Override
+    public void chooseMonth(String month) {
+
+        chosenMonth = month;
+    }
+
+    @Override
+    public void chooseNextYear() {
+
+        if (datePickerDialogBox.getYear().equals(String.valueOf(currentYear))) {
+
+            datePickerDialogBox.setYear(String.valueOf(currentYear + 1));
+
+        } else {
+
+            datePickerDialogBox.setYear(String.valueOf(Integer.parseInt(datePickerDialogBox.getYear()) + 1));
+
+        }
+
+        chosenYear = datePickerDialogBox.getYear();
+    }
+
+    @Override
+    public void choosePreviousYear() {
+
+        if (datePickerDialogBox.getYear().equals(String.valueOf(currentYear))) {
+
+            datePickerDialogBox.setYear(String.valueOf(currentYear - 1));
+
+        } else {
+
+            datePickerDialogBox.setYear(String.valueOf(Integer.parseInt(datePickerDialogBox.getYear()) - 1));
+
+        }
+
+        chosenYear = datePickerDialogBox.getYear();
+    }
+
+    @Override
+    public void goToExpenseIncomeActivity() {
+
+        startActivityForResult(new Intent(this, ExpenseIncomeActivity.class), 1);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+
+            drawerLayout.closeDrawer(GravityCompat.START);
+            showTheCategoryMenuItems();
+
+        } else if ((budgetsFragment != null && budgetsFragment.isVisible())
+                || (statisticsFragment != null && statisticsFragment.isVisible())) {
+
+            changeTheActionBarTitle("");
+            calendarCardView.setVisibility(View.VISIBLE);
+            loadTheFragmentWithSlideRightCustomAnimation(homeScreenFragment);
+            navigationView.setCheckedItem(R.id.home);
+            showTheCategoryMenuItems();
+
+        } else if (homeScreenFragment != null && homeScreenFragment.isVisible()) {
+
+            super.onBackPressed();
+
+        }
+    }
+
+    @Override
+    public void ok() {
+
+        datePickerDialogBox.dismiss();
+
+        if (!chosenMonth.equals(month) && !chosenYear.equals(String.valueOf(currentYear))) {
+
+            month_name = chosenMonth + " " + chosenYear;
+            monthNameTextView.setText(month_name);
+
+        } else if (!chosenMonth.equals(month) && chosenYear.equals(String.valueOf(currentYear))) {
+
+            monthNameTextView.setText(chosenMonth);
+
+        } else if (chosenMonth.equals(month) && !chosenYear.equals(String.valueOf(currentYear))) {
+
+            month_name = chosenMonth + " " + chosenYear;
+            monthNameTextView.setText(month_name);
+
+        } else if (chosenMonth.equals(month) && chosenYear.equals(String.valueOf(currentYear))) {
+
+            monthNameTextView.setText(chosenMonth);
+
+        }
+
+        homeScreenFragment = new HomeScreenFragment(
+                chosenCategory,
+                chosenMonth,
+                chosenYear
+        );
+        loadTheFragment(homeScreenFragment);
+
+    }
+
+    @Override
+    public void showExpensePercentage() {
+
+    }
+
+    @Override
+    public void showIncomePercentage() {
+
+    }
+
+    @Override
+    public void showMonthListForBalance(final String current_month, final String current_year) {
+
+        selected_month = current_month;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .child(current_year)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            int i, checkedItem = 0;
+                            monthList.clear();
+
+                             for (DataSnapshot monthSnapshot : snapshot.getChildren()) {
+
+                                 monthList.add(monthSnapshot.getKey());
+
+                             }
+
+                             if (monthList.size() == 1) {
+
+                                 selected_month = monthList.get(0);
+
+                             }
+
+                             List<String> arrangedMonthList = arrangeTheMonths(monthList);
+                             final String[] month = new String[monthList.size()];
+
+                             for (i = 0; i < arrangedMonthList.size(); i++) {
+
+                                 month[i] = arrangedMonthList.get(i);
+                                 
+                             }
+                             
+                             for (i = 0; i < month.length; i++) {
+                                 
+                                 if (month[i].equals(current_month)) {
+
+                                     checkedItem = i;
+                                     break;
+                                     
+                                 }
+                                 
+                             }
+
+                             builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                             builder.setTitle("Select a month");
+                             builder.setSingleChoiceItems(month, checkedItem, new DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int i) {
+
+                                     selected_month = month[i];
+                                 }
+                             });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int which) {
+
+                                     //statisticsFragment = new StatisticsFragment(selected_month, current_year);
+                                     //loadTheFragment(statisticsFragment);
+                                     statisticsFragment.updateTheFragment(
+                                             HomeScreenActivity.this,
+                                             tabPosition.getTabPosition(),
+                                             selected_month,
+                                             current_year
+                                     );
+                                 }
+                             });
+                             builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface dialog, int which) {
+
+                                 }
+                             });
+                             dialog = builder.create();
+                             dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    public void showYearListForBalance(final String current_month, final String current_year) {
+
+        selected_year = current_year;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            int i, checkedItem = 0;
+                            yearList.clear();
+
+                            for (DataSnapshot yearSnapshot : snapshot.getChildren()) {
+
+                                yearList.add(yearSnapshot.getKey());
+
+                            }
+
+                            final String[] year = new String[yearList.size()];
+
+                            for (i = 0; i < yearList.size(); i++) {
+
+                                year[i] = yearList.get(i);
+
+                            }
+
+                            for (i = 0; i < year.length; i++) {
+
+                                if (year[i].equals(current_year)) {
+
+                                    checkedItem = i;
+                                    break;
+
+                                }
+
+                            }
+
+                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                            builder.setTitle("Select a year");
+                            builder.setSingleChoiceItems(year, checkedItem, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int i) {
+
+                                    selected_year = year[i];
+                                }
+                            });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //statisticsFragment = new StatisticsFragment(current_month, selected_year);
+                                    //loadTheFragment(statisticsFragment);
+                                    statisticsFragment.updateTheFragment(
+                                            HomeScreenActivity.this,
+                                            tabPosition.getTabPosition(),
+                                            current_month,
+                                            selected_year
+                                    );
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            dialog = builder.create();
+                            dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    public void showMonthListForCashFlow(final String current_month, final String current_year) {
+
+        selected_month = current_month;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .child(current_year)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            int i, checkedItem = 0;
+                            monthList.clear();
+
+                            for (DataSnapshot monthSnapshot : snapshot.getChildren()) {
+
+                                monthList.add(monthSnapshot.getKey());
+
+                            }
+
+                            if (monthList.size() == 1) {
+
+                                selected_month = monthList.get(0);
+
+                            }
+
+                            List<String> arrangedMonthList = arrangeTheMonths(monthList);
+                            final String[] month = new String[monthList.size()];
+
+                            for (i = 0; i < arrangedMonthList.size(); i++) {
+
+                                month[i] = arrangedMonthList.get(i);
+
+                            }
+
+                            for (i = 0; i < month.length; i++) {
+
+                                if (month[i].equals(current_month)) {
+
+                                    checkedItem = i;
+                                    break;
+
+                                }
+
+                            }
+
+                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                            builder.setTitle("Select a month");
+                            builder.setSingleChoiceItems(month, checkedItem, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int i) {
+
+                                    selected_month = month[i];
+                                }
+                            });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //statisticsFragment = new StatisticsFragment(selected_month, current_year);
+                                    //loadTheFragment(statisticsFragment);
+                                    statisticsFragment.updateTheFragment(
+                                            HomeScreenActivity.this,
+                                            tabPosition.getTabPosition(),
+                                            selected_month,
+                                            current_year
+                                    );
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            dialog = builder.create();
+                            dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
+    }
+
+    @Override
+    public void showYearListForCashFlow(final String current_month, final String current_year) {
+
+        selected_year = current_year;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            int i, checkedItem = 0;
+                            yearList.clear();
+
+                            for (DataSnapshot yearSnapshot : snapshot.getChildren()) {
+
+                                yearList.add(yearSnapshot.getKey());
+
+                            }
+
+                            final String[] year = new String[yearList.size()];
+
+                            for (i = 0; i < yearList.size(); i++) {
+
+                                year[i] = yearList.get(i);
+
+                            }
+
+                            for (i = 0; i < year.length; i++) {
+
+                                if (year[i].equals(current_year)) {
+
+                                    checkedItem = i;
+                                    break;
+
+                                }
+
+                            }
+
+                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                            builder.setTitle("Select a year");
+                            builder.setSingleChoiceItems(year, checkedItem, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int i) {
+
+                                    selected_year = year[i];
+                                }
+                            });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //statisticsFragment = new StatisticsFragment(current_month, selected_year);
+                                    //loadTheFragment(statisticsFragment);
+                                    statisticsFragment.updateTheFragment(
+                                            HomeScreenActivity.this,
+                                            tabPosition.getTabPosition(),
+                                            current_month,
+                                            selected_year
+                                    );
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            dialog = builder.create();
+                            dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
     }
 }

@@ -6,26 +6,16 @@
     android:layout_height="match_parent"
     tools:context="com.jaekapps.expensetracker.AddItemCategoryActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+    <include
+        layout="@layout/toolbar_layout">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+    </include>
 
     <FrameLayout
         android:id="@+id/categoryFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appBarLayout">
+        android:layout_below="@id/toolbar">
 
     </FrameLayout>
 

@@ -67,7 +67,7 @@ public class DateOfEachMonthRecyclerAdapter extends RecyclerView.Adapter<DateOfE
         LinearLayout numberDateLinearLayout;
         TextView dateTextView, numberTextView;
 
-        DateOfEachMonthViewHolder(OnDateClickListener onDateClickListener, List<String> dateList, @NonNull View itemView) {
+        DateOfEachMonthViewHolder(final OnDateClickListener onDateClickListener, final List<String> dateList, @NonNull View itemView) {
             super(itemView);
 
             dateTextView = itemView.findViewById(R.id.dateTextView);
