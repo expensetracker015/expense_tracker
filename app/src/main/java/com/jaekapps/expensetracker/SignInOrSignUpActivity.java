@@ -35,13 +35,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     private ForgotPasswordDialogBox forgotPasswordDialogBox;
     private FrameLayout fragmentContainer;
     private int currentYear;
-    private SignInOrSignUpModeConfigActivity signInOrSignUpModeConfigActivity;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingEmailFragment signInUsingEmailFragment;
     private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     private SignUpUsingEmailFragment signUpUsingEmailFragment;
-    private String month, userId;
+    private String mode_of_sign_in, month, userId;
     private UserIdConfigActivity userIdConfigActivity;
 
     private boolean checkIfUserIdContainsSpecChar(String userId) {
@@ -226,7 +225,8 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
         int currentMonth = calendar.get(Calendar.MONTH);
         currentMonth = currentMonth + 1;
         findMonth(currentMonth);
-        signInOrSignUpModeConfigActivity = new SignInOrSignUpModeConfigActivity(this);
+        Intent intent = getIntent();
+        mode_of_sign_in = intent.getStringExtra("mode_of_sign_in");
         signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
         signInUsingEmailFragment = new SignInUsingEmailFragment();
@@ -284,12 +284,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
             }
 
-            if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign In")) {
+            if (mode_of_sign_in.equals("Sign In")) {
 
                 changeTheToolbarTitle("Sign In Using Email");
                 loadTheFragment(signInUsingEmailFragment);
 
-            } else if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign Up")) {
+            } else if (mode_of_sign_in.equals("Sign Up")) {
 
                 changeTheToolbarTitle("Sign Up Using Email");
                 loadTheFragment(signUpUsingEmailFragment);

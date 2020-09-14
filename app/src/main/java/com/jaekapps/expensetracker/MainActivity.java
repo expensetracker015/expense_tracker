@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private GoogleSignInButton googleSignInButton;
     private GoogleSignInClient googleSignInClient;
     private int currentYear, GOOGLE_SIGN_IN = 1;
-    private SignInOrSignUpModeConfigActivity signInOrSignUpModeConfigActivity;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
@@ -209,6 +208,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         finish();
     }
 
+    private void goToSignInOrSignUpActivity(String modeOfSignIn) {
+
+        Intent intent = new Intent(this, SignInOrSignUpActivity.class);
+        intent.putExtra("mode_of_sign_in", modeOfSignIn);
+        startActivity(intent);
+    }
+
     private void initialization() {
 
         beiAmount = new BEIAmount();
@@ -227,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findMonth(currentMonth);
         signInUsingEmailButton = findViewById(R.id.signInUsingEmailButton);
         signUpUsingEmailButton = findViewById(R.id.signUpUsingEmailButton);
-        signInOrSignUpModeConfigActivity = new SignInOrSignUpModeConfigActivity(this);
         signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
         signInUsingEmailOrGoogleDialogBox = new SignInUsingEmailOrGoogleDialogBox();
@@ -432,13 +437,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.signInUsingEmailButton:
-                signInOrSignUpModeConfigActivity.setModeOfSignIn("Sign In");
-                startActivity(new Intent(this, SignInOrSignUpActivity.class));
+                goToSignInOrSignUpActivity("Sign In");
                 break;
 
             case R.id.signUpUsingEmailButton:
-                signInOrSignUpModeConfigActivity.setModeOfSignIn("Sign Up");
-                startActivity(new Intent(this, SignInOrSignUpActivity.class));
+                goToSignInOrSignUpActivity("Sign Up");
                 break;
         }
 
