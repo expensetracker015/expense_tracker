@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class SpendingFragment extends Fragment implements View.OnClickListener {
@@ -51,6 +52,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     private PieData expensesPieData;
     private PieDataSet expensesPieDataSet;
     private RecyclerView expenseItemRecyclerView, topCategoriesRecyclerView;
+    private SpendingFragmentListener spendingFragmentListener;
     private String current_month, date, expense, month, year, userId;
     private TextView monthTitleTextView, natureOfSpendingAmountTextView, natureOfSpendingMonthTextView, spendingAmountTextView,
             spendingCurrentMonthTextView, yearTitleTextView;
@@ -332,6 +334,12 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         yearTitleTextView = view.findViewById(R.id.yearTitleTextView);
     }
 
+    public interface SpendingFragmentListener {
+
+        void showMonthListForSpending(String current_month, String current_year);
+        void showYearListForSpending(String current_month, String current_year);
+    }
+
     public void updateTheViews(final Context context, final String month, final String year) {
 
         String convertedMonth;
@@ -438,6 +446,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         spendingCategoryPieChart.setDrawEntryLabels(false);
                                         spendingCategoryPieChart.setDrawHoleEnabled(true);
                                         spendingCategoryPieChart.setHoleRadius(65);
+                                        spendingCategoryPieChart.setRotationEnabled(false);
                                         expenseItemList.clear();
                                         expenseItemList.add(new PieEntry(100f, itemList.get(0)));
                                         expensesPieDataSet = new PieDataSet(expenseItemList, "");
@@ -483,10 +492,12 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                         spendingCategoryPieChart.getDescription().setEnabled(false);
+                                        spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
                                         spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
                                         spendingCategoryPieChart.setDrawEntryLabels(false);
                                         spendingCategoryPieChart.setDrawHoleEnabled(true);
                                         spendingCategoryPieChart.setHoleRadius(65);
+                                        spendingCategoryPieChart.setRotationEnabled(false);
                                         expenseItemList.clear();
 
                                         for (int i = 0; i < itemList.size(); i++) {
@@ -522,7 +533,158 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 }
 
-                            } else {}
+                            } else {
+
+                                amountList.clear();
+                                final ArrayList<String> dateList, newAmountList, newItemList;
+                                boolean alreadyAdded;
+                                dateList = new ArrayList<>();
+                                dateList.clear();
+                                HashMap<String, String> itemHashMap = new HashMap<>();
+                                itemHashMap.clear();
+                                itemList.clear();
+                                newAmountList = new ArrayList<>();
+                                newAmountList.clear();
+                                newItemList = new ArrayList<>();
+                                newItemList.clear();
+                                String item;
+
+                                for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
+
+                                    dateList.add(dateSnapshot.getKey());
+
+                                }
+
+                                for (int i = 0; i < dateList.size(); i++) {
+
+                                    for (DataSnapshot itemSnapshot : snapshot.child(dateList.get(i)).getChildren()) {
+
+                                        amountList.add(itemSnapshot.getValue(String.class));
+                                        itemList.add(itemSnapshot.getKey());
+
+                                    }
+
+                                }
+
+                                for (int i = 0; i < itemList.size(); i++) {
+
+                                    alreadyAdded = false;
+                                    float amount = 0;
+                                    item = itemList.get(i);
+
+                                    for (int j = 0; j < itemList.size(); j++) {
+
+                                        if (!itemHashMap.isEmpty()) {
+
+                                            if (itemHashMap.containsKey(item)) {
+
+                                                alreadyAdded = true;
+                                                break;
+
+                                            } else {
+
+                                                if (item.equals(itemList.get(j))) {
+
+                                                    amount = amount + Float.parseFloat(amountList.get(j));
+
+                                                }
+
+                                            }
+
+                                        } else {
+
+
+                                            if (item.equals(itemList.get(j))) {
+
+                                                amount = amount + Float.parseFloat(amountList.get(j));
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    if (!alreadyAdded) {
+
+                                        itemHashMap.put(item, "Added");
+                                        newAmountList.add(String.valueOf(amount));
+                                        newItemList.add(item);
+
+                                    }
+
+                                }
+
+                                double amount_percentage;
+                                float total_expense_amount = 0;
+                                final float[] item_amount_percentage = new float[newAmountList.size()];
+
+                                for (int i = 0; i < newAmountList.size(); i++) {
+
+                                    total_expense_amount = total_expense_amount + Float.parseFloat(newAmountList.get(i));
+
+                                }
+
+                                for (int i = 0; i < newAmountList.size(); i++) {
+
+                                    amount_percentage = (Float.parseFloat(newAmountList.get(i)) / total_expense_amount) * 100;
+                                    item_amount_percentage[i] = Float.parseFloat(new DecimalFormat("##.##").format(amount_percentage));
+
+                                }
+
+                                itemAmountPercentageList.clear();
+
+                                for (float p : item_amount_percentage) {
+
+                                    itemAmountPercentageList.add(p);
+
+                                }
+
+                                for (int i = 0; i < newAmountList.size(); i++) {
+
+                                    newAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(newAmountList.get(i)));
+
+                                }
+
+                                spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
+                                spendingCategoryPieChart.getDescription().setEnabled(false);
+                                spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
+                                spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                spendingCategoryPieChart.setDrawEntryLabels(false);
+                                spendingCategoryPieChart.setDrawHoleEnabled(true);
+                                spendingCategoryPieChart.setHoleRadius(65);
+                                spendingCategoryPieChart.setRotationEnabled(false);
+                                expenseItemList.clear();
+
+                                for (int i = 0; i < newItemList.size(); i++) {
+
+                                    expenseItemList.add(new PieEntry(item_amount_percentage[i], newItemList.get(i)));
+
+                                }
+
+                                expensesPieDataSet = new PieDataSet(expenseItemList, "");
+                                expensesPieDataSet.setColors(colors);
+                                expensesPieDataSet.setDrawValues(false);
+                                expensesPieData = new PieData(expensesPieDataSet);
+                                spendingCategoryPieChart.setData(expensesPieData);
+                                expensesPieData.setValueTextColor(Color.WHITE);
+                                expensesPieData.setValueTextSize(10f);
+                                final float finalTotal_expense_amount = total_expense_amount;
+                                spendingCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                                    @Override
+                                    public void onValueSelected(Entry e, Highlight h) {
+
+                                        int index = (int) h.getX();
+                                        spendingCategoryPieChart.setCenterText(newItemList.get(index) + "\n" + newAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected() {
+
+                                        spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(finalTotal_expense_amount)));
+                                    }
+                                });
+
+                            }
 
                         } else {
 
@@ -553,20 +715,45 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        try {
+
+            spendingFragmentListener = (SpendingFragmentListener) context;
+
+        } catch (Exception e) {
+
+            throw new ClassCastException(context.toString() + " must implement SpendingFragmentListener!");
+
+        }
+
+    }
+
+    @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
 
             case R.id.monthListCardView:
+                spendingFragmentListener.showMonthListForSpending(month, year);
                 break;
 
             case R.id.showMoreButton:
                 break;
 
             case R.id.yearListCardView:
+                spendingFragmentListener.showYearListForSpending(month, year);
                 break;
 
         }
 
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        spendingFragmentListener = null;
     }
 }

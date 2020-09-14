@@ -220,8 +220,27 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                             if (beiAmount != null) {
 
-                                beiAmount.setBalance(context.getResources()
-                                        .getString(R.string.rupees) + putComma(beiAmount.getBalance()));
+                                if (beiAmount.getBalance().contains("-")) {
+
+                                    char[] bal = beiAmount.getBalance().toCharArray();
+                                    StringBuilder builder = new StringBuilder();
+
+                                    for (int i = 1; i < bal.length; i++) {
+
+                                        builder.append(bal[i]);
+
+                                    }
+
+                                    beiAmount.setBalance("-" + context.getResources()
+                                            .getString(R.string.rupees) + putComma(builder.toString()));
+
+                                } else {
+
+                                    beiAmount.setBalance(context.getResources()
+                                            .getString(R.string.rupees) + putComma(beiAmount.getBalance()));
+
+                                }
+
                                 beiAmount.setExpense(context.getResources()
                                         .getString(R.string.rupees) + putComma(beiAmount.getExpense()));
                                 beiAmount.setIncome(context.getResources()

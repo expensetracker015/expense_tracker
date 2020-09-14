@@ -498,7 +498,8 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                 if (beiAmount.getExpense().equals("0")) {
 
-                                    expense = "0";
+                                    expense = context.getResources()
+                                            .getString(R.string.rupees) + "0";
 
                                 } else {
 
@@ -568,6 +569,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                                                             expensesPieChart.setDrawEntryLabels(false);
                                                             expensesPieChart.setDrawHoleEnabled(true);
                                                             expensesPieChart.setHoleRadius(65);
+                                                            expensesPieChart.setRotationEnabled(false);
                                                             expenseDateArrayList.clear();
                                                             expenseDateArrayList.add(new PieEntry(100f, date));
                                                             expensesPieDataSet = new PieDataSet(expenseDateArrayList, "");
@@ -626,6 +628,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                         expensesPieChart.animateY(1000, Easing.EaseInOutCubic);
                                                         expensesPieChart.getDescription().setEnabled(false);
+                                                        expensesPieChart.getLegend().setWordWrapEnabled(true);
                                                         expensesPieChart.setCenterText("All\n" + month + "\n" + expense);
                                                         expensesPieChart.setDrawEntryLabels(false);
                                                         expensesPieChart.setDrawHoleEnabled(true);
@@ -706,6 +709,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                                                             incomePieChart.setDrawEntryLabels(false);
                                                             incomePieChart.setDrawHoleEnabled(true);
                                                             incomePieChart.setHoleRadius(65);
+                                                            incomePieChart.setRotationEnabled(false);
                                                             incomeDateArrayList.clear();
                                                             incomeDateArrayList.add(new PieEntry(100f, date));
                                                             incomePieDataSet = new PieDataSet(incomeDateArrayList, "");
@@ -764,6 +768,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                         incomePieChart.animateY(1000, Easing.EaseInOutCubic);
                                                         incomePieChart.getDescription().setEnabled(false);
+                                                        incomePieChart.getLegend().setWordWrapEnabled(true);
                                                         incomePieChart.setCenterText("All\n" + month + "\n" + income);
                                                         incomePieChart.setDrawEntryLabels(false);
                                                         incomePieChart.setDrawHoleEnabled(true);
@@ -830,7 +835,11 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                             cashFlowIncomeProgressBar.setProgress(0);
                             cashFlowIncomeAmountTextView.setText(income);
                             expensesAmountTextView.setText(expense);
+                            expensesPieChart.setData(null);
+                            expensesPieChart.invalidate();
                             incomeAmountTextView.setText(income);
+                            incomePieChart.setData(null);
+                            incomePieChart.invalidate();
 
                         }
 

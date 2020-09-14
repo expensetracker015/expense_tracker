@@ -375,8 +375,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                     }
 
-                                    beiAmount.setBalance(builder.toString());
-                                    beiAmount.setBalance(putComma(beiAmount.getBalance()));
+                                    beiAmount.setBalance(putComma(builder.toString()));
                                     balance = "-" + context.getResources()
                                             .getString(R.string.rupees) + beiAmount.getBalance();
                                     balanceStatusTextView.setVisibility(View.VISIBLE);
@@ -476,8 +475,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                                 }
 
-                                                beiAmount.setBalance(builder.toString());
-                                                beiAmount.setBalance(putComma(beiAmount.getBalance()));
+                                                beiAmount.setBalance(putComma(builder.toString()));
                                                 balance = "-" + context.getResources()
                                                         .getString(R.string.rupees) + beiAmount.getBalance();
 
@@ -578,6 +576,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                 balAmountTextView.setText(balance);
                                 balancePieChart.animateY(1000, Easing.EaseInOutCubic);
                                 balancePieChart.getDescription().setEnabled(false);
+                                balancePieChart.getLegend().setWordWrapEnabled(true);
                                 balancePieChart.setCenterText("All\n" + year + "\n" + balance);
                                 balancePieChart.setDrawEntryLabels(false);
                                 balancePieChart.setDrawHoleEnabled(true);

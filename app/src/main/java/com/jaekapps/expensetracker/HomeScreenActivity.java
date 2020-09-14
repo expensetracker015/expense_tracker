@@ -47,7 +47,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeScreenActivity extends AppCompatActivity implements BalanceFragment.BalanceFragmentListener,
         CashFlowFragment.CashFlowFragmentListener, DatePickerDialogBox.DatePickerListener, HomeScreenFragment.HomeScreenFragmentListener,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener, SpendingFragment.SpendingFragmentListener {
 
     AlertDialog dialog;
     AlertDialog.Builder builder;
@@ -414,6 +414,103 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 .commit();
     }
 
+    private void showMonthList(final String current_month, final String current_year) {
+
+        selected_month = current_month;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .child(current_year)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            boolean found = false;
+                            int i, checkedItem = 0;
+                            monthList.clear();
+
+                            for (DataSnapshot monthSnapshot : snapshot.getChildren()) {
+
+                                monthList.add(monthSnapshot.getKey());
+
+                            }
+
+                            if (monthList.size() == 1) {
+
+                                selected_month = monthList.get(0);
+
+                            }
+
+                            List<String> arrangedMonthList = sortTheMonths(monthList);
+                            final String[] month = new String[monthList.size()];
+
+                            for (i = 0; i < arrangedMonthList.size(); i++) {
+
+                                month[i] = arrangedMonthList.get(i);
+
+                            }
+
+                            for (i = 0; i < month.length; i++) {
+
+                                if (month[i].equals(current_month)) {
+
+                                    checkedItem = i;
+                                    found = true;
+                                    break;
+
+                                }
+
+                            }
+
+                            if (!found) {
+
+                                checkedItem = -1;
+
+                            }
+
+                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                            builder.setTitle("Select a month");
+                            builder.setSingleChoiceItems(month, checkedItem, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int i) {
+
+                                    selected_month = month[i];
+                                }
+                            });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    statisticsFragment.updateTheFragment(
+                                            HomeScreenActivity.this,
+                                            tabPosition.getTabPosition(),
+                                            selected_month,
+                                            current_year
+                                    );
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            dialog = builder.create();
+                            dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
+    }
+
     private void showTheCategoryMenuItems() {
 
         popupMenu.findItem(R.id.expense).setVisible(true);
@@ -427,6 +524,95 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 message,
                 Toast.LENGTH_SHORT
         ).show();
+    }
+
+    private void showYearList(final String current_month, final String current_year) {
+
+        selected_year = current_year;
+        userDBReference.child(userId)
+                .child("BEIAmount")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+
+                            boolean found = false;
+                            int i, checkedItem = 0;
+                            yearList.clear();
+
+                            for (DataSnapshot yearSnapshot : snapshot.getChildren()) {
+
+                                yearList.add(yearSnapshot.getKey());
+
+                            }
+
+                            final String[] year = new String[yearList.size()];
+
+                            for (i = 0; i < yearList.size(); i++) {
+
+                                year[i] = yearList.get(i);
+
+                            }
+
+                            for (i = 0; i < year.length; i++) {
+
+                                if (year[i].equals(current_year)) {
+
+                                    checkedItem = i;
+                                    found = true;
+                                    break;
+
+                                }
+
+                            }
+
+                            if (!found) {
+
+                                checkedItem = -1;
+
+                            }
+
+                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                            builder.setTitle("Select a year");
+                            builder.setSingleChoiceItems(year, checkedItem, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int i) {
+
+                                    selected_year = year[i];
+                                }
+                            });
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    statisticsFragment.updateTheFragment(
+                                            HomeScreenActivity.this,
+                                            tabPosition.getTabPosition(),
+                                            current_month,
+                                            selected_year
+                                    );
+                                }
+                            });
+                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                            dialog = builder.create();
+                            dialog.show();
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        Log.e("database_error", error.getMessage());
+                    }
+                });
     }
 
     @Override
@@ -872,376 +1058,36 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     @Override
     public void showMonthListForBalance(final String current_month, final String current_year) {
 
-        selected_month = current_month;
-        userDBReference.child(userId)
-                .child("BEIAmount")
-                .child(current_year)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        if (snapshot.exists()) {
-
-                            boolean found = false;
-                            int i, checkedItem = 0;
-                            monthList.clear();
-
-                             for (DataSnapshot monthSnapshot : snapshot.getChildren()) {
-
-                                 monthList.add(monthSnapshot.getKey());
-
-                             }
-
-                             if (monthList.size() == 1) {
-
-                                 selected_month = monthList.get(0);
-
-                             }
-
-                             List<String> arrangedMonthList = sortTheMonths(monthList);
-                             final String[] month = new String[monthList.size()];
-
-                             for (i = 0; i < arrangedMonthList.size(); i++) {
-
-                                 month[i] = arrangedMonthList.get(i);
-                                 
-                             }
-                             
-                             for (i = 0; i < month.length; i++) {
-                                 
-                                 if (month[i].equals(current_month)) {
-
-                                     checkedItem = i;
-                                     found = true;
-                                     break;
-                                     
-                                 }
-                                 
-                             }
-
-                             if (!found) {
-
-                                 checkedItem = -1;
-
-                             }
-
-                             builder = new AlertDialog.Builder(HomeScreenActivity.this);
-                             builder.setTitle("Select a month");
-                             builder.setSingleChoiceItems(month, checkedItem, new DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int i) {
-
-                                     selected_month = month[i];
-                                 }
-                             });
-                             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-
-                                     statisticsFragment.updateTheFragment(
-                                             HomeScreenActivity.this,
-                                             tabPosition.getTabPosition(),
-                                             selected_month,
-                                             current_year
-                                     );
-                                 }
-                             });
-                             builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                 @Override
-                                 public void onClick(DialogInterface dialog, int which) {
-
-                                 }
-                             });
-                             dialog = builder.create();
-                             dialog.show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                        Log.e("database_error", error.getMessage());
-                    }
-                });
+        showMonthList(current_month, current_year);
     }
 
     @Override
-    public void showYearListForBalance(final String current_month, final String current_year) {
+    public void showYearListForBalance(String current_month, String current_year) {
 
-        selected_year = current_year;
-        userDBReference.child(userId)
-                .child("BEIAmount")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        if (snapshot.exists()) {
-
-                            boolean found = false;
-                            int i, checkedItem = 0;
-                            yearList.clear();
-
-                            for (DataSnapshot yearSnapshot : snapshot.getChildren()) {
-
-                                yearList.add(yearSnapshot.getKey());
-
-                            }
-
-                            final String[] year = new String[yearList.size()];
-
-                            for (i = 0; i < yearList.size(); i++) {
-
-                                year[i] = yearList.get(i);
-
-                            }
-
-                            for (i = 0; i < year.length; i++) {
-
-                                if (year[i].equals(current_year)) {
-
-                                    checkedItem = i;
-                                    found = true;
-                                    break;
-
-                                }
-
-                            }
-
-                            if (!found) {
-
-                                checkedItem = -1;
-
-                            }
-
-                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
-                            builder.setTitle("Select a year");
-                            builder.setSingleChoiceItems(year, checkedItem, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int i) {
-
-                                    selected_year = year[i];
-                                }
-                            });
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    statisticsFragment.updateTheFragment(
-                                            HomeScreenActivity.this,
-                                            tabPosition.getTabPosition(),
-                                            current_month,
-                                            selected_year
-                                    );
-                                }
-                            });
-                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            dialog = builder.create();
-                            dialog.show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                        Log.e("database_error", error.getMessage());
-                    }
-                });
+        showYearList(current_month, current_year);
     }
 
     @Override
-    public void showMonthListForCashFlow(final String current_month, final String current_year) {
+    public void showMonthListForCashFlow(String current_month, String current_year) {
 
-        selected_month = current_month;
-        userDBReference.child(userId)
-                .child("BEIAmount")
-                .child(current_year)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        if (snapshot.exists()) {
-
-                            boolean found = false;
-                            int i, checkedItem = 0;
-                            monthList.clear();
-
-                            for (DataSnapshot monthSnapshot : snapshot.getChildren()) {
-
-                                monthList.add(monthSnapshot.getKey());
-
-                            }
-
-                            if (monthList.size() == 1) {
-
-                                selected_month = monthList.get(0);
-
-                            }
-
-                            List<String> arrangedMonthList = sortTheMonths(monthList);
-                            final String[] month = new String[monthList.size()];
-
-                            for (i = 0; i < arrangedMonthList.size(); i++) {
-
-                                month[i] = arrangedMonthList.get(i);
-
-                            }
-
-                            for (i = 0; i < month.length; i++) {
-
-                                if (month[i].equals(current_month)) {
-
-                                    checkedItem = i;
-                                    found = true;
-                                    break;
-
-                                }
-
-                            }
-
-                            if (!found) {
-
-                                checkedItem = -1;
-
-                            }
-
-                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
-                            builder.setTitle("Select a month");
-                            builder.setSingleChoiceItems(month, checkedItem, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int i) {
-
-                                    selected_month = month[i];
-                                }
-                            });
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    statisticsFragment.updateTheFragment(
-                                            HomeScreenActivity.this,
-                                            tabPosition.getTabPosition(),
-                                            selected_month,
-                                            current_year
-                                    );
-                                }
-                            });
-                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            dialog = builder.create();
-                            dialog.show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                        Log.e("database_error", error.getMessage());
-                    }
-                });
+        showMonthList(current_month, current_year);
     }
 
     @Override
-    public void showYearListForCashFlow(final String current_month, final String current_year) {
+    public void showYearListForCashFlow(String current_month, String current_year) {
 
-        selected_year = current_year;
-        userDBReference.child(userId)
-                .child("BEIAmount")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        showYearList(current_month, current_year);
+    }
 
-                        if (snapshot.exists()) {
+    @Override
+    public void showMonthListForSpending(String current_month, String current_year) {
 
-                            boolean found = false;
-                            int i, checkedItem = 0;
-                            yearList.clear();
+        showMonthList(current_month, current_year);
+    }
 
-                            for (DataSnapshot yearSnapshot : snapshot.getChildren()) {
+    @Override
+    public void showYearListForSpending(String current_month, String current_year) {
 
-                                yearList.add(yearSnapshot.getKey());
-
-                            }
-
-                            final String[] year = new String[yearList.size()];
-
-                            for (i = 0; i < yearList.size(); i++) {
-
-                                year[i] = yearList.get(i);
-
-                            }
-
-                            for (i = 0; i < year.length; i++) {
-
-                                if (year[i].equals(current_year)) {
-
-                                    checkedItem = i;
-                                    found = true;
-                                    break;
-
-                                }
-
-                            }
-
-                            if (!found) {
-
-                                checkedItem = -1;
-
-                            }
-
-                            builder = new AlertDialog.Builder(HomeScreenActivity.this);
-                            builder.setTitle("Select a year");
-                            builder.setSingleChoiceItems(year, checkedItem, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int i) {
-
-                                    selected_year = year[i];
-                                }
-                            });
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    statisticsFragment.updateTheFragment(
-                                            HomeScreenActivity.this,
-                                            tabPosition.getTabPosition(),
-                                            current_month,
-                                            selected_year
-                                    );
-                                }
-                            });
-                            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                }
-                            });
-                            dialog = builder.create();
-                            dialog.show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                        Log.e("database_error", error.getMessage());
-                    }
-                });
+        showYearList(current_month, current_year);
     }
 }
