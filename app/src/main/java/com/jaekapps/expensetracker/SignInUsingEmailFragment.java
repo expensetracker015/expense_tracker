@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
@@ -21,9 +20,8 @@ import java.util.Objects;
 
 public class SignInUsingEmailFragment extends Fragment implements View.OnClickListener {
 
-    private AppCompatButton forgotPasswordButton;
     private boolean passwordStatus;
-    private CardView createAccountCardView, signInButton;
+    private CardView createAccountCardView, forgotPasswordButton, signInButton;
     private SignInListener signInListener;
     private TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText;
     private TextInputLayout passwordTextInputLayout;

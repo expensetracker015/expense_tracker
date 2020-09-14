@@ -29,10 +29,6 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
-    <style name="ForgotPasswordButtonTheme" parent="Widget.AppCompat.Button.Borderless">
-
-    </style>
-
     <style name="DatePickerDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_down_date_dialog</item>
         <item name="android:windowExitAnimation">@anim/slide_up_date_dialog</item>
