@@ -65,6 +65,10 @@
         <attr name="isRounded" format="boolean"/>
     </declare-styleable>
 
+    <style name="ShowMoreButtonTheme" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
     <style name="SignInUsingEmailOrGoogleDialogBoxProgressBarTheme" parent="Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>

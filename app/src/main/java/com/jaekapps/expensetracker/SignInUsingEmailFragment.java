@@ -23,7 +23,7 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
 
     private AppCompatButton forgotPasswordButton;
     private boolean passwordStatus;
-    private CardView signInButton;
+    private CardView createAccountCardView, signInButton;
     private SignInListener signInListener;
     private TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
@@ -80,12 +80,14 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
 
     private void initializeOnClickListener() {
 
+        createAccountCardView.setOnClickListener(this);
         forgotPasswordButton.setOnClickListener(this);
         signInButton.setOnClickListener(this);
     }
 
     private void initializeView(View view) {
 
+        createAccountCardView = view.findViewById(R.id.createAccountCardView);
         emailAddressTextInputEditText = view.findViewById(R.id.emailAddressTextInputEditText);
         forgotPasswordButton = view.findViewById(R.id.forgotPasswordButton);
         passwordTextInputEditText = view.findViewById(R.id.passwordTextInputEditText);
@@ -124,6 +126,7 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
     public interface SignInListener {
 
         void forgotPassword();
+        void loadSignUpUsingEmailFragment();
         void signIn();
     }
 
@@ -184,6 +187,10 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
     public void onClick(View view) {
 
         switch (view.getId()) {
+
+            case R.id.createAccountCardView:
+                signInListener.loadSignUpUsingEmailFragment();
+                break;
 
             case R.id.forgotPasswordButton:
                 signInListener.forgotPassword();

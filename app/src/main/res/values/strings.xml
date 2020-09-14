@@ -66,7 +66,7 @@
     <string name="cash_flow">Cash Flow</string>
     <string name="am_i_spending_more_than_i_make">Am I spending more than I make?</string>
     <string name="rupees">\u20B9</string>
-    <string name="spending_by_categories_or_labels">Spending by Categories or Labels</string>
+    <string name="spending_by_categories">Spending by Categories</string>
     <string name="where_does_my_money_go">Where does my money go?</string>
     <string name="sign_up_using_email">SIGN UP USING EMAIL</string>
     <string name="signing_in">Signing In</string>
@@ -74,7 +74,7 @@
     <string name="reset_password">Reset Password</string>
     <string name="information">Please, provide email address to reset the password.</string>
     <string name="ok">OK</string>
-    <string name="cancel">CANCEL</string>
+    <string name="cancel">Cancel</string>
     <string name="jan">Jan</string>
     <string name="feb">Feb</string>
     <string name="mar">Mar</string>
@@ -93,4 +93,19 @@
     <string name="balance_by_currencies">Balance by Currencies</string>
     <string name="how_much_do_i_have_in_currencies">How much do I have in currencies?</string>
     <string name="inr">INR</string>
+    <string name="expenses_structure">Expenses Structure</string>
+    <string name="how_much_am_i_spending">How much am I spending?</string>
+    <string name="how_much_am_i_earning">How much am I earning?</string>
+    <string name="balance_percentage_in_each_month_of_a_year">Balance percentage in each month of a year.</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="create_a_new_account">Create a new account</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="top_5_expenses">TOP 5 EXPENSES</string>
+    <string name="show_more">Show more</string>
+    <string name="the_nature_of_spending">The Nature of Spending</string>
+    <string name="top_categories">TOP CATEGORIES</string>
+    <string name="how_am_i_spending">How am I spending?</string>
 </resources>

@@ -90,20 +90,6 @@ public class DatePickerDialogBox extends BottomSheetDialogFragment implements Vi
         yearTextView = view.findViewById(R.id.yearTextView);
     }
 
-    public interface DatePickerListener {
-
-        void cancel();
-        void chooseMonth(String month);
-        void chooseNextYear();
-        void choosePreviousYear();
-        void ok();
-    }
-
-    public String getYear() {
-
-        return chosenYearTextView.getText().toString();
-    }
-
     private void setTheCardAndTextColorForMonth(String month) {
 
         aprCardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -131,6 +117,20 @@ public class DatePickerDialogBox extends BottomSheetDialogFragment implements Vi
         sepCardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
         sepTextView.setTextColor(Color.parseColor("#000000"));
         highlightTheMonth(month);
+    }
+
+    public interface DatePickerListener {
+
+        void cancel();
+        void chooseMonth(String month);
+        void chooseNextYear();
+        void choosePreviousYear();
+        void ok();
+    }
+
+    public String getYear() {
+
+        return chosenYearTextView.getText().toString();
     }
 
     public void highlightTheMonth(String month) {

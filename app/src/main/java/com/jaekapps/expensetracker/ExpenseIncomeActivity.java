@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -71,9 +72,9 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         return status;
     }
 
-    private String addCurAmAndPreAm(float currentItemAmount, float previousItemAmount) {
+    private String addCurAmAndPreAm(BigDecimal currentItemAmount, BigDecimal previousItemAmount) {
 
-        return  String.valueOf(currentItemAmount + previousItemAmount);
+        return currentItemAmount.add(previousItemAmount).toString();
     }
 
     private String calculateTotalAmount(String currentItemAmount, String previousItemAmount) {
@@ -82,13 +83,13 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         if (currentItemAmount.contains(".")) {
 
-            totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
+            totalAmount = addCurAmAndPreAm(new BigDecimal(currentItemAmount), new BigDecimal(previousItemAmount));
 
         } else {
 
             if (previousItemAmount.contains(".")) {
 
-                totalAmount = addCurAmAndPreAm(Float.parseFloat(currentItemAmount), Float.parseFloat(previousItemAmount));
+                totalAmount = addCurAmAndPreAm(new BigDecimal(currentItemAmount), new BigDecimal(previousItemAmount));
 
             } else {
 
@@ -200,9 +201,8 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     private void addOperatorToTextView(String operatorSign) {
 
-        if (!amountTextView.getText().equals("0")) {
+        if (!amountTextView.getText().toString().equals("0")) {
 
-            text = "";
             text = amountTextView.getText().toString();
             amount = text.toCharArray();
             int pos = amount.length;
@@ -258,9 +258,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         if (amountTextView.getText().toString().contains(".")) {
 
-            float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-            balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-            expense = String.valueOf(totalExpense);
+            calculateTotalExpenseInBigDecimal();
 
         } else {
 
@@ -276,9 +274,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         if (amountTextView.getText().toString().contains(".")) {
 
-            float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-            balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-            income = String.valueOf(totalIncome);
+            calculateTotalIncomeInBigDecimal();
 
         } else {
 
@@ -288,6 +284,20 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         }
 
+    }
+
+    private void calculateTotalExpenseInBigDecimal() {
+
+        BigDecimal totalExpense = new BigDecimal(amountTextView.getText().toString()).add(new BigDecimal(expense));
+        balance = new BigDecimal(income).subtract(totalExpense).toString();
+        expense = totalExpense.toString();
+    }
+
+    private void calculateTotalIncomeInBigDecimal() {
+
+        BigDecimal totalIncome = new BigDecimal(amountTextView.getText().toString()).add(new BigDecimal(income));
+        balance = totalIncome.subtract(new BigDecimal(expense)).toString();
+        income = totalIncome.toString();
     }
 
     private void checkIfDotIsPresentOrNot(char[] amount, int index, String number) {
@@ -322,8 +332,38 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         } else {
 
-            text = amountTextView.getText().toString() + number;
-            amountTextView.setText(text);
+            if (amountTextView.getText().toString().contains("+") || amountTextView.getText().toString().contains("-")) {
+
+                if (amount.length == index) {
+
+                    text = amountTextView.getText().toString() + number;
+                    amountTextView.setText(text);
+
+                } else {
+
+                    int size = 0;
+
+                    for (int i = index; i < amount.length; i++) {
+
+                        size++;
+
+                    }
+
+                    if (size != 8) {
+
+                        text = amountTextView.getText().toString() + number;
+                        amountTextView.setText(text);
+
+                    }
+
+                }
+
+            } else if (amountTextView.getText().toString().length() != 8) {
+
+                text = amountTextView.getText().toString() + number;
+                amountTextView.setText(text);
+
+            }
 
         }
 
@@ -331,7 +371,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     private void checkIfDotIsPresentBeforeOrAfterOfOperator(char[] amount, int operatorPos) {
 
-        if (amount[operatorPos - 1] == '.' || operatorPos == amount.length - 1 ||amount[amount.length - 1] == '.') {
+        if (amount[operatorPos - 1] == '.' || operatorPos == amount.length - 1 || amount[amount.length - 1] == '.') {
 
             amountTextView.setText("0");
             showToast("Please, enter a valid amount.");
@@ -369,10 +409,10 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (firstNoString.contains(".") || secondNoString.contains(".")) {
 
-                float firstNo = Float.parseFloat(firstNoString);
-                float secondNo = Float.parseFloat(secondNoString);
-                float addition = firstNo + secondNo;
-                text = addition + operatorSign;
+                BigDecimal firstNo = new BigDecimal(firstNoString);
+                BigDecimal secondNo = new BigDecimal(secondNoString);
+                BigDecimal addition = firstNo.add(secondNo);
+                text = addition.toString() + operatorSign;
 
             } else {
 
@@ -389,25 +429,25 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (firstNoString.contains(".") || secondNoString.contains(".")) {
 
-                float firstNo = Float.parseFloat(firstNoString);
-                float secondNo = Float.parseFloat(secondNoString);
+                BigDecimal firstNo = new BigDecimal(firstNoString);
+                BigDecimal secondNo = new BigDecimal(secondNoString);
 
-                if (firstNo < secondNo) {
+                if (firstNo.compareTo(secondNo) < 0) {
 
                     text = "0";
                     showToast("Please, enter valid amount.");
 
-                } else {
+                }  else {
 
-                    float subtraction = firstNo - secondNo;
+                    BigDecimal subtraction = firstNo.subtract(secondNo);
 
-                    if (subtraction == 0) {
+                    if (subtraction.floatValue() == 0) {
 
                         text = "0";
 
                     } else {
 
-                        text = subtraction + operatorSign;
+                        text = subtraction.toString() + operatorSign;
 
                     }
 
@@ -736,6 +776,19 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
         initialization();
         initializeOnClickListener();
+        cancelCardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                if (!amountTextView.getText().toString().equals("0")) {
+
+                    amountTextView.setText("0");
+
+                }
+
+                return true;
+            }
+        });
     }
 
     @Override
@@ -852,9 +905,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                                     if (amountTextView.getText().toString().contains(".")) {
 
-                                                                        float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                                                        balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                                                        expense = String.valueOf(totalExpense);
+                                                                        calculateTotalExpenseInBigDecimal();
 
                                                                     } else {
 
@@ -874,9 +925,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                             } else if (expense.contains(".")) {
 
-                                                                float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                                                balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                                                expense = String.valueOf(totalExpense);
+                                                                calculateTotalExpenseInBigDecimal();
                                                                 updateTheBEIAmount(balance, expense, income);
 
                                                             } else {
@@ -887,9 +936,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                                 } else if (income.contains(".")) {
 
-                                                                    float totalExpense = Float.parseFloat(expense) + Float.parseFloat(amountTextView.getText().toString());
-                                                                    balance = String.valueOf(Float.parseFloat(income) - totalExpense);
-                                                                    expense = String.valueOf(totalExpense);
+                                                                    calculateTotalExpenseInBigDecimal();
 
                                                                 } else {
 
@@ -911,9 +958,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                                 } else if (income.contains(".")) {
 
-                                                                    float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                                                    balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                                                    income = String.valueOf(totalIncome);
+                                                                    calculateTotalIncomeInBigDecimal();
 
                                                                 } else {
 
@@ -925,9 +970,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                             } else if (expense.contains(".")) {
 
-                                                                float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                                                balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                                                income = String.valueOf(totalIncome);
+                                                                calculateTotalIncomeInBigDecimal();
                                                                 updateTheBEIAmount(balance, expense, income);
 
                                                             } else {
@@ -938,9 +981,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                                 } else if (income.contains(".")) {
 
-                                                                    float totalIncome = Float.parseFloat(income) + Float.parseFloat(amountTextView.getText().toString());
-                                                                    balance = String.valueOf(totalIncome - Float.parseFloat(expense));
-                                                                    income = String.valueOf(totalIncome);
+                                                                    calculateTotalIncomeInBigDecimal();
 
                                                                 } else {
 
@@ -962,40 +1003,36 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                                                         if (amountTextView.getText().toString().contains(".")) {
 
-                                                            float totalExpense = Float.parseFloat(amountTextView.getText().toString());
-                                                            balance = String.valueOf(0 - totalExpense);
-                                                            expense = String.valueOf(totalExpense);
-                                                            income = "0.0";
+                                                            BigDecimal totalExpense = new BigDecimal(amountTextView.getText().toString());
+                                                            balance = new BigDecimal(0).subtract(totalExpense).toString();
+                                                            expense = totalExpense.toString();
 
                                                         } else {
 
                                                             long totalExpense = Long.parseLong(amountTextView.getText().toString());
                                                             balance = String.valueOf(-totalExpense);
                                                             expense = String.valueOf(totalExpense);
-                                                            income = "0";
 
                                                         }
 
+                                                        income = "0";
                                                         updateTheBEIAmount(balance, expense, income);
 
                                                     } else if (categorySharedPreferences.readCategoryName().equals("Income")) {
 
                                                         if (amountTextView.getText().toString().contains(".")) {
 
-                                                            float totalIncome = Float.parseFloat(amountTextView.getText().toString());
-                                                            balance = String.valueOf(totalIncome);
-                                                            income = String.valueOf(totalIncome);
-                                                            expense = "0.0";
+                                                            BigDecimal totalIncome = new BigDecimal(amountTextView.getText().toString());
+                                                            balance = income = totalIncome.toString();
 
                                                         } else {
 
                                                             long totalIncome = Long.parseLong(amountTextView.getText().toString());
-                                                            balance = String.valueOf(totalIncome);
-                                                            income = String.valueOf(totalIncome);
-                                                            expense = "0";
+                                                            balance = income = String.valueOf(totalIncome);
 
                                                         }
 
+                                                        expense = "0";
                                                         updateTheBEIAmount(balance, expense, income);
 
                                                     }
@@ -1043,7 +1080,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             case R.id.cancelCardView:
 
-                if (!amountTextView.getText().equals("0")) {
+                if (!amountTextView.getText().toString().equals("0")) {
 
                     length = amountTextView.getText().length();
 
@@ -1079,7 +1116,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     text = "";
 
-                    if (amountTextView.getText().equals("0")) {
+                    if (amountTextView.getText().toString().equals("0")) {
 
                         text = "0.";
                         amountTextView.setText(text);
@@ -1131,7 +1168,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                             if (secondNoArr[pos] != '.') {
 
-                                text = amountTextView.getText() + ".";
+                                text = amountTextView.getText().toString() + ".";
                                 amountTextView.setText(text);
 
                             }
@@ -1151,7 +1188,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                             if (amount[pos] != '.') {
 
-                                text = amountTextView.getText() + ".";
+                                text = amountTextView.getText().toString() + ".";
                                 amountTextView.setText(text);
 
                             }

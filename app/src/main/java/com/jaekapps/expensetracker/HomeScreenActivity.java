@@ -74,7 +74,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     private TabPosition tabPosition;
     private TextView monthNameTextView, usernameTextView, emailAddressTextView;
 
-    private List<String> arrangeTheMonths(List<String> monthList) {
+    private List<String> sortTheMonths(List<String> monthList) {
 
         int i, month_no, pos = 0;
         int[] month_nos = new int[monthList.size()];
@@ -463,12 +463,12 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                     chosenMonth = data.getStringExtra("month");
                     chosenYear = data.getStringExtra("year");
-                    homeScreenFragment = new HomeScreenFragment(
+                    homeScreenFragment.updateTheViews(
+                            this,
                             data.getStringExtra("category"),
                             data.getStringExtra("month"),
                             data.getStringExtra("year")
                     );
-                    loadTheFragment(homeScreenFragment);
                     showToast("Updated successfully.");
 
                 }
@@ -481,7 +481,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_drawer);
 
@@ -626,24 +625,24 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
             case R.id.home:
                 calendarCardView.setVisibility(View.VISIBLE);
+                changeTheActionBarTitle("");
                 loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
                 monthNameTextView.setText(month);
-                changeTheActionBarTitle("");
                 showTheCategoryMenuItems();
                 break;
 
             case R.id.statistics:
                 calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Statistics");
                 hideTheCategoryMenuItems();
                 loadTheFragmentWithSlideLeftCustomAnimation(statisticsFragment);
-                changeTheActionBarTitle("Statistics");
                 break;
 
             case R.id.budgets:
                 calendarCardView.setVisibility(View.GONE);
+                changeTheActionBarTitle("Budgets");
                 hideTheCategoryMenuItems();
                 loadTheFragmentWithSlideLeftCustomAnimation(budgetsFragment);
-                changeTheActionBarTitle("Budgets");
                 break;
 
             case R.id.calendar:
@@ -731,22 +730,22 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         if (item.getItemId() == R.id.expense) {
 
             chosenCategory = "Expense_Category";
-            homeScreenFragment = new HomeScreenFragment(
+            homeScreenFragment.updateTheViews(
+                    this,
                     "Expense_Category",
                     chosenMonth,
                     chosenYear
             );
-            loadTheFragment(homeScreenFragment);
 
         } else if (item.getItemId() == R.id.income) {
 
             chosenCategory = "Income_Category";
-            homeScreenFragment = new HomeScreenFragment(
+            homeScreenFragment.updateTheViews(
+                    this,
                     "Income_Category",
                     chosenMonth,
                     chosenYear
             );
-            loadTheFragment(homeScreenFragment);
 
         }
 
@@ -852,13 +851,12 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
         }
 
-        homeScreenFragment = new HomeScreenFragment(
+        homeScreenFragment.updateTheViews(
+                this,
                 chosenCategory,
                 chosenMonth,
                 chosenYear
         );
-        loadTheFragment(homeScreenFragment);
-
     }
 
     @Override
@@ -884,6 +882,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                         if (snapshot.exists()) {
 
+                            boolean found = false;
                             int i, checkedItem = 0;
                             monthList.clear();
 
@@ -899,7 +898,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                              }
 
-                             List<String> arrangedMonthList = arrangeTheMonths(monthList);
+                             List<String> arrangedMonthList = sortTheMonths(monthList);
                              final String[] month = new String[monthList.size()];
 
                              for (i = 0; i < arrangedMonthList.size(); i++) {
@@ -913,10 +912,17 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                  if (month[i].equals(current_month)) {
 
                                      checkedItem = i;
+                                     found = true;
                                      break;
                                      
                                  }
                                  
+                             }
+
+                             if (!found) {
+
+                                 checkedItem = -1;
+
                              }
 
                              builder = new AlertDialog.Builder(HomeScreenActivity.this);
@@ -928,12 +934,10 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                      selected_month = month[i];
                                  }
                              });
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                  @Override
                                  public void onClick(DialogInterface dialog, int which) {
 
-                                     //statisticsFragment = new StatisticsFragment(selected_month, current_year);
-                                     //loadTheFragment(statisticsFragment);
                                      statisticsFragment.updateTheFragment(
                                              HomeScreenActivity.this,
                                              tabPosition.getTabPosition(),
@@ -975,6 +979,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                         if (snapshot.exists()) {
 
+                            boolean found = false;
                             int i, checkedItem = 0;
                             yearList.clear();
 
@@ -997,9 +1002,16 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 if (year[i].equals(current_year)) {
 
                                     checkedItem = i;
+                                    found = true;
                                     break;
 
                                 }
+
+                            }
+
+                            if (!found) {
+
+                                checkedItem = -1;
 
                             }
 
@@ -1016,8 +1028,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    //statisticsFragment = new StatisticsFragment(current_month, selected_year);
-                                    //loadTheFragment(statisticsFragment);
                                     statisticsFragment.updateTheFragment(
                                             HomeScreenActivity.this,
                                             tabPosition.getTabPosition(),
@@ -1060,6 +1070,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                         if (snapshot.exists()) {
 
+                            boolean found = false;
                             int i, checkedItem = 0;
                             monthList.clear();
 
@@ -1075,7 +1086,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                             }
 
-                            List<String> arrangedMonthList = arrangeTheMonths(monthList);
+                            List<String> arrangedMonthList = sortTheMonths(monthList);
                             final String[] month = new String[monthList.size()];
 
                             for (i = 0; i < arrangedMonthList.size(); i++) {
@@ -1089,9 +1100,16 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 if (month[i].equals(current_month)) {
 
                                     checkedItem = i;
+                                    found = true;
                                     break;
 
                                 }
+
+                            }
+
+                            if (!found) {
+
+                                checkedItem = -1;
 
                             }
 
@@ -1108,8 +1126,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    //statisticsFragment = new StatisticsFragment(selected_month, current_year);
-                                    //loadTheFragment(statisticsFragment);
                                     statisticsFragment.updateTheFragment(
                                             HomeScreenActivity.this,
                                             tabPosition.getTabPosition(),
@@ -1151,6 +1167,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                         if (snapshot.exists()) {
 
+                            boolean found = false;
                             int i, checkedItem = 0;
                             yearList.clear();
 
@@ -1173,9 +1190,16 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 if (year[i].equals(current_year)) {
 
                                     checkedItem = i;
+                                    found = true;
                                     break;
 
                                 }
+
+                            }
+
+                            if (!found) {
+
+                                checkedItem = -1;
 
                             }
 
@@ -1192,8 +1216,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    //statisticsFragment = new StatisticsFragment(current_month, selected_year);
-                                    //loadTheFragment(statisticsFragment);
                                     statisticsFragment.updateTheFragment(
                                             HomeScreenActivity.this,
                                             tabPosition.getTabPosition(),

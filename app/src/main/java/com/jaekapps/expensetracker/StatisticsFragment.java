@@ -2,6 +2,7 @@ package com.jaekapps.expensetracker;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class StatisticsFragment extends Fragment {
 
         balanceFragment = new BalanceFragment(month, year);
         cashFlowFragment = new CashFlowFragment(month, year);
-        SpendingFragment spendingFragment = new SpendingFragment();
+        SpendingFragment spendingFragment = new SpendingFragment(month, year);
         tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager viewPager = view.findViewById(R.id.viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager());
@@ -42,6 +43,7 @@ public class StatisticsFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorTabIndicator, view.getContext().getTheme()));
         tabPosition = new TabPosition(view.getContext());
+        tabPosition.setTabPosition(0);
     }
 
     public void updateTheFragment(Context context, int position, String month, String year) {

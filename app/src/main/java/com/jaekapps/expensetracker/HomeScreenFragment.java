@@ -34,6 +34,7 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     private BEIAmount beiAmount;
     private CardView beiAmountCardView, expenseCardView, incomeCardView;
     private DatabaseReference userDBReference;
+    private DateOfEachMonthRecyclerAdapter dateOfEachMonthRecyclerAdapter;
     private FloatingActionButton expenseIncomeFab;
     private HomeScreenFragmentListener homeScreenFragmentListener;
     private LinearLayout noTransactionLayout;
@@ -55,8 +56,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
         char[] amt;
         int flag = 0, i, pos = 0;
-        String new_amount = "";
-        StringBuilder amountBuilder = new StringBuilder(new_amount);
+        String new_amount;
+        StringBuilder amountBuilder = new StringBuilder();
 
         if (amount.contains(".")) {
 
@@ -69,36 +70,50 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
                     pos = i;
                     break;
 
-                }
-
-            }
-
-            for (i = pos - 1; i >= 0; i--) {
-
-                flag++;
-
-                if (flag <= 3) {
+                } else {
 
                     amountBuilder.append(amt[i]);
 
-                } else {
-
-                    amountBuilder.append(",").append(amt[i]);
-                    flag = 0;
-
                 }
-
-            }
-
-            amountBuilder.reverse();
-
-            for (i = pos; i < amt.length; i++) {
-
-                amountBuilder.append(amt[i]);
 
             }
 
             new_amount = amountBuilder.toString();
+            amountBuilder = new StringBuilder();
+
+            if (new_amount.length() >= 4) {
+
+                amt = new_amount.toCharArray();
+                char[] new_amt = amount.toCharArray();
+
+                for (i = amt.length - 1; i >= 0; i--) {
+
+                    if (flag < 3) {
+
+                        amountBuilder.append(amt[i]);
+                        flag++;
+
+                    } else {
+
+                        amountBuilder.append(',');
+                        amountBuilder.append(amt[i]);
+                        flag = 1;
+
+                    }
+
+                }
+
+                amountBuilder.reverse();
+
+                for (i = pos; i < new_amt.length; i++) {
+
+                    amountBuilder.append(new_amt[i]);
+
+                }
+
+                new_amount = amountBuilder.toString();
+
+            }
 
         } else {
 
@@ -106,16 +121,16 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
             for (i = amt.length - 1; i >= 0; i--) {
 
-                flag++;
-
-                if (flag <= 3) {
+                if (flag < 3) {
 
                     amountBuilder.append(amt[i]);
+                    flag++;
 
                 } else {
 
-                    amountBuilder.append(",").append(amt[i]);
-                    flag = 0;
+                    amountBuilder.append(",");
+                    amountBuilder.append(amt[i]);
+                    flag = 1;
 
                 }
 
@@ -187,13 +202,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
         void showIncomePercentage();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void updateTheViews(final Context context, final String category, String month, String year) {
 
-        final View view = inflater.inflate(R.layout.home_screen_fragment, container, false);
-        initializeViews(view);
-        initializeOnClickListener();
         userDBReference.child(userId)
                 .child("BEIAmount")
                 .child(year)
@@ -206,35 +216,26 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                             beiAmount = snapshot.getValue(BEIAmount.class);
                             beiAmountCardView.setVisibility(View.VISIBLE);
-                            categoryLayout.setVisibility(View.VISIBLE);
-                            String category_title = "";
-
-                            if (category.equals("Expense_Category")) {
-
-                                category_title = view.getContext()
-                                        .getString(R.string.category) + " - " + view.getContext().getString(R.string.expenses);
-
-                            } else if (category.equals("Income_Category")) {
-
-                                category_title = view.getContext()
-                                        .getString(R.string.category) + " - " + view.getContext().getString(R.string.income);
-
-                            }
-
-                            categoryTextView.setText(category_title);
                             loadingProgressbar.setVisibility(View.GONE);
 
                             if (beiAmount != null) {
 
-                                beiAmount.setBalance(putComma(beiAmount.getBalance()));
-                                beiAmount.setExpense(putComma(beiAmount.getExpense()));
-                                beiAmount.setIncome(putComma(beiAmount.getIncome()));
+                                beiAmount.setBalance(context.getResources()
+                                        .getString(R.string.rupees) + putComma(beiAmount.getBalance()));
+                                beiAmount.setExpense(context.getResources()
+                                        .getString(R.string.rupees) + putComma(beiAmount.getExpense()));
+                                beiAmount.setIncome(context.getResources()
+                                        .getString(R.string.rupees) + putComma(beiAmount.getIncome()));
                                 balanceTextView.setText(beiAmount.getBalance());
                                 expenseTextView.setText(beiAmount.getExpense());
                                 incomeTextView.setText(beiAmount.getIncome());
 
-
                             }
+
+                        } else {
+
+                            beiAmountCardView.setVisibility(View.GONE);
+                            noTransactionLayout.setVisibility(View.VISIBLE);
 
                         }
 
@@ -256,7 +257,24 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                         if (snapshot.exists()) {
 
+                            categoryLayout.setVisibility(View.VISIBLE);
                             dateList.clear();
+                            noTransactionLayout.setVisibility(View.GONE);
+                            String category_title = "";
+
+                            if (category.equals("Expense_Category")) {
+
+                                category_title = context
+                                        .getString(R.string.category) + " - " + context.getString(R.string.expenses);
+
+                            } else if (category.equals("Income_Category")) {
+
+                                category_title = context
+                                        .getString(R.string.category) + " - " + context.getString(R.string.income);
+
+                            }
+
+                            categoryTextView.setText(category_title);
 
                             for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
 
@@ -266,11 +284,15 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                             }
 
-                            DateOfEachMonthRecyclerAdapter dateOfEachMonthRecyclerAdapter = new DateOfEachMonthRecyclerAdapter(dateList);
+                            dateOfEachMonthRecyclerAdapter = new DateOfEachMonthRecyclerAdapter(dateList);
                             homeScreenFragmentDateRecyclerView.setAdapter(dateOfEachMonthRecyclerAdapter);
 
                         } else {
 
+                            categoryLayout.setVisibility(View.GONE);
+                            dateList.clear();
+                            dateOfEachMonthRecyclerAdapter = new DateOfEachMonthRecyclerAdapter(dateList);
+                            homeScreenFragmentDateRecyclerView.setAdapter(dateOfEachMonthRecyclerAdapter);
                             loadingProgressbar.setVisibility(View.GONE);
                             noTransactionLayout.setVisibility(View.VISIBLE);
 
@@ -284,6 +306,21 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
                         Log.e("database_error", error.getMessage());
                     }
                 });
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        final View view = inflater.inflate(R.layout.home_screen_fragment, container, false);
+        initializeViews(view);
+        initializeOnClickListener();
+        updateTheViews(
+                view.getContext(),
+                category,
+                month,
+                year
+        );
         return view;
     }
 

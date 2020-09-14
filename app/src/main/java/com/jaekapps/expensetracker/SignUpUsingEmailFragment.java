@@ -18,11 +18,11 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
-public class SignUpUsingEmailFragment extends Fragment {
+public class SignUpUsingEmailFragment extends Fragment implements View.OnClickListener {
 
     private boolean emailAddressStatus = false;
     private boolean passwordStatus = false;
-    private CardView signUpButton;
+    private CardView haveAnAccountCardView, signUpButton;
     private SignUpListener signUpListener;
     private TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText, usernameTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
@@ -104,9 +104,16 @@ public class SignUpUsingEmailFragment extends Fragment {
 
     }
 
+    private void initializeOnClickListener() {
+
+        haveAnAccountCardView.setOnClickListener(this);
+        signUpButton.setOnClickListener(this);
+    }
+
     private void initializeViews(View view) {
 
         emailAddressTextInputEditText = view.findViewById(R.id.emailAddressTextInputEditText);
+        haveAnAccountCardView = view.findViewById(R.id.haveAnAccountCardView);
         passwordTextInputEditText = view.findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = view.findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
@@ -160,6 +167,7 @@ public class SignUpUsingEmailFragment extends Fragment {
 
     public interface SignUpListener {
 
+        void loadSignInUsingEmailFragment();
         void signUp();
     }
 
@@ -184,6 +192,7 @@ public class SignUpUsingEmailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.signupusingemailfragment, container, false);
         initializeViews(view);
+        initializeOnClickListener();
         passwordTextInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -201,13 +210,6 @@ public class SignUpUsingEmailFragment extends Fragment {
 
             }
         });
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                signUpListener.signUp();
-            }
-        });
         return view;
     }
 
@@ -222,6 +224,23 @@ public class SignUpUsingEmailFragment extends Fragment {
         } catch (Exception e) {
 
             throw new ClassCastException(context.toString() + " must implement SignUpListener.");
+
+        }
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.haveAnAccountCardView:
+                signUpListener.loadSignInUsingEmailFragment();
+                break;
+
+            case R.id.signUpButton:
+                signUpListener.signUp();
+                break;
 
         }
 

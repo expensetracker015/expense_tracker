@@ -193,6 +193,16 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
     }
 
+    private void changeTheToolbarTitle(String title) {
+
+        if (getSupportActionBar() != null) {
+
+            getSupportActionBar().setTitle(title);
+
+        }
+
+    }
+
     private void goToHomeScreenActivity() {
 
         signInUsingEmailConfigActivity.setSignInUsingEmailStatus(true);
@@ -226,11 +236,26 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
         setSupportActionBar(toolbar);
         userDBReference = FirebaseDatabase.getInstance().getReference("User");
         userIdConfigActivity = new UserIdConfigActivity(this);
+
+        if (getSupportActionBar() != null) {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        }
+
     }
 
     private void loadTheFragment(Fragment fragment) {
 
         getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit();
+    }
+
+    private void loadTheFragmentWithSlideLeftCustomAnimation(Fragment fragment) {
+
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.fragment_slide_left_enter, R.animator.fragment_slide_left_exit)
                 .replace(R.id.fragmentContainer, fragment)
                 .commit();
     }
@@ -259,21 +284,15 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
             }
 
-            if (getSupportActionBar() != null) {
+            if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign In")) {
 
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                changeTheToolbarTitle("Sign In Using Email");
+                loadTheFragment(signInUsingEmailFragment);
 
-                if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign In")) {
+            } else if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign Up")) {
 
-                    getSupportActionBar().setTitle("Sign In Using Email");
-                    loadTheFragment(signInUsingEmailFragment);
-
-                } else if (signInOrSignUpModeConfigActivity.getModeOfSignIn().equals("Sign Up")) {
-
-                    getSupportActionBar().setTitle("Sign Up Using Email");
-                    loadTheFragment(signUpUsingEmailFragment);
-
-                }
+                changeTheToolbarTitle("Sign Up Using Email");
+                loadTheFragment(signUpUsingEmailFragment);
 
             }
 
@@ -291,7 +310,6 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
         }
 
         return true;
-
     }
 
     @Override
@@ -304,6 +322,20 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     public void forgotPassword() {
 
         forgotPasswordDialogBox.show(getSupportFragmentManager(), "forgot_password");
+    }
+
+    @Override
+    public void loadSignInUsingEmailFragment() {
+
+        changeTheToolbarTitle("Sign In Using Email");
+        loadTheFragmentWithSlideLeftCustomAnimation(signInUsingEmailFragment);
+    }
+
+    @Override
+    public void loadSignUpUsingEmailFragment() {
+
+        changeTheToolbarTitle("Sign Up Using Email");
+        loadTheFragmentWithSlideLeftCustomAnimation(signUpUsingEmailFragment);
     }
 
     @Override

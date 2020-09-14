@@ -205,11 +205,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="0"
-                android:layout_row="0"
                 android:layout_columnWeight="1"
+                android:layout_row="0"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -217,6 +219,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/seven"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -228,11 +231,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="1"
-                android:layout_row="0"
                 android:layout_columnWeight="1"
+                android:layout_row="0"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -240,6 +245,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/eight"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -251,11 +257,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="2"
-                android:layout_row="0"
                 android:layout_columnWeight="1"
+                android:layout_row="0"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -263,6 +271,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/nine"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -278,7 +287,9 @@
                 android:layout_columnWeight="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -314,11 +325,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="2"
-                android:layout_row="1"
                 android:layout_columnWeight="1"
+                android:layout_row="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -326,6 +339,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/six"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -341,7 +355,9 @@
                 android:layout_columnWeight="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -349,6 +365,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/five"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -360,11 +377,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="0"
-                android:layout_row="1"
                 android:layout_columnWeight="1"
+                android:layout_row="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -372,6 +391,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/four"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -383,11 +403,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="3"
-                android:layout_row="1"
                 android:layout_columnWeight="1"
+                android:layout_row="1"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <ImageView
                     android:layout_width="30dp"
@@ -405,11 +427,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="0"
-                android:layout_row="2"
                 android:layout_columnWeight="1"
+                android:layout_row="2"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -417,6 +441,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/one"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -428,11 +453,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="1"
-                android:layout_row="2"
                 android:layout_columnWeight="1"
+                android:layout_row="2"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -440,6 +467,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/two"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -451,11 +479,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="2"
-                android:layout_row="2"
                 android:layout_columnWeight="1"
+                android:layout_row="2"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -463,6 +493,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/three"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -474,11 +505,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="3"
-                android:layout_row="2"
                 android:layout_columnWeight="1"
+                android:layout_row="2"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <ImageView
                     android:layout_width="30dp"
@@ -496,11 +529,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="0"
-                android:layout_row="3"
                 android:layout_columnWeight="1"
+                android:layout_row="3"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -508,6 +543,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/dot"
+                    android:textColor="#000000"
                     android:textSize="40sp">
 
                 </TextView>
@@ -519,11 +555,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="1"
-                android:layout_row="3"
                 android:layout_columnWeight="1"
+                android:layout_row="3"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -531,6 +569,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/zero"
+                    android:textColor="#000000"
                     android:textSize="30sp">
 
                 </TextView>
@@ -542,11 +581,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="2"
-                android:layout_row="3"
                 android:layout_columnWeight="1"
+                android:layout_row="3"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <ImageView
                     android:layout_width="30dp"
@@ -564,11 +605,13 @@
                 android:layout_width="40dp"
                 android:layout_height="80dp"
                 android:layout_column="3"
-                android:layout_row="3"
                 android:layout_columnWeight="1"
+                android:layout_row="3"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                app:cardCornerRadius="0dp"
+                app:cardElevation="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
