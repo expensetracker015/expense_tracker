@@ -29,7 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,10 +40,11 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
     private ArrayList<String> monthList;
     private BalanceFragmentListener balanceFragmentListener;
     private BEIAmount beiAmount;
+    private BigDecimal total_balance_amount;
+    private BigDecimal[] balance_amount;
     private CardView monthListCardView, yearListCardView;
     private DatabaseReference userDBReference;
-    private float total_balance_amount;
-    private float[] balance_amount, balance_amount_percentage;
+    private float[] balance_amount_percentage;
     private int[] balance_colors;
     private PieChart balancePieChart;
     private PieData balancePieData;
@@ -522,7 +523,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                 }
 
                                 List<String> arrangedMonthList = sortTheMonths(monthList);
-                                balance_amount = new float[arrangedMonthList.size()];
+                                balance_amount = new BigDecimal[arrangedMonthList.size()];
 
                                 for (int i = 0; i < arrangedMonthList.size(); i++) {
 
@@ -541,11 +542,11 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                             }
 
-                                            balance_amount[i] = Float.parseFloat(balanceBuilder.toString());
+                                            balance_amount[i] = new BigDecimal(balanceBuilder.toString());
 
                                         } else {
 
-                                            balance_amount[i] = Float.parseFloat(beiAmount.getBalance());
+                                            balance_amount[i] = new BigDecimal(beiAmount.getBalance());
 
                                         }
 
@@ -555,17 +556,16 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                 for (int i = 0; i < balance_amount.length - 1; i++) {
 
-                                    total_balance_amount = balance_amount[i] + balance_amount[i + 1];
+                                    total_balance_amount = balance_amount[i].add(balance_amount[i + 1]);
 
                                 }
 
                                 balance_amount_percentage = new float[balance_amount.length];
-                                DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
                                 for (int i = 0; i < balance_amount.length; i++) {
 
-                                    double percentage = (balance_amount[i] / total_balance_amount) * 100;
-                                    balance_amount_percentage[i] = Float.parseFloat(decimalFormat.format(percentage));
+                                    BigDecimal percentage = (balance_amount[i].divide(total_balance_amount, 3)).multiply(new BigDecimal(100));
+                                    balance_amount_percentage[i] = Float.parseFloat(percentage.toString());
                                     monthArrayList.add(new PieEntry(balance_amount_percentage[i], arrangedMonthList.get(i)));
 
                                 }

@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +43,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     private AppCompatButton showMoreButton;
     private ArrayList<Float> itemAmountPercentageList;
     private ArrayList<PieEntry> expenseItemList;
-    private ArrayList<String> amountList, itemList;
+    private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList;
     private BEIAmount beiAmount;
     private CardView monthListCardView, yearListCardView;
     private DatabaseReference userDBReference;
@@ -61,6 +62,45 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
         this.month = month;
         this.year = year;
+    }
+
+    private ArrayList<String> makeAListOfTop5Categories(ArrayList<String> amountList) {
+
+        ArrayList<String> tempList = new ArrayList<>();
+        BigDecimal temp;
+        BigDecimal[] amount = new BigDecimal[amountList.size()];
+
+        for (int i = 0; i < amountList.size(); i++) {
+
+            amount[i] = new BigDecimal(amountList.get(i));
+
+        }
+
+        for (int i = 0; i < amount.length; i++) {
+
+            for (int j = i + 1; j < amount.length; j++) {
+
+                if (amount[i].compareTo(amount[j]) < 0) {
+
+                    temp = amount[j];
+                    amount[j] = amount[i];
+                    amount[i] = temp;
+
+                }
+
+            }
+
+        }
+
+        tempList.clear();
+
+        for (int i = 0; i < 5; i++) {
+
+            tempList.add(amount[i].toString());
+
+        }
+
+        return tempList;
     }
 
     private String convertToFullName(String month) {
@@ -292,23 +332,9 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         colors = new int[] {
                 getResources().getColor(R.color.amber, Objects.requireNonNull(getActivity()).getTheme()),
                 getResources().getColor(R.color.blue, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.blue_gray, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.brown, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.cyan, Objects.requireNonNull(getActivity()).getTheme()),
                 getResources().getColor(R.color.deep_orange, Objects.requireNonNull(getActivity()).getTheme()),
                 getResources().getColor(R.color.deep_purple, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.gray, Objects.requireNonNull(getActivity()).getTheme()),
                 getResources().getColor(R.color.green, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.indigo, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.light_blue, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.light_green, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.lime, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.orange, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.pink, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.purple, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.red, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.teal, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.yellow, Objects.requireNonNull(getActivity()).getTheme())
         };
         currentMonth = calendar.get(Calendar.MONTH);
         currentMonth = currentMonth + 1;
@@ -318,6 +344,8 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         expenseItemRecyclerView = view.findViewById(R.id.expenseItemRecyclerView);
         itemAmountPercentageList = new ArrayList<>();
         itemList = new ArrayList<>();
+        modifiedAmountList = new ArrayList<>();
+        modifiedItemList = new ArrayList<>();
         monthListCardView = view.findViewById(R.id.monthListCardView);
         monthTitleTextView = view.findViewById(R.id.monthTitleTextView);
         natureOfSpendingAmountTextView = view.findViewById(R.id.natureOfSpendingAmountTextView);
@@ -332,6 +360,27 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         userId = userIdConfigActivity.getUserID();
         yearListCardView = view.findViewById(R.id.yearListCardView);
         yearTitleTextView = view.findViewById(R.id.yearTitleTextView);
+    }
+
+    private void sortTheIndexList(ArrayList<Integer> indexList) {
+
+        int temp;
+
+        for (int i = 0; i < indexList.size(); i++) {
+
+            for (int j = i + 1; j < indexList.size(); j++) {
+
+                if (indexList.get(i) > indexList.get(j)) {
+
+                    temp = indexList.get(i);
+                    indexList.set(i, indexList.get(j));
+                    indexList.set(j, temp);
+
+                }
+
+            }
+
+        }
     }
 
     public interface SpendingFragmentListener {
@@ -459,20 +508,20 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                     } else {
 
-                                        double amount_percentage;
-                                        float total_expense_amount = 0;
+                                        BigDecimal amount_percentage;
+                                        BigDecimal total_expense_amount = new BigDecimal(0);
                                         final float[] item_amount_percentage = new float[amountList.size()];
 
                                         for (int i = 0; i < amountList.size(); i++) {
 
-                                            total_expense_amount = total_expense_amount + Float.parseFloat(amountList.get(i));
+                                            total_expense_amount = total_expense_amount.add(new BigDecimal(amountList.get(i)));
 
                                         }
 
                                         for (int i = 0; i < amountList.size(); i++) {
 
-                                            amount_percentage = (Float.parseFloat(amountList.get(i)) / total_expense_amount) * 100;
-                                            item_amount_percentage[i] = Float.parseFloat(new DecimalFormat("##.##").format(amount_percentage));
+                                            amount_percentage = new BigDecimal(amountList.get(i)).divide(total_expense_amount, 3).multiply(new BigDecimal(100));
+                                            item_amount_percentage[i] = Float.parseFloat(amount_percentage.toString());
 
                                         }
 
@@ -493,7 +542,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                         spendingCategoryPieChart.getDescription().setEnabled(false);
                                         spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
-                                        spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
                                         spendingCategoryPieChart.setDrawEntryLabels(false);
                                         spendingCategoryPieChart.setDrawHoleEnabled(true);
                                         spendingCategoryPieChart.setHoleRadius(65);
@@ -513,7 +562,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         spendingCategoryPieChart.setData(expensesPieData);
                                         expensesPieData.setValueTextColor(Color.WHITE);
                                         expensesPieData.setValueTextSize(10f);
-                                        final float finalTotal_expense_amount = total_expense_amount;
+                                        final BigDecimal finalTotal_expense_amount = total_expense_amount;
                                         spendingCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                                             @Override
                                             public void onValueSelected(Entry e, Highlight h) {
@@ -525,7 +574,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                             @Override
                                             public void onNothingSelected() {
 
-                                                spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(finalTotal_expense_amount)));
+                                                spendingCategoryPieChart.setCenterText("All\n" + month + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
                                             }
                                         });
 
@@ -569,7 +618,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                 for (int i = 0; i < itemList.size(); i++) {
 
                                     alreadyAdded = false;
-                                    float amount = 0;
+                                    BigDecimal amount = new BigDecimal(0);
                                     item = itemList.get(i);
 
                                     for (int j = 0; j < itemList.size(); j++) {
@@ -585,7 +634,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                                 if (item.equals(itemList.get(j))) {
 
-                                                    amount = amount + Float.parseFloat(amountList.get(j));
+                                                    amount = amount.add(new BigDecimal(amountList.get(i)));
 
                                                 }
 
@@ -593,10 +642,9 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         } else {
 
-
                                             if (item.equals(itemList.get(j))) {
 
-                                                amount = amount + Float.parseFloat(amountList.get(j));
+                                                amount = amount.add(new BigDecimal(amountList.get(i)));
 
                                             }
 
@@ -607,26 +655,64 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                     if (!alreadyAdded) {
 
                                         itemHashMap.put(item, "Added");
-                                        newAmountList.add(String.valueOf(amount));
+                                        newAmountList.add(amount.toString());
                                         newItemList.add(item);
 
                                     }
 
                                 }
 
-                                double amount_percentage;
-                                float total_expense_amount = 0;
-                                final float[] item_amount_percentage = new float[newAmountList.size()];
+                                ArrayList<Integer> indexList = new ArrayList<>();
 
-                                for (int i = 0; i < newAmountList.size(); i++) {
+                                if (newAmountList.size() > 5 && newItemList.size() > 5) {
 
-                                    total_expense_amount = total_expense_amount + Float.parseFloat(newAmountList.get(i));
+                                    modifiedAmountList = makeAListOfTop5Categories(newAmountList);
+
+                                    for (int i = 0; i < modifiedAmountList.size(); i++) {
+
+                                        for (int j = 0; j < newAmountList.size(); j++) {
+
+                                            if (modifiedAmountList.get(i).equals(newAmountList.get(j))) {
+
+                                                indexList.add(j);
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    modifiedAmountList.clear();
+                                    modifiedItemList.clear();
+                                    sortTheIndexList(indexList);
+
+                                    for (int i = 0; i < indexList.size(); i++) {
+
+                                        modifiedAmountList.add(newAmountList.get(indexList.get(i)));
+                                        modifiedItemList.add(newItemList.get(indexList.get(i)));
+
+                                    }
+
+                                } else {
+
+                                    modifiedAmountList = newAmountList;
+                                    modifiedItemList = newItemList;
 
                                 }
 
-                                for (int i = 0; i < newAmountList.size(); i++) {
+                                BigDecimal amount_percentage;
+                                BigDecimal total_expense_amount = new BigDecimal(0);
+                                final float[] item_amount_percentage = new float[modifiedAmountList.size()];
 
-                                    amount_percentage = (Float.parseFloat(newAmountList.get(i)) / total_expense_amount) * 100;
+                                for (int i = 0; i < modifiedAmountList.size(); i++) {
+
+                                    total_expense_amount = total_expense_amount.add(new BigDecimal(modifiedAmountList.get(i)));
+
+                                }
+
+                                for (int i = 0; i < modifiedAmountList.size(); i++) {
+
+                                    amount_percentage = new BigDecimal(modifiedAmountList.get(i)).divide(total_expense_amount, 3).multiply(new BigDecimal(100));
                                     item_amount_percentage[i] = Float.parseFloat(new DecimalFormat("##.##").format(amount_percentage));
 
                                 }
@@ -639,25 +725,25 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 }
 
-                                for (int i = 0; i < newAmountList.size(); i++) {
+                                for (int i = 0; i < modifiedAmountList.size(); i++) {
 
-                                    newAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(newAmountList.get(i)));
+                                    modifiedAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(modifiedAmountList.get(i)));
 
                                 }
 
                                 spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                 spendingCategoryPieChart.getDescription().setEnabled(false);
                                 spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
-                                spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
                                 spendingCategoryPieChart.setDrawEntryLabels(false);
                                 spendingCategoryPieChart.setDrawHoleEnabled(true);
                                 spendingCategoryPieChart.setHoleRadius(65);
                                 spendingCategoryPieChart.setRotationEnabled(false);
                                 expenseItemList.clear();
 
-                                for (int i = 0; i < newItemList.size(); i++) {
+                                for (int i = 0; i < modifiedItemList.size(); i++) {
 
-                                    expenseItemList.add(new PieEntry(item_amount_percentage[i], newItemList.get(i)));
+                                    expenseItemList.add(new PieEntry(item_amount_percentage[i], modifiedItemList.get(i)));
 
                                 }
 
@@ -668,19 +754,19 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                 spendingCategoryPieChart.setData(expensesPieData);
                                 expensesPieData.setValueTextColor(Color.WHITE);
                                 expensesPieData.setValueTextSize(10f);
-                                final float finalTotal_expense_amount = total_expense_amount;
+                                final BigDecimal finalTotal_expense_amount = total_expense_amount;
                                 spendingCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                                     @Override
                                     public void onValueSelected(Entry e, Highlight h) {
 
                                         int index = (int) h.getX();
-                                        spendingCategoryPieChart.setCenterText(newItemList.get(index) + "\n" + newAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
+                                        spendingCategoryPieChart.setCenterText(modifiedItemList.get(index) + "\n" + modifiedAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
                                     }
 
                                     @Override
                                     public void onNothingSelected() {
 
-                                        spendingCategoryPieChart.setCenterText("All\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(finalTotal_expense_amount)));
+                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
                                     }
                                 });
 

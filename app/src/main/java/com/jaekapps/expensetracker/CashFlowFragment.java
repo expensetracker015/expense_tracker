@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -598,7 +599,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                                                         for (int i = 0; i < expenseDateList.size(); i++) {
 
                                                             amountList.clear();
-                                                            float total_expense_amount = 0;
+                                                            BigDecimal total_expense_amount = new BigDecimal(0);
 
                                                             for (DataSnapshot itemSnapshot : snapshot.child(expenseDateList.get(i)).getChildren()) {
 
@@ -608,14 +609,14 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                             for (int j = 0; j < amountList.size(); j++) {
 
-                                                                total_expense_amount = total_expense_amount + Float.parseFloat(amountList.get(j));
+                                                                total_expense_amount = total_expense_amount.add(new BigDecimal(amountList.get(j)));
 
                                                             }
 
-                                                            double percentage = (total_expense_amount / exp) * 100;
+                                                            BigDecimal percentage = total_expense_amount.divide(new BigDecimal(String.valueOf(exp)), 3).multiply(new BigDecimal(100));
                                                             expenseAmountList.add(context.getResources()
                                                                     .getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
-                                                            expense_amount_percentage[i] = Float.parseFloat(decimalFormat.format(percentage));
+                                                            expense_amount_percentage[i] = Float.parseFloat(percentage.toString());
 
                                                         }
 
@@ -738,7 +739,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                                                         for (int i = 0; i < incomeDateList.size(); i++) {
 
                                                             amountList.clear();
-                                                            float total_income_amount = 0;
+                                                            BigDecimal total_income_amount = new BigDecimal(0);
 
                                                             for (DataSnapshot itemSnapshot : snapshot.child(incomeDateList.get(i)).getChildren()) {
 
@@ -748,11 +749,11 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                             for (int j = 0; j < amountList.size(); j++) {
 
-                                                                total_income_amount = total_income_amount + Float.parseFloat(amountList.get(j));
+                                                                total_income_amount = total_income_amount.add(new BigDecimal(amountList.get(j)));
 
                                                             }
 
-                                                            double percentage = (total_income_amount / inc) * 100;
+                                                            BigDecimal percentage = total_income_amount.divide(new BigDecimal(String.valueOf(inc)), 3).multiply(new BigDecimal(100));
                                                             incomeAmountList.add(context.getResources()
                                                                     .getString(R.string.rupees) + putComma(String.valueOf(total_income_amount)));
                                                             income_amount_percentage[i] = Float.parseFloat(decimalFormat.format(percentage));
