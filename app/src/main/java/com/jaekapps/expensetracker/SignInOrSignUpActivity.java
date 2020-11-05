@@ -39,6 +39,7 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     private SignInUsingEmailFragment signInUsingEmailFragment;
     private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
+    private SignUpUsingEmailDialogBox signUpUsingEmailDialogBox;
     private SignUpUsingEmailFragment signUpUsingEmailFragment;
     private String mode_of_sign_in, month, userId;
     private UserIdConfigActivity userIdConfigActivity;
@@ -206,7 +207,6 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
         signInUsingEmailConfigActivity.setSignInUsingEmailStatus(true);
         signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
-        signInUsingEmailOrGoogleDialogBox.dismiss();
         userIdConfigActivity.setUserID(userId);
         startActivity(new Intent(SignInOrSignUpActivity.this, HomeScreenActivity.class));
         finishAffinity();
@@ -230,8 +230,9 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
         signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
         signInUsingEmailFragment = new SignInUsingEmailFragment();
-        signUpUsingEmailFragment = new SignUpUsingEmailFragment();
         signInUsingEmailOrGoogleDialogBox = new SignInUsingEmailOrGoogleDialogBox();
+        signUpUsingEmailDialogBox = new SignUpUsingEmailDialogBox();
+        signUpUsingEmailFragment = new SignUpUsingEmailFragment();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         userDBReference = FirebaseDatabase.getInstance().getReference("User");
@@ -369,11 +370,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     @Override
     public void signIn() {
 
+        signInUsingEmailOrGoogleDialogBox.show(getSupportFragmentManager(), "sign_in");
+
         if (checkInternetConnection()) {
 
             if (signInUsingEmailFragment.checkEmailAddress()) {
 
-                signInUsingEmailOrGoogleDialogBox.show(getSupportFragmentManager(), "sign_in");
                 String email_address = signInUsingEmailFragment.getEmailId();
                 String password = signInUsingEmailFragment.getPassword();
                 userId = extractUserId(email_address.toCharArray());
@@ -391,15 +393,16 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
                                 if (task.isSuccessful()) {
 
-                                    showToast("Successfully signed in.");
                                     goToHomeScreenActivity();
+                                    showToast("Successfully signed in.");
 
                                 } else {
 
                                     showToast("Failed to sign in - " + Objects.requireNonNull(task.getException()).getMessage());
-                                    signInUsingEmailOrGoogleDialogBox.dismiss();
 
                                 }
+
+                                signInUsingEmailOrGoogleDialogBox.dismiss();
 
                             }
                         });
@@ -418,11 +421,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     @Override
     public void signUp() {
 
+        signUpUsingEmailDialogBox.show(getSupportFragmentManager(), "sign_up");
+
         if (checkInternetConnection()) {
 
             if (signUpUsingEmailFragment.checkUsername()) {
 
-                signInUsingEmailOrGoogleDialogBox.show(getSupportFragmentManager(), "sign_up");
                 String email_address = signUpUsingEmailFragment.getEmailId();
                 String password = signUpUsingEmailFragment.getPassword();
                 String username = signUpUsingEmailFragment.getUsername();
@@ -470,8 +474,8 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
                                                                             if (task.isSuccessful()) {
 
-                                                                                showToast("Account created successfully.");
                                                                                 goToHomeScreenActivity();
+                                                                                showToast("Account created successfully.");
 
                                                                             } else {
 
@@ -479,12 +483,15 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
                                                                             }
 
+                                                                            signUpUsingEmailDialogBox.dismiss();
+
                                                                         }
                                                                     });
 
                                                         } else {
 
                                                             showToast("Failed to sign up - " + Objects.requireNonNull(task.getException()).getMessage());
+                                                            signUpUsingEmailDialogBox.dismiss();
 
                                                         }
 

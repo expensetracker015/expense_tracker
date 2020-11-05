@@ -39,31 +39,30 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class SpendingFragment extends Fragment implements View.OnClickListener {
+public class EarningFragment extends Fragment implements View.OnClickListener {
 
     int currentMonth;
     private AppCompatButton showMoreButton;
     private ArrayList<Float> itemAmountPercentageList;
-    private ArrayList<Integer> indexList, itemIconList, topCategoriesItemPercetageList;
-    private ArrayList<PieEntry> expenseItemList;
+    private ArrayList<Integer> indexList, itemIconList;
+    private ArrayList<PieEntry> incomeItemList;
     private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList, newAmountList, newItemList;
     private BEIAmount beiAmount;
     private CardView monthListCardView, yearListCardView;
     private DatabaseReference userDBReference;
+    private EarningFragmentListener earningFragmentListener;
     private int currentYear;
     private int[] colors;
-    private PieChart spendingCategoryPieChart;
-    private PieData expensesPieData;
-    private PieDataSet expensesPieDataSet;
-    private RecyclerView expenseItemRecyclerView, topExpenseCategoriesRecyclerView;
-    private SpendingFragmentListener spendingFragmentListener;
-    private String current_month, date, expense, month, year, userId;
-    private TextView monthTitleTextView, natureOfSpendingAmountTextView, natureOfSpendingMonthTextView, spendingAmountTextView,
-            spendingCurrentMonthTextView, yearTitleTextView;
-    private Top5ExpensesRecyclerAdapter top5ExpensesRecyclerAdapter;
-    private TopExpenseCategoriesRecyclerAdapter topExpenseCategoriesRecyclerAdapter;
+    private PieChart earningCategoryPieChart;
+    private PieData incomePieData;
+    private PieDataSet incomePieDataSet;
+    private RecyclerView incomeItemRecyclerView, topIncomeCategoriesRecyclerView;
+    private String current_month, date, income, month, year, userId;
+    private TextView monthTitleTextView, natureOfEarningAmountTextView, natureOfEarningMonthTextView, earningAmountTextView,
+            earningCurrentMonthTextView, yearTitleTextView;
+    private Top5IncomeRecyclerAdapter top5IncomeRecyclerAdapter;
 
-    SpendingFragment(String month, String year) {
+    EarningFragment(String month, String year) {
 
         this.month = month;
         this.year = year;
@@ -127,83 +126,35 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
         switch (item_name) {
 
-            case "Food":
-                icon_id = R.drawable.food_light;
+            case "Salary":
+                icon_id = R.drawable.salary_light;
                 break;
-            case "Bills":
-                icon_id = R.drawable.bills_light;
+            case "Awards":
+                icon_id = R.drawable.awards_light;
                 break;
-            case "Transportation":
-                icon_id = R.drawable.transportation_light;
-                break;
-            case "Home":
-                icon_id = R.drawable.home_light;
-                break;
-            case "Car":
-                icon_id = R.drawable.car_light;
-                break;
-            case "Entertainment":
-                icon_id = R.drawable.entertainment_light;
-                break;
-            case "Shopping":
-                icon_id = R.drawable.shopping_light;
-                break;
-            case "Clothing":
-                icon_id = R.drawable.cloth_light;
-                break;
-            case "Insurance":
-                icon_id = R.drawable.insurance_light;
-                break;
-            case "Tax":
-                icon_id = R.drawable.tax_light;
-                break;
-            case "Telephone":
-                icon_id = R.drawable.phone_light;
-                break;
-            case "Cigarette":
-                icon_id = R.drawable.cigarette_light;
-                break;
-            case "Health":
-                icon_id = R.drawable.health_light;
-                break;
-            case "Sports":
-                icon_id = R.drawable.sports_light;
-                break;
-            case "Baby":
-                icon_id = R.drawable.baby_light;
-                break;
-            case "Pet":
-                icon_id = R.drawable.pet_light;
-                break;
-            case "Beauty":
-                icon_id = R.drawable.beauty_light;
-                break;
-            case "Electronics":
-                icon_id = R.drawable.electronics_light;
-                break;
-            case "Wine":
-                icon_id = R.drawable.wine_light;
-                break;
-            case "Vegetables":
-                icon_id = R.drawable.vegetables_light;
-                break;
-            case "Gift":
+            case "Grants":
                 icon_id = R.drawable.gift_light;
                 break;
-            case "Social":
-                icon_id = R.drawable.social_light;
+            case "Sale":
+                icon_id = R.drawable.sale_light;
                 break;
-            case "Travel":
-                icon_id = R.drawable.travel_light;
+            case "Rental":
+                icon_id = R.drawable.home_light;
                 break;
-            case "Education":
-                icon_id = R.drawable.education_light;
+            case "Refunds":
+                icon_id = R.drawable.refunds_light;
                 break;
-            case "Book":
-                icon_id = R.drawable.book_light;
+            case "Coupons":
+                icon_id = R.drawable.coupons_light;
                 break;
-            case "Office":
-                icon_id = R.drawable.office_light;
+            case "Lottery":
+                icon_id = R.drawable.lottery_light;
+                break;
+            case "Dividends":
+                icon_id = R.drawable.dividends_light;
+                break;
+            case "Investments":
+                icon_id = R.drawable.investments_light;
                 break;
             case "Others":
                 icon_id = R.drawable.others_light;
@@ -424,8 +375,8 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
     private void changeMonthNameIfMonthOrYearIsNotSame(String month_info) {
 
-        natureOfSpendingMonthTextView.setText(month_info);
-        spendingCurrentMonthTextView.setText(month_info);
+        natureOfEarningMonthTextView.setText(month_info);
+        earningCurrentMonthTextView.setText(month_info);
     }
 
     private void initializeOnClickListener() {
@@ -441,20 +392,23 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         beiAmount = new BEIAmount();
         Calendar calendar = Calendar.getInstance();
         colors = new int[] {
-                getResources().getColor(R.color.amber, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.blue, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.deep_orange, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.deep_purple, Objects.requireNonNull(getActivity()).getTheme()),
-                getResources().getColor(R.color.green, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.indigo, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.red, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.light_blue, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.light_green, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.purple, Objects.requireNonNull(getActivity()).getTheme())
         };
         currentMonth = calendar.get(Calendar.MONTH);
         currentMonth = currentMonth + 1;
         current_month = findMonth(currentMonth);
         currentYear = calendar.get(Calendar.YEAR);
-        expenseItemList = new ArrayList<>();
-        expenseItemRecyclerView = view.findViewById(R.id.expenseItemRecyclerView);
-        expenseItemRecyclerView.setHasFixedSize(true);
-        expenseItemRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        earningAmountTextView = view.findViewById(R.id.earningAmountTextView);
+        earningCategoryPieChart = view.findViewById(R.id.earningCategoryPieChart);
+        earningCurrentMonthTextView = view.findViewById(R.id.earningCurrentMonthTextView);
+        incomeItemList = new ArrayList<>();
+        incomeItemRecyclerView = view.findViewById(R.id.incomeItemRecyclerView);
+        incomeItemRecyclerView.setHasFixedSize(true);
+        incomeItemRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         indexList = new ArrayList<>();
         itemAmountPercentageList = new ArrayList<>();
         itemIconList = new ArrayList<>();
@@ -463,18 +417,12 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         modifiedItemList = new ArrayList<>();
         monthListCardView = view.findViewById(R.id.monthListCardView);
         monthTitleTextView = view.findViewById(R.id.monthTitleTextView);
-        natureOfSpendingAmountTextView = view.findViewById(R.id.natureOfSpendingAmountTextView);
-        natureOfSpendingMonthTextView = view.findViewById(R.id.natureOfSpendingMonthTextView);
+        natureOfEarningAmountTextView = view.findViewById(R.id.natureOfEarningAmountTextView);
+        natureOfEarningMonthTextView = view.findViewById(R.id.natureOfEarningMonthTextView);
         newAmountList = new ArrayList<>();
         newItemList = new ArrayList<>();
         showMoreButton = view.findViewById(R.id.showMoreButton);
-        spendingAmountTextView = view.findViewById(R.id.spendingAmountTextView);
-        spendingCategoryPieChart = view.findViewById(R.id.spendingCategoryPieChart);
-        spendingCurrentMonthTextView = view.findViewById(R.id.spendingCurrentMonthTextView);
-        topCategoriesItemPercetageList = new ArrayList<>();
-        topExpenseCategoriesRecyclerView = view.findViewById(R.id.topExpenseCategoriesRecyclerView);
-        topExpenseCategoriesRecyclerView.setHasFixedSize(true);
-        topExpenseCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        topIncomeCategoriesRecyclerView = view.findViewById(R.id.topIncomeCategoriesRecyclerView);
         userDBReference = FirebaseDatabase.getInstance().getReference("User");
         UserIdConfigActivity userIdConfigActivity = new UserIdConfigActivity(view.getContext());
         userId = userIdConfigActivity.getUserID();
@@ -503,11 +451,11 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public interface SpendingFragmentListener {
+    public interface EarningFragmentListener {
 
-        void showMonthListForSpending(String current_month, String current_year);
-        void showMoreExpensesForSpending(ArrayList<String> amountList, ArrayList<String> itemList);
-        void showYearListForSpending(String current_month, String current_year);
+        void showMonthListForEarning(String current_month, String current_year);
+        void showMoreIncomeForEarning(ArrayList<String> amountList, ArrayList<String> itemList);
+        void showYearListForEarning(String current_month, String current_year);
     }
 
     public void updateTheViews(final Context context, final String month, final String year) {
@@ -552,20 +500,20 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                             if (beiAmount != null) {
 
-                                beiAmount.setExpense(putComma(beiAmount.getExpense()));
-                                expense = context.getResources()
-                                        .getString(R.string.rupees) + beiAmount.getExpense();
-                                natureOfSpendingAmountTextView.setText(expense);
-                                spendingAmountTextView.setText(expense);
+                                beiAmount.setIncome(putComma(beiAmount.getIncome()));
+                                income = context.getResources()
+                                        .getString(R.string.rupees) + beiAmount.getIncome();
+                                earningAmountTextView.setText(income);
+                                natureOfEarningAmountTextView.setText(income);
 
                             }
 
                         } else {
 
-                            expense = context.getResources()
+                            income = context.getResources()
                                     .getString(R.string.rupees) + "0";
-                            natureOfSpendingAmountTextView.setText(expense);
-                            spendingAmountTextView.setText(expense);
+                            earningAmountTextView.setText(income);
+                            natureOfEarningAmountTextView.setText(income);
 
                         }
 
@@ -578,7 +526,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                     }
                 });
         userDBReference.child(userId)
-                .child("Expense_Category")
+                .child("Income_Category")
                 .child(year)
                 .child(month)
                 .addValueEventListener(new ValueEventListener() {
@@ -610,47 +558,37 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                     if (amountList.size() == 1 && itemList.size() == 1) {
 
                                         amountList.set(0, context.getResources().getString(R.string.rupees) + putComma(amountList.get(0)));
-                                        expenseItemList.clear();
+                                        incomeItemList.clear();
                                         itemIconList.clear();
                                         itemIconList = addIconsToIconList(itemList);
+                                        earningCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
+                                        earningCategoryPieChart.getDescription().setEnabled(false);
+                                        earningCategoryPieChart.setCenterText(itemList.get(0) + "\n" + amountList.get(0) + "\n" + "100%");
+                                        earningCategoryPieChart.setDrawEntryLabels(false);
+                                        earningCategoryPieChart.setDrawHoleEnabled(true);
+                                        earningCategoryPieChart.setHoleRadius(65);
+                                        earningCategoryPieChart.setRotationEnabled(false);
+                                        incomeItemList.add(new PieEntry(100f, itemList.get(0)));
+                                        incomePieDataSet = new PieDataSet(incomeItemList, "");
+                                        incomePieDataSet.setColors(colors);
+                                        incomePieDataSet.setDrawValues(false);
+                                        incomePieData = new PieData(incomePieDataSet);
+                                        earningCategoryPieChart.setData(incomePieData);
+                                        incomePieData.setValueTextColor(Color.WHITE);
+                                        incomePieData.setValueTextSize(10f);
                                         showMoreButton.setVisibility(View.GONE);
-                                        spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
-                                        spendingCategoryPieChart.getDescription().setEnabled(false);
-                                        spendingCategoryPieChart.setCenterText(itemList.get(0) + "\n" + amountList.get(0) + "\n" + "100%");
-                                        spendingCategoryPieChart.setDrawEntryLabels(false);
-                                        spendingCategoryPieChart.setDrawHoleEnabled(true);
-                                        spendingCategoryPieChart.setHoleRadius(65);
-                                        spendingCategoryPieChart.setRotationEnabled(false);
-                                        expenseItemList.add(new PieEntry(100f, itemList.get(0)));
-                                        expensesPieDataSet = new PieDataSet(expenseItemList, "");
-                                        expensesPieDataSet.setColors(colors);
-                                        expensesPieDataSet.setDrawValues(false);
-                                        expensesPieData = new PieData(expensesPieDataSet);
-                                        spendingCategoryPieChart.setData(expensesPieData);
-                                        expensesPieData.setValueTextColor(Color.WHITE);
-                                        expensesPieData.setValueTextSize(10f);
-                                        top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
+                                        top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                                 itemIconList,
                                                 amountList,
                                                 itemList,
                                                 context,
                                                 colors
                                         );
-                                        topCategoriesItemPercetageList.clear();
-                                        topCategoriesItemPercetageList.add(100);
-                                        topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
-                                                topCategoriesItemPercetageList,
-                                                amountList,
-                                                itemList,
-                                                context
-                                        );
-                                        topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                                     } else {
 
                                         modifiedAmountList.clear();
                                         modifiedItemList.clear();
-                                        topCategoriesItemPercetageList.clear();
                                         newAmountList = amountList;
                                         newItemList = itemList;
 
@@ -743,66 +681,60 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         }
 
-                                        spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
-                                        spendingCategoryPieChart.getDescription().setEnabled(false);
-                                        spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
-                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
-                                        spendingCategoryPieChart.setDrawEntryLabels(false);
-                                        spendingCategoryPieChart.setDrawHoleEnabled(true);
-                                        spendingCategoryPieChart.setHoleRadius(65);
-                                        spendingCategoryPieChart.setRotationEnabled(false);
-                                        expenseItemList.clear();
+                                        earningCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
+                                        earningCategoryPieChart.getDescription().setEnabled(false);
+                                        earningCategoryPieChart.getLegend().setWordWrapEnabled(true);
+                                        earningCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                        earningCategoryPieChart.setDrawEntryLabels(false);
+                                        earningCategoryPieChart.setDrawHoleEnabled(true);
+                                        earningCategoryPieChart.setHoleRadius(65);
+                                        earningCategoryPieChart.setRotationEnabled(false);
+                                        incomeItemList.clear();
 
                                         for (int i = 0; i < modifiedItemList.size(); i++) {
 
-                                            expenseItemList.add(new PieEntry(item_amount_percentage[i], modifiedItemList.get(i)));
+                                            incomeItemList.add(new PieEntry(item_amount_percentage[i], modifiedItemList.get(i)));
 
                                         }
 
-                                        expensesPieDataSet = new PieDataSet(expenseItemList, "");
-                                        expensesPieDataSet.setColors(colors);
-                                        expensesPieDataSet.setDrawValues(false);
-                                        expensesPieData = new PieData(expensesPieDataSet);
-                                        spendingCategoryPieChart.setData(expensesPieData);
-                                        expensesPieData.setValueTextColor(Color.WHITE);
-                                        expensesPieData.setValueTextSize(10f);
+                                        incomePieDataSet = new PieDataSet(incomeItemList, "");
+                                        incomePieDataSet.setColors(colors);
+                                        incomePieDataSet.setDrawValues(false);
+                                        incomePieData = new PieData(incomePieDataSet);
+                                        earningCategoryPieChart.setData(incomePieData);
+                                        incomePieData.setValueTextColor(Color.WHITE);
+                                        incomePieData.setValueTextSize(10f);
                                         final BigDecimal finalTotal_expense_amount = total_expense_amount;
-                                        spendingCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                                        earningCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                                             @Override
                                             public void onValueSelected(Entry e, Highlight h) {
 
                                                 int index = (int) h.getX();
-                                                spendingCategoryPieChart.setCenterText(modifiedItemList.get(index) + "\n" + modifiedAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
+                                                earningCategoryPieChart.setCenterText(modifiedItemList.get(index) + "\n" + modifiedAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
                                             }
 
                                             @Override
                                             public void onNothingSelected() {
 
-                                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
+                                                earningCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
                                             }
                                         });
                                         itemIconList.clear();
                                         itemIconList = addIconsToIconList(modifiedItemList);
-                                        top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
+                                        top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                                 itemIconList,
                                                 modifiedAmountList,
                                                 modifiedItemList,
                                                 context,
                                                 colors
                                         );
-                                        topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
-                                                topCategoriesItemPercetageList,
-                                                amountList,
-                                                itemList,
-                                                context
-                                        );
-                                        topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                                     }
 
-                                    expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                                    incomeItemRecyclerView.setAdapter(top5IncomeRecyclerAdapter);
 
                                 }
+
 
                             } else {
 
@@ -945,7 +877,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 BigDecimal amount_percentage;
                                 BigDecimal total_expense_amount = new BigDecimal(0);
-                                final float[] item_amount_percentage = new float[newAmountList.size()];
+                                final float[] item_amount_percentage = new float[modifiedAmountList.size()];
 
                                 for (int i = 0; i < newAmountList.size(); i++) {
 
@@ -974,72 +906,72 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 }
 
-                                spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
-                                spendingCategoryPieChart.getDescription().setEnabled(false);
-                                spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
-                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
-                                spendingCategoryPieChart.setDrawEntryLabels(false);
-                                spendingCategoryPieChart.setDrawHoleEnabled(true);
-                                spendingCategoryPieChart.setHoleRadius(65);
-                                spendingCategoryPieChart.setRotationEnabled(false);
-                                expenseItemList.clear();
+                                earningCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
+                                earningCategoryPieChart.getDescription().setEnabled(false);
+                                earningCategoryPieChart.getLegend().setWordWrapEnabled(true);
+                                earningCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                earningCategoryPieChart.setDrawEntryLabels(false);
+                                earningCategoryPieChart.setDrawHoleEnabled(true);
+                                earningCategoryPieChart.setHoleRadius(65);
+                                earningCategoryPieChart.setRotationEnabled(false);
+                                incomeItemList.clear();
 
                                 for (int i = 0; i < modifiedItemList.size(); i++) {
 
-                                    expenseItemList.add(new PieEntry(item_amount_percentage[i], modifiedItemList.get(i)));
+                                    incomeItemList.add(new PieEntry(item_amount_percentage[i], modifiedItemList.get(i)));
 
                                 }
 
-                                expensesPieDataSet = new PieDataSet(expenseItemList, "");
-                                expensesPieDataSet.setColors(colors);
-                                expensesPieDataSet.setDrawValues(false);
-                                expensesPieData = new PieData(expensesPieDataSet);
-                                spendingCategoryPieChart.setData(expensesPieData);
-                                expensesPieData.setValueTextColor(Color.WHITE);
-                                expensesPieData.setValueTextSize(10f);
+                                incomePieDataSet = new PieDataSet(incomeItemList, "");
+                                incomePieDataSet.setColors(colors);
+                                incomePieDataSet.setDrawValues(false);
+                                incomePieData = new PieData(incomePieDataSet);
+                                earningCategoryPieChart.setData(incomePieData);
+                                incomePieData.setValueTextColor(Color.WHITE);
+                                incomePieData.setValueTextSize(10f);
                                 final BigDecimal finalTotal_expense_amount = total_expense_amount;
-                                spendingCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+                                earningCategoryPieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                                     @Override
                                     public void onValueSelected(Entry e, Highlight h) {
 
                                         int index = (int) h.getX();
-                                        spendingCategoryPieChart.setCenterText(modifiedItemList.get(index) + "\n" + modifiedAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
+                                        earningCategoryPieChart.setCenterText(modifiedItemList.get(index) + "\n" + modifiedAmountList.get(index) + "\n" + itemAmountPercentageList.get(index) + "%");
                                     }
 
                                     @Override
                                     public void onNothingSelected() {
 
-                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
+                                        earningCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
                                     }
                                 });
                                 itemIconList = addIconsToIconList(modifiedItemList);
-                                top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
+                                top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                         itemIconList,
                                         modifiedAmountList,
                                         modifiedItemList,
                                         context,
                                         colors
                                 );
-                                expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                                incomeItemRecyclerView.setAdapter(top5IncomeRecyclerAdapter);
 
                             }
 
                         } else {
 
+                            earningCategoryPieChart.setData(null);
+                            earningCategoryPieChart.invalidate();
                             itemIconList.clear();
                             modifiedAmountList.clear();
                             modifiedItemList.clear();
                             showMoreButton.setVisibility(View.GONE);
-                            spendingCategoryPieChart.setData(null);
-                            spendingCategoryPieChart.invalidate();
-                            top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
+                            top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                     itemIconList,
                                     modifiedAmountList,
                                     modifiedItemList,
                                     context,
                                     colors
                             );
-                            expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                            incomeItemRecyclerView.setAdapter(top5IncomeRecyclerAdapter);
 
                         }
 
@@ -1057,7 +989,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.spending_fragment, container, false);
+        View view = inflater.inflate(R.layout.earning_fragment, container, false);
         initializeViews(view);
         initializeOnClickListener();
         updateTheViews(view.getContext(), month, year);
@@ -1070,14 +1002,13 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
         try {
 
-            spendingFragmentListener = (SpendingFragmentListener) context;
+            earningFragmentListener = (EarningFragmentListener) context;
 
         } catch (Exception e) {
 
-            throw new ClassCastException(context.toString() + " must implement SpendingFragmentListener!");
+            throw new ClassCastException(context.toString() + " must implement EarningFragmentListener!");
 
         }
-
     }
 
     @Override
@@ -1086,15 +1017,15 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
 
             case R.id.monthListCardView:
-                spendingFragmentListener.showMonthListForSpending(month, year);
+                earningFragmentListener.showMonthListForEarning(month, year);
                 break;
 
             case R.id.showMoreButton:
-                spendingFragmentListener.showMoreExpensesForSpending(newAmountList, newItemList);
+                earningFragmentListener.showMoreIncomeForEarning(newAmountList, newItemList);
                 break;
 
             case R.id.yearListCardView:
-                spendingFragmentListener.showYearListForSpending(month, year);
+                earningFragmentListener.showYearListForEarning(month, year);
                 break;
 
         }
@@ -1105,6 +1036,6 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     public void onDetach() {
         super.onDetach();
 
-        spendingFragmentListener = null;
+        earningFragmentListener = null;
     }
 }

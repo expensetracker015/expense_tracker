@@ -46,23 +46,25 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeScreenActivity extends AppCompatActivity implements BalanceFragment.BalanceFragmentListener,
-        CashFlowFragment.CashFlowFragmentListener, DatePickerDialogBox.DatePickerListener, HomeScreenFragment.HomeScreenFragmentListener,
-        NavigationView.OnNavigationItemSelectedListener, SpendingFragment.SpendingFragmentListener {
+        CashFlowFragment.CashFlowFragmentListener, DatePickerDialogBox.DatePickerListener, EarningFragment.EarningFragmentListener,
+        HomeScreenFragment.HomeScreenFragmentListener, NavigationView.OnNavigationItemSelectedListener,
+        SpendingFragment.SpendingFragmentListener {
 
-    AlertDialog dialog;
-    AlertDialog.Builder builder;
     int currentMonth, dayOfTheWeek;
+    private AlertDialog dialog;
+    private AlertDialog.Builder builder;
     private BudgetsFragment budgetsFragment;
     private CardView calendarCardView;
     private CircleImageView profilePicImageView;
     private DatabaseReference userDBReference;
     private DatePickerDialogBox datePickerDialogBox;
+    private DrawerLayout drawerLayout;
     private FirebaseUser firebaseUser;
     private FrameLayout fragment_container;
-    private DrawerLayout drawerLayout;
     private GoogleSignInClient googleSignInClient;
     private HomeScreenFragment homeScreenFragment;
     private int currentDay,  currentYear;
+    private int[] expenses_colors, income_colors;
     private List<String> monthList, yearList;
     private Menu popupMenu;
     private NavigationView navigationView;
@@ -73,6 +75,142 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
             selected_year, userId, username;
     private TabPosition tabPosition;
     private TextView monthNameTextView, usernameTextView, emailAddressTextView;
+
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0; i < itemList.size(); i++) {
+
+            itemIconList.add(findTheIcon(itemList.get(i)));
+
+        }
+
+        return itemIconList;
+    }
+
+    private int findTheIcon(String item_name) {
+
+        int icon_id = 0;
+
+        switch (item_name) {
+
+            case "Food":
+                icon_id = R.drawable.food_light;
+                break;
+            case "Bills":
+                icon_id = R.drawable.bills_light;
+                break;
+            case "Transportation":
+                icon_id = R.drawable.transportation_light;
+                break;
+            case "Home":
+                icon_id = R.drawable.home_light;
+                break;
+            case "Car":
+                icon_id = R.drawable.car_light;
+                break;
+            case "Entertainment":
+                icon_id = R.drawable.entertainment_light;
+                break;
+            case "Shopping":
+                icon_id = R.drawable.shopping_light;
+                break;
+            case "Clothing":
+                icon_id = R.drawable.cloth_light;
+                break;
+            case "Insurance":
+                icon_id = R.drawable.insurance_light;
+                break;
+            case "Tax":
+                icon_id = R.drawable.tax_light;
+                break;
+            case "Telephone":
+                icon_id = R.drawable.phone_light;
+                break;
+            case "Cigarette":
+                icon_id = R.drawable.cigarette_light;
+                break;
+            case "Health":
+                icon_id = R.drawable.health_light;
+                break;
+            case "Sports":
+                icon_id = R.drawable.sports_light;
+                break;
+            case "Baby":
+                icon_id = R.drawable.baby_light;
+                break;
+            case "Pet":
+                icon_id = R.drawable.pet_light;
+                break;
+            case "Beauty":
+                icon_id = R.drawable.beauty_light;
+                break;
+            case "Electronics":
+                icon_id = R.drawable.electronics_light;
+                break;
+            case "Wine":
+                icon_id = R.drawable.wine_light;
+                break;
+            case "Vegetables":
+                icon_id = R.drawable.vegetables_light;
+                break;
+            case "Gift":
+                icon_id = R.drawable.gift_light;
+                break;
+            case "Social":
+                icon_id = R.drawable.social_light;
+                break;
+            case "Travel":
+                icon_id = R.drawable.travel_light;
+                break;
+            case "Education":
+                icon_id = R.drawable.education_light;
+                break;
+            case "Book":
+                icon_id = R.drawable.book_light;
+                break;
+            case "Office":
+                icon_id = R.drawable.office_light;
+                break;
+            case "Salary":
+                icon_id = R.drawable.salary_light;
+                break;
+            case "Awards":
+                icon_id = R.drawable.awards_light;
+                break;
+            case "Grants":
+                icon_id = R.drawable.gift_light;
+                break;
+            case "Sale":
+                icon_id = R.drawable.sale_light;
+                break;
+            case "Rental":
+                icon_id = R.drawable.home_light;
+                break;
+            case "Refunds":
+                icon_id = R.drawable.refunds_light;
+                break;
+            case "Coupons":
+                icon_id = R.drawable.coupons_light;
+                break;
+            case "Lottery":
+                icon_id = R.drawable.lottery_light;
+                break;
+            case "Dividends":
+                icon_id = R.drawable.dividends_light;
+                break;
+            case "Investments":
+                icon_id = R.drawable.investments_light;
+                break;
+            case "Others":
+                icon_id = R.drawable.others_light;
+                break;
+
+        }
+
+        return icon_id;
+    }
 
     private List<String> sortTheMonths(List<String> monthList) {
 
@@ -309,6 +447,98 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         return month;
     }
 
+    private String putComma(String amount) {
+
+        char[] amt;
+        int flag = 0, i, pos = 0;
+        String new_amount = "";
+        StringBuilder amountBuilder = new StringBuilder(new_amount);
+
+        if (amount.contains(".")) {
+
+            amt = amount.toCharArray();
+
+            for (i = 0; i < amt.length; i++) {
+
+                if (amt[i] == '.') {
+
+                    pos = i;
+                    break;
+
+                } else {
+
+                    amountBuilder.append(amt[i]);
+
+                }
+
+            }
+
+            new_amount = amountBuilder.toString();
+            amountBuilder = new StringBuilder();
+
+            if (new_amount.length() >= 4) {
+
+                amt = new_amount.toCharArray();
+                char[] new_amt = amount.toCharArray();
+
+                for (i = amt.length - 1; i >= 0; i--) {
+
+                    if (flag < 3) {
+
+                        amountBuilder.append(amt[i]);
+                        flag++;
+
+                    } else {
+
+                        amountBuilder.append(',');
+                        amountBuilder.append(amt[i]);
+                        flag = 1;
+
+                    }
+
+                }
+
+                amountBuilder.reverse();
+
+                for (i = pos; i < new_amt.length; i++) {
+
+                    amountBuilder.append(new_amt[i]);
+
+                }
+
+                new_amount = amountBuilder.toString();
+
+            }
+
+        } else {
+
+            amt = amount.toCharArray();
+
+            for (i = amt.length - 1; i >= 0; i--) {
+
+                if (flag < 3) {
+
+                    amountBuilder.append(amt[i]);
+                    flag++;
+
+                } else {
+
+                    amountBuilder.append(",");
+                    amountBuilder.append(amt[i]);
+                    flag = 1;
+
+                }
+
+            }
+
+            amountBuilder.reverse();
+            new_amount = amountBuilder.toString();
+
+        }
+
+        return new_amount;
+    }
+
     private void changeTheActionBarTitle(String title) {
 
         if (getSupportActionBar() != null) {
@@ -347,6 +577,27 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 String.valueOf(currentYear)
         );
         drawerLayout = findViewById(R.id.drawerLayout);
+        expenses_colors = new int[] {
+                getResources().getColor(R.color.amber, getTheme()),
+                getResources().getColor(R.color.blue, getTheme()),
+                getResources().getColor(R.color.blue_gray, getTheme()),
+                getResources().getColor(R.color.brown, getTheme()),
+                getResources().getColor(R.color.cyan, getTheme()),
+                getResources().getColor(R.color.deep_orange, getTheme()),
+                getResources().getColor(R.color.deep_purple, getTheme()),
+                getResources().getColor(R.color.gray, getTheme()),
+                getResources().getColor(R.color.green, getTheme()),
+                getResources().getColor(R.color.indigo, getTheme()),
+                getResources().getColor(R.color.light_blue, getTheme()),
+                getResources().getColor(R.color.light_green, getTheme()),
+                getResources().getColor(R.color.lime, getTheme()),
+                getResources().getColor(R.color.orange, getTheme()),
+                getResources().getColor(R.color.pink, getTheme()),
+                getResources().getColor(R.color.purple, getTheme()),
+                getResources().getColor(R.color.red, getTheme()),
+                getResources().getColor(R.color.teal, getTheme()),
+                getResources().getColor(R.color.yellow, getTheme())
+        };
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         fragment_container = findViewById(R.id.fragment_container);
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -359,6 +610,27 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 month,
                 String.valueOf(currentYear)
         );
+        income_colors = new int[] {
+                getResources().getColor(R.color.teal, getTheme()),
+                getResources().getColor(R.color.red, getTheme()),
+                getResources().getColor(R.color.purple, getTheme()),
+                getResources().getColor(R.color.pink, getTheme()),
+                getResources().getColor(R.color.orange, getTheme()),
+                getResources().getColor(R.color.light_green, getTheme()),
+                getResources().getColor(R.color.lime, getTheme()),
+                getResources().getColor(R.color.light_blue, getTheme()),
+                getResources().getColor(R.color.indigo, getTheme()),
+                getResources().getColor(R.color.green, getTheme()),
+                getResources().getColor(R.color.gray, getTheme()),
+                getResources().getColor(R.color.amber, getTheme()),
+                getResources().getColor(R.color.blue, getTheme()),
+                getResources().getColor(R.color.blue_gray, getTheme()),
+                getResources().getColor(R.color.brown, getTheme()),
+                getResources().getColor(R.color.cyan, getTheme()),
+                getResources().getColor(R.color.deep_orange, getTheme()),
+                getResources().getColor(R.color.deep_purple, getTheme()),
+                getResources().getColor(R.color.yellow, getTheme())
+        };
         monthList = new ArrayList<>();
         monthNameTextView = findViewById(R.id.monthNameTextView);
         monthNameTextView.setText(month);
@@ -668,7 +940,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.navigation_drawer);
+        setContentView(R.layout.activity_home_screen);
 
         initialization();
 
@@ -1080,9 +1352,57 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
+    public void showMonthListForEarning(String current_month, String current_year) {
+
+        showMonthList(current_month, current_year);
+    }
+
+    @Override
+    public void showMoreIncomeForEarning(ArrayList<String> amountList, ArrayList<String> itemList) {
+
+        for (int i = 0; i < amountList.size(); i++) {
+
+            amountList.set(i, getResources().getString(R.string.rupees) + putComma(amountList.get(i)));
+
+        }
+
+        IncomeItemsListDialogBox incomeItemsListDialogBox = new IncomeItemsListDialogBox(
+                addIconsToIconList(itemList),
+                amountList,
+                itemList,
+                income_colors
+        );
+        incomeItemsListDialogBox.show(getSupportFragmentManager(), "more_income");
+    }
+
+    @Override
+    public void showYearListForEarning(String current_month, String current_year) {
+
+        showYearList(current_month, current_year);
+    }
+
+    @Override
     public void showMonthListForSpending(String current_month, String current_year) {
 
         showMonthList(current_month, current_year);
+    }
+
+    @Override
+    public void showMoreExpensesForSpending(ArrayList<String> amountList, ArrayList<String> itemList) {
+
+        for (int i = 0; i < amountList.size(); i++) {
+
+            amountList.set(i, getResources().getString(R.string.rupees) + putComma(amountList.get(i)));
+
+        }
+
+        ExpenseItemsListDialogBox expenseItemsListDialogBox = new ExpenseItemsListDialogBox(
+                addIconsToIconList(itemList),
+                amountList,
+                itemList,
+                expenses_colors
+        );
+        expenseItemsListDialogBox.show(getSupportFragmentManager(), "more_expenses");
     }
 
     @Override

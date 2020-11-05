@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import java.util.Objects;
+
 public class SignUpUsingEmailDialogBox extends DialogFragment {
 
     SignUpUsingEmailDialogBox() {}
@@ -18,12 +20,10 @@ public class SignUpUsingEmailDialogBox extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getActivity()));
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.signupusingemaildialogbox, null);
         builder.setView(view);
         return builder.create();
-
     }
-
 }

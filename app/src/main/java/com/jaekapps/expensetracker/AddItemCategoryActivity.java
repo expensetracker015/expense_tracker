@@ -7,11 +7,8 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 public class AddItemCategoryActivity extends AppCompatActivity implements ExpenseFragment.ExpenseFragmentListener,
         IncomeFragment.IncomeFragmentListener {
@@ -20,7 +17,6 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     private ExpenseFragment expenseFragment;
     private FrameLayout categoryFragmentContainer;
     private IncomeFragment incomeFragment;
-    private String item_name = "";
     String toolbar_title;
 
     private void initialization() {
@@ -38,6 +34,14 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
         }
 
+    }
+
+    private void goToExpenseIncomeActivity(String item_name) {
+
+        Intent intent = new Intent();
+        intent.putExtra("item_name", item_name);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     private void loadTheFragment(Fragment fragment) {
@@ -93,38 +97,11 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.create_new_user_action_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
 
             finish();
-
-        } else if (item.getItemId() == R.id.saveInformation) {
-
-            if (item_name.length() == 0) {
-
-                Toast.makeText(
-                        this,
-                        "Please, select an item.",
-                        Toast.LENGTH_SHORT
-                ).show();
-
-            } else {
-
-                Intent intent = new Intent();
-                intent.putExtra("item_name", item_name);
-                setResult(RESULT_OK, intent);
-                finish();
-
-            }
 
         }
 
@@ -134,12 +111,12 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     @Override
     public void selectItemFromExpenseCategory(String item_name) {
 
-        this.item_name = item_name;
+        goToExpenseIncomeActivity(item_name);
     }
 
     @Override
     public void selectItemFromIncomeCategory(String item_name) {
 
-        this.item_name = item_name;
+        goToExpenseIncomeActivity(item_name);
     }
 }

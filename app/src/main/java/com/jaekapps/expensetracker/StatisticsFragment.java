@@ -17,6 +17,8 @@ public class StatisticsFragment extends Fragment {
 
     private BalanceFragment balanceFragment;
     private CashFlowFragment cashFlowFragment;
+    private EarningFragment earningFragment;
+    private ReportsFragment reportsFragment;
     private SpendingFragment spendingFragment;
     private String month, year;
     private TabLayout tabLayout;
@@ -32,6 +34,8 @@ public class StatisticsFragment extends Fragment {
 
         balanceFragment = new BalanceFragment(month, year);
         cashFlowFragment = new CashFlowFragment(month, year);
+        earningFragment = new EarningFragment(month, year);
+        reportsFragment = new ReportsFragment();
         spendingFragment = new SpendingFragment(month, year);
         tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager viewPager = view.findViewById(R.id.viewPager);
@@ -39,6 +43,8 @@ public class StatisticsFragment extends Fragment {
         viewPagerAdapter.addFragment(balanceFragment, "BALANCE");
         viewPagerAdapter.addFragment(cashFlowFragment, "CASH-FLOW");
         viewPagerAdapter.addFragment(spendingFragment, "SPENDING");
+        viewPagerAdapter.addFragment(earningFragment, "EARNING");
+        viewPagerAdapter.addFragment(reportsFragment, "REPORTS");
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorTabIndicator, view.getContext().getTheme()));
@@ -59,6 +65,10 @@ public class StatisticsFragment extends Fragment {
         } else if (position == 2) {
 
             spendingFragment.updateTheViews(context, month, year);
+
+        } else if (position == 3) {
+
+            earningFragment.updateTheViews(context, month, year);
 
         }
 

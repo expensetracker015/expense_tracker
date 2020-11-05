@@ -150,7 +150,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 app:cardBackgroundColor="@color/colorExpenseIncomeCategoryCardView"
-                app:cardCornerRadius="7dp"
+                app:cardCornerRadius="5dp"
                 app:cardElevation="0dp">
 
                 <LinearLayout

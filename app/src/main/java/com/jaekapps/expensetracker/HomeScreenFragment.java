@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -183,8 +184,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
         expenseIncomeFab = view.findViewById(R.id.expenseIncomeFab);
         expenseTextView = view.findViewById(R.id.expenseTextView);
         homeScreenFragmentDateRecyclerView = view.findViewById(R.id.homeScreenFragmentDateRecyclerView);
-        homeScreenFragmentDateRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         homeScreenFragmentDateRecyclerView.setHasFixedSize(true);
+        homeScreenFragmentDateRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         incomeCardView = view.findViewById(R.id.incomeCardView);
         incomeTextView = view.findViewById(R.id.incomeTextView);
         loadingProgressbar = view.findViewById(R.id.loadingProgressbar);
@@ -236,6 +237,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                                 } else {
 
+                                    Log.i("balance", String.valueOf(Float.parseFloat(beiAmount.getBalance())));
+                                    Log.i("bal", new BigDecimal(beiAmount.getBalance()).toString());
                                     beiAmount.setBalance(context.getResources()
                                             .getString(R.string.rupees) + putComma(beiAmount.getBalance()));
 

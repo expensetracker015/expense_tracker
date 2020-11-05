@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#EEEEEE">
 
     <androidx.core.widget.NestedScrollView
@@ -18,6 +17,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cv1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="10dp"
@@ -36,7 +36,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
-                        android:text="@string/spending_by_categories"
+                        android:text="@string/earning_by_categories"
                         android:textSize="20sp"
                         android:textColor="#000000">
 
@@ -46,7 +46,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
-                        android:text="@string/where_does_my_money_go"
+                        android:text="@string/where_does_money_come_from"
                         android:textSize="16sp">
 
                     </TextView>
@@ -60,7 +60,7 @@
                     </View>
 
                     <TextView
-                        android:id="@+id/spendingCurrentMonthTextView"
+                        android:id="@+id/earningCurrentMonthTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
@@ -70,7 +70,7 @@
                     </TextView>
 
                     <TextView
-                        android:id="@+id/spendingAmountTextView"
+                        android:id="@+id/earningAmountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
@@ -80,7 +80,7 @@
                     </TextView>
 
                     <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/spendingCategoryPieChart"
+                        android:id="@+id/earningCategoryPieChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
                         android:layout_gravity="center"
@@ -93,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
-                        android:text="@string/top_5_expenses"
+                        android:text="@string/top_5_income"
                         android:textSize="16sp">
 
                     </TextView>
@@ -107,7 +107,7 @@
                     </View>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/expenseItemRecyclerView"
+                        android:id="@+id/incomeItemRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="5dp"
@@ -156,7 +156,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
-                        android:text="@string/the_nature_of_spending"
+                        android:text="@string/the_nature_of_earning"
                         android:textSize="20sp"
                         android:textColor="#000000">
 
@@ -166,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
-                        android:text="@string/how_am_i_spending"
+                        android:text="@string/how_am_i_earning"
                         android:textSize="16sp">
 
                     </TextView>
@@ -180,7 +180,7 @@
                     </View>
 
                     <TextView
-                        android:id="@+id/natureOfSpendingMonthTextView"
+                        android:id="@+id/natureOfEarningMonthTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
@@ -190,7 +190,7 @@
                     </TextView>
 
                     <TextView
-                        android:id="@+id/natureOfSpendingAmountTextView"
+                        android:id="@+id/natureOfEarningAmountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
@@ -210,12 +210,11 @@
                     </TextView>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/topExpenseCategoriesRecyclerView"
+                        android:id="@+id/topIncomeCategoriesRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="15dp"
                         android:clipToPadding="false"
-                        android:nestedScrollingEnabled="false"
                         android:paddingBottom="15dp">
 
                     </androidx.recyclerview.widget.RecyclerView>

@@ -100,7 +100,7 @@
     <string name="welcome_back">Welcome back!</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="sign_up">SIGN UP</string>
-    <string name="create_a_new_account">Create a new account</string>
+    <string name="create_a_new_account">Create a new account!</string>
     <string name="sign_in">SIGN IN</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="top_5_expenses">TOP 5 EXPENSES</string>
@@ -108,4 +108,10 @@
     <string name="the_nature_of_spending">The Nature of Spending</string>
     <string name="top_categories">TOP CATEGORIES</string>
     <string name="how_am_i_spending">How am I spending?</string>
+    <string name="earning_by_categories">Earning by Categories</string>
+    <string name="where_does_money_come_from">Where does money come from?</string>
+    <string name="top_5_income">TOP 5 INCOME</string>
+    <string name="the_nature_of_earning">The Nature of Earning</string>
+    <string name="how_am_i_earning">How am I earning?</string>
+    <string name="records">Records</string>
 </resources>

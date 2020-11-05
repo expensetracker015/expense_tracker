@@ -1,7 +1,6 @@
 package com.jaekapps.expensetracker;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -502,8 +502,6 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                             balancePieDataSet.setDrawValues(false);
                                             balancePieData = new PieData(balancePieDataSet);
                                             balancePieChart.setData(balancePieData);
-                                            balancePieData.setValueTextColor(Color.WHITE);
-                                            balancePieData.setValueTextSize(10f);
 
                                         }
 
@@ -554,22 +552,15 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                 }
 
-                                for (int i = 0; i < balance_amount.length - 1; i++) {
+                                total_balance_amount = new BigDecimal(0);
 
-                                    total_balance_amount = balance_amount[i].add(balance_amount[i + 1]);
+                                for (BigDecimal balance : balance_amount) {
+
+                                    total_balance_amount = total_balance_amount.add(balance);
 
                                 }
 
                                 balance_amount_percentage = new float[balance_amount.length];
-
-                                for (int i = 0; i < balance_amount.length; i++) {
-
-                                    BigDecimal percentage = (balance_amount[i].divide(total_balance_amount, 3)).multiply(new BigDecimal(100));
-                                    balance_amount_percentage[i] = Float.parseFloat(percentage.toString());
-                                    monthArrayList.add(new PieEntry(balance_amount_percentage[i], arrangedMonthList.get(i)));
-
-                                }
-
                                 balance = String.valueOf(total_balance_amount);
                                 balance = context.getResources()
                                         .getString(R.string.rupees) + putComma(balance);
@@ -582,13 +573,20 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                 balancePieChart.setDrawHoleEnabled(true);
                                 balancePieChart.setHoleRadius(65);
                                 balancePieChart.setRotationEnabled(false);
+
+                                for (int i = 0; i < balance_amount.length; i++) {
+
+                                    BigDecimal percentage = (balance_amount[i].divide(total_balance_amount, 4, RoundingMode.HALF_EVEN)).multiply(new BigDecimal(100));
+                                    balance_amount_percentage[i] = Float.parseFloat(percentage.toString());
+                                    monthArrayList.add(new PieEntry(balance_amount_percentage[i], arrangedMonthList.get(i)));
+
+                                }
+
                                 balancePieDataSet = new PieDataSet(monthArrayList, "");
                                 balancePieDataSet.setColors(balance_colors);
                                 balancePieDataSet.setDrawValues(false);
                                 balancePieData = new PieData(balancePieDataSet);
                                 balancePieChart.setData(balancePieData);
-                                balancePieData.setValueTextColor(Color.WHITE);
-                                balancePieData.setValueTextSize(10f);
                                 balancePieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                                     @Override
                                     public void onValueSelected(Entry e, Highlight h) {
