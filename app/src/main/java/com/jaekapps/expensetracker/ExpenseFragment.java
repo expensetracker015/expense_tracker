@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ExpenseFragment extends Fragment implements ExpenseItemRecyclerAdapter.ExpenseItemClickListener {
 
-    private int[] expenseCategoryItemIconId = {
+    private final int[] expenseCategoryItemIconId = {
             R.drawable.food_dark,
             R.drawable.bills_dark,
             R.drawable.transportation_dark,
@@ -46,9 +46,9 @@ public class ExpenseFragment extends Fragment implements ExpenseItemRecyclerAdap
             R.drawable.office_dark,
             R.drawable.others_dark,
     };
-    private List<Integer> expenseCategoryListItemIconId = new ArrayList<>();
-    private List<String> expenseCategoryListItemName = new ArrayList<>();
-    private String[] expenseCategoryItemNames = {
+    private final List<Integer> expenseCategoryListItemIconId = new ArrayList<>();
+    private final List<String> expenseCategoryListItemName = new ArrayList<>();
+    private final String[] expenseCategoryItemNames = {
             "Food",
             "Bills",
             "Transportation",

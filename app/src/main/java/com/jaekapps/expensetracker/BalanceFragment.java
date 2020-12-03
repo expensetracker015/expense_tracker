@@ -661,15 +661,15 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        int view_id = v.getId();
 
-            case R.id.monthListCardView:
-                balanceFragmentListener.showMonthListForBalance(month, year);
-                break;
+        if (view_id == R.id.monthListCardView) {
 
-            case R.id.yearListCardView:
-                balanceFragmentListener.showYearListForBalance(month, year);
-                break;
+            balanceFragmentListener.showMonthListForBalance(month, year);
+
+        } else if (view_id == R.id.yearListCardView) {
+
+            balanceFragmentListener.showYearListForBalance(month, year);
 
         }
 

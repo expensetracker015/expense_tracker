@@ -885,15 +885,15 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        int view_id = v.getId();
 
-            case R.id.monthListCardView:
-                cashFlowFragmentListener.showMonthListForCashFlow(month, year);
-                break;
+        if (view_id == R.id.monthListCardView) {
 
-            case R.id.yearListCardView:
-                cashFlowFragmentListener.showYearListForCashFlow(month, year);
-                break;
+            cashFlowFragmentListener.showMonthListForCashFlow(month, year);
+
+        } else if (view_id == R.id.yearListCardView) {
+
+            cashFlowFragmentListener.showYearListForCashFlow(month, year);
 
         }
 

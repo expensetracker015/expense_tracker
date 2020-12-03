@@ -7,6 +7,7 @@ public class BEIAmount {
     BEIAmount() {}
 
     public String getBalance() {
+
         return balance;
     }
 
@@ -15,6 +16,7 @@ public class BEIAmount {
     }
 
     public String getExpense() {
+
         return expense;
     }
 
@@ -23,6 +25,7 @@ public class BEIAmount {
     }
 
     public String getIncome() {
+
         return income;
     }
 

@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 class SignInUsingEmailConfigActivity {
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     SignInUsingEmailConfigActivity(Context context) {
 

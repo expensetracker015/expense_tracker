@@ -13,14 +13,14 @@ import com.sasank.roundedhorizontalprogress.RoundedHorizontalProgressBar;
 
 import java.util.ArrayList;
 
-public class TopExpenseCategoriesRecyclerAdapter extends RecyclerView.Adapter<TopExpenseCategoriesRecyclerAdapter.TopExpenseCategoriesViewHolder> {
+public class TopIncomeCategoriesRecyclerAdapter extends RecyclerView.Adapter<TopIncomeCategoriesRecyclerAdapter.TopIncomeCategoriesViewHolder> {
 
     ArrayList<Integer> topCategoriesItemPercentageList;
     ArrayList<String> amountList, itemList;
     Context context;
     int[] colors;
 
-    TopExpenseCategoriesRecyclerAdapter(ArrayList<Integer> topCategoriesItemPercentageList, ArrayList<String> amountList, ArrayList<String> itemList, Context context, int[] colors) {
+    TopIncomeCategoriesRecyclerAdapter(ArrayList<Integer> topCategoriesItemPercentageList, ArrayList<String> amountList, ArrayList<String> itemList, Context context, int[] colors) {
 
         this.amountList = amountList;
         this.context = context;
@@ -31,14 +31,14 @@ public class TopExpenseCategoriesRecyclerAdapter extends RecyclerView.Adapter<To
 
     @NonNull
     @Override
-    public TopExpenseCategoriesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TopIncomeCategoriesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.top_categories_layout, parent, false);
-        return new TopExpenseCategoriesViewHolder(view);
+        return new TopIncomeCategoriesViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TopExpenseCategoriesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TopIncomeCategoriesViewHolder holder, int position) {
 
         holder.topCategoryItemAmount.setText(amountList.get(position));
         holder.topCategoryItemName.setText(itemList.get(position));
@@ -52,12 +52,12 @@ public class TopExpenseCategoriesRecyclerAdapter extends RecyclerView.Adapter<To
         return amountList.size();
     }
 
-    public static class TopExpenseCategoriesViewHolder extends RecyclerView.ViewHolder {
+    public static class TopIncomeCategoriesViewHolder extends RecyclerView.ViewHolder {
 
         private final RoundedHorizontalProgressBar topCategoryProgressBar;
         private final TextView topCategoryItemAmount, topCategoryItemName;
 
-        public TopExpenseCategoriesViewHolder(@NonNull View itemView) {
+        public TopIncomeCategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
 
             topCategoryItemAmount = itemView.findViewById(R.id.topCategoryItemAmount);

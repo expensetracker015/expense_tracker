@@ -17,7 +17,7 @@ import java.util.List;
 
 public class IncomeFragment extends Fragment implements IncomeItemRecyclerAdapter.IncomeItemClickListener {
 
-    private int[] incomeCategoryItemIconId = {
+    private final int[] incomeCategoryItemIconId = {
             R.drawable.salary_dark,
             R.drawable.awards_dark,
             R.drawable.gift_dark,
@@ -30,9 +30,9 @@ public class IncomeFragment extends Fragment implements IncomeItemRecyclerAdapte
             R.drawable.investments_dark,
             R.drawable.others_dark
     };
-    private List<Integer> incomeCategoryLisItemIconId = new ArrayList<>();
-    private List<String> incomeCategoryListItemName = new ArrayList<>();
-    private String[] incomeCategoryItemNames = {
+    private final List<Integer> incomeCategoryLisItemIconId = new ArrayList<>();
+    private final List<String> incomeCategoryListItemName = new ArrayList<>();
+    private final String[] incomeCategoryItemNames = {
             "Salary",
             "Awards",
             "Grants",

@@ -20,7 +20,7 @@ public class StatisticsFragment extends Fragment {
     private EarningFragment earningFragment;
     private ReportsFragment reportsFragment;
     private SpendingFragment spendingFragment;
-    private String month, year;
+    private final String month, year;
     private TabLayout tabLayout;
     private TabPosition tabPosition;
 

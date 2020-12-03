@@ -15,25 +15,22 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DateOfEachMonthRecyclerAdapter extends RecyclerView.Adapter<DateOfEachMonthRecyclerAdapter.DateOfEachMonthViewHolder> {
 
-    private List<String> dateList;
+    private final List<String> dateList;
     private OnDateClickListener onDateClickListener;
 
     DateOfEachMonthRecyclerAdapter(List<String> dateList) {
 
         this.dateList = dateList;
-
     }
 
     public interface OnDateClickListener {
 
         void onDateClick(int position, List<String> dateList, View view);
-
     }
 
     void setOnDateClickListener(OnDateClickListener onDateClickListener) {
 
         this.onDateClickListener = onDateClickListener;
-
     }
 
     @NonNull
@@ -51,14 +48,12 @@ public class DateOfEachMonthRecyclerAdapter extends RecyclerView.Adapter<DateOfE
         holder.dateTextView.setText(dateList.get(position));
         String number = String.valueOf(position + 1);
         holder.numberTextView.setText(number);
-
     }
 
     @Override
     public int getItemCount() {
 
         return dateList.size();
-
     }
 
     static class DateOfEachMonthViewHolder extends RecyclerView.ViewHolder {
@@ -111,7 +106,6 @@ public class DateOfEachMonthRecyclerAdapter extends RecyclerView.Adapter<DateOfE
 
                 }
             });
-
         }
     }
 }

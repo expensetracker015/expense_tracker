@@ -184,19 +184,19 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()) {
+        int id = view.getId();
 
-            case R.id.createAccountCardView:
-                signInListener.loadSignUpUsingEmailFragment();
-                break;
+        if (id == R.id.createAccountCardView) {
 
-            case R.id.forgotPasswordButton:
-                signInListener.forgotPassword();
-                break;
+            signInListener.loadSignUpUsingEmailFragment();
 
-            case R.id.signInButton:
-                signInListener.signIn();
-                break;
+        } else if (id == R.id.forgotPasswordButton) {
+
+            signInListener.forgotPassword();
+
+        } else if (id == R.id.signInButton) {
+
+            signInListener.signIn();
 
         }
 

@@ -18,9 +18,9 @@ import java.util.Objects;
 
 public class ExpenseItemsListDialogBox extends DialogFragment {
 
-    private ArrayList<Integer> itemIconList;
-    private ArrayList<String> amountList, itemList;
-    private int[] colors;
+    private final ArrayList<Integer> itemIconList;
+    private final ArrayList<String> amountList, itemList;
+    private final int[] colors;
 
     ExpenseItemsListDialogBox(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList, int[] colors) {
 

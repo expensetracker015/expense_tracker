@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseUser firebaseUser;
     private GoogleSignInButton googleSignInButton;
     private GoogleSignInClient googleSignInClient;
-    private int currentYear, GOOGLE_SIGN_IN = 1;
+    private int currentYear;
+    private final int GOOGLE_SIGN_IN = 1;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
@@ -420,29 +421,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()) {
+        int id = view.getId();
 
-            case R.id.googleSignInButton:
+        if (id == R.id.googleSignInButton) {
 
-                if (checkInternetConnection()) {
+            if (checkInternetConnection()) {
 
-                    showTheGoogleAccounts();
+                showTheGoogleAccounts();
 
-                } else {
+            } else {
 
-                    showToast("Please, check your internet connection.");
+                showToast("Please, check your internet connection.");
 
-                }
+            }
 
-                break;
+        } else if (id == R.id.signInUsingEmailButton) {
 
-            case R.id.signInUsingEmailButton:
-                goToSignInOrSignUpActivity("Sign In");
-                break;
+            goToSignInOrSignUpActivity("Sign In");
 
-            case R.id.signUpUsingEmailButton:
-                goToSignInOrSignUpActivity("Sign Up");
-                break;
+        } else if (id == R.id.signUpUsingEmailButton) {
+
+            goToSignInOrSignUpActivity("Sign Up");
+
         }
 
     }

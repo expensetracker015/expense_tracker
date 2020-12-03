@@ -105,6 +105,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 icon_id = R.drawable.transportation_light;
                 break;
             case "Home":
+            case "Rental":
                 icon_id = R.drawable.home_light;
                 break;
             case "Car":
@@ -156,6 +157,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 icon_id = R.drawable.vegetables_light;
                 break;
             case "Gift":
+            case "Grants":
                 icon_id = R.drawable.gift_light;
                 break;
             case "Social":
@@ -179,14 +181,8 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
             case "Awards":
                 icon_id = R.drawable.awards_light;
                 break;
-            case "Grants":
-                icon_id = R.drawable.gift_light;
-                break;
             case "Sale":
                 icon_id = R.drawable.sale_light;
-                break;
-            case "Rental":
-                icon_id = R.drawable.home_light;
                 break;
             case "Refunds":
                 icon_id = R.drawable.refunds_light;
@@ -1079,102 +1075,98 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
         int id = menuItem.getItemId();
 
-        switch (id) {
+        if (id == R.id.budgets) {
 
-            case R.id.home:
-                calendarCardView.setVisibility(View.VISIBLE);
-                changeTheActionBarTitle("");
-                loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
-                monthNameTextView.setText(month);
-                showTheCategoryMenuItems();
-                break;
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Budgets");
+            hideTheCategoryMenuItems();
+            loadTheFragmentWithSlideLeftCustomAnimation(budgetsFragment);
 
-            case R.id.statistics:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Statistics");
-                hideTheCategoryMenuItems();
-                loadTheFragmentWithSlideLeftCustomAnimation(statisticsFragment);
-                break;
+        } else if (id == R.id.calendar) {
 
-            case R.id.budgets:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Budgets");
-                hideTheCategoryMenuItems();
-                loadTheFragmentWithSlideLeftCustomAnimation(budgetsFragment);
-                break;
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Calendar");
+            Toast.makeText(this, "calendar", Toast.LENGTH_SHORT).show();
 
-            case R.id.calendar:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Calendar");
-                Toast.makeText(this, "calendar", Toast.LENGTH_SHORT).show();
-                break;
+        } else if (id == R.id.chart) {
 
-            case R.id.chart:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Chart");
-                Toast.makeText(this, "chart", Toast.LENGTH_SHORT).show();
-                break;
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Chart");
+            Toast.makeText(this, "chart", Toast.LENGTH_SHORT).show();
 
-            case R.id.goals:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Chart");
-                Toast.makeText(this, "goals", Toast.LENGTH_SHORT).show();
-                break;
+        } else if (id == R.id.goals) {
 
-            case R.id.shopping_lists:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Shopping Lists");
-                Toast.makeText(this, "shopping lists", Toast.LENGTH_SHORT).show();
-                break;
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Chart");
+            Toast.makeText(this, "goals", Toast.LENGTH_SHORT).show();
 
-            case R.id.help:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Help");
-                Toast.makeText(this, "help", Toast.LENGTH_SHORT).show();
-                break;
+        } else if (id == R.id.help) {
 
-            case R.id.settings:
-                calendarCardView.setVisibility(View.GONE);
-                changeTheActionBarTitle("Settings");
-                Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
-                break;
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Help");
+            Toast.makeText(this, "help", Toast.LENGTH_SHORT).show();
 
-            case R.id.sign_out:
+        } else if (id == R.id.home) {
 
-                if (signInUsingGoogleConfigActivity.getSignInUsingGoogleStatus()) {
+            calendarCardView.setVisibility(View.VISIBLE);
+            changeTheActionBarTitle("");
+            loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
+            monthNameTextView.setText(month);
+            showTheCategoryMenuItems();
 
-                    googleSignInClient.signOut().addOnCompleteListener(HomeScreenActivity.this, new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
+        } else if (id == R.id.settings) {
 
-                            if (task.isSuccessful()) {
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Settings");
+            Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
 
-                                showToast("Successfully signed out.");
-                                signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
-                                startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
-                                finish();
+        } else if (id == R.id.shopping_lists) {
 
-                            } else {
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Shopping Lists");
+            Toast.makeText(this, "shopping lists", Toast.LENGTH_SHORT).show();
 
-                                showToast(Objects.requireNonNull(task.getException()).getMessage());
+        } else if (id == R.id.sign_out) {
 
-                            }
+            if (signInUsingGoogleConfigActivity.getSignInUsingGoogleStatus()) {
+
+                googleSignInClient.signOut().addOnCompleteListener(HomeScreenActivity.this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (task.isSuccessful()) {
+
+                            showToast("Successfully signed out.");
+                            signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
+                            startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
+                            finish();
+
+                        } else {
+
+                            showToast(Objects.requireNonNull(task.getException()).getMessage());
 
                         }
-                    });
 
-                } else if (signInUsingEmailConfigActivity.getSignInUsingEmailStatus()) {
+                    }
+                });
 
-                    FirebaseAuth.getInstance().signOut();
-                    showToast("Successfully signed out.");
-                    signInUsingEmailConfigActivity.setSignInUsingEmailStatus(false);
-                    signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
-                    startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
-                    finish();
+            } else if (signInUsingEmailConfigActivity.getSignInUsingEmailStatus()) {
 
-                }
+                FirebaseAuth.getInstance().signOut();
+                showToast("Successfully signed out.");
+                signInUsingEmailConfigActivity.setSignInUsingEmailStatus(false);
+                signInUsingGoogleConfigActivity.setSignInUsingGoogleStatus(false);
+                startActivity(new Intent(HomeScreenActivity.this, MainActivity.class));
+                finish();
 
-                break;
+            }
+
+        } else if (id == R.id.statistics) {
+
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Statistics");
+            hideTheCategoryMenuItems();
+            loadTheFragmentWithSlideLeftCustomAnimation(statisticsFragment);
 
         }
 

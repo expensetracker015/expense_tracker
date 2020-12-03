@@ -2,17 +2,14 @@ package com.jaekapps.expensetracker;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.cardview.widget.CardView;
 
@@ -26,7 +23,7 @@ public class DatePickerDialogBox extends BottomSheetDialogFragment implements Vi
     private CardView aprCardView, augCardView, decCardView, febCardView, janCardView, julyCardView, juneCardView, leftArrowLayout,
             marCardView, mayCardView, novCardView, octCardView, rightArrowLayout, sepCardView;
     private DatePickerListener datePickerListener;
-    private String chosenYear, date, month, year;
+    private final String chosenYear, date, month, year;
     private TextView aprTextView, augTextView, chosenYearTextView, dayAndDateTextView, decTextView, febTextView, janTextView,
             julyTextView, juneTextView, marTextView, mayTextView, novTextView, octTextView, sepTextView, yearTextView;
 
@@ -242,82 +239,83 @@ public class DatePickerDialogBox extends BottomSheetDialogFragment implements Vi
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()) {
+        int view_id = view.getId();
 
-            case R.id.aprCardView:
-                datePickerListener.chooseMonth("Apr");
-                setTheCardAndTextColorForMonth("Apr");
-                break;
+        if (view_id == R.id.aprCardView) {
 
-            case R.id.augCardView:
-                datePickerListener.chooseMonth("Aug");
-                setTheCardAndTextColorForMonth("Aug");
-                break;
+            datePickerListener.chooseMonth("Apr");
+            setTheCardAndTextColorForMonth("Apr");
 
-            case R.id.cancelButton:
-                datePickerListener.cancel();
-                break;
+        } else if (view_id == R.id.augCardView) {
 
-            case R.id.decCardView:
-                datePickerListener.chooseMonth("Dec");
-                setTheCardAndTextColorForMonth("Dec");
-                break;
+            datePickerListener.chooseMonth("Aug");
+            setTheCardAndTextColorForMonth("Aug");
 
-            case R.id.febCardView:
-                datePickerListener.chooseMonth("Feb");
-                setTheCardAndTextColorForMonth("Feb");
-                break;
+        } else if (view_id == R.id.cancelButton) {
 
-            case R.id.janCardView:
-                datePickerListener.chooseMonth("Jan");
-                setTheCardAndTextColorForMonth("Jan");
-                break;
+            datePickerListener.cancel();
 
-            case R.id.julyCardView:
-                datePickerListener.chooseMonth("July");
-                setTheCardAndTextColorForMonth("July");
-                break;
+        } else if (view_id == R.id.decCardView) {
 
-            case R.id.juneCardView:
-                datePickerListener.chooseMonth("June");
-                setTheCardAndTextColorForMonth("June");
-                break;
+            datePickerListener.chooseMonth("Dec");
+            setTheCardAndTextColorForMonth("Dec");
 
-            case R.id.leftArrowLayout:
-                datePickerListener.choosePreviousYear();
-                break;
+        } else if (view_id == R.id.febCardView) {
 
-            case R.id.marCardView:
-                datePickerListener.chooseMonth("Mar");
-                setTheCardAndTextColorForMonth("Mar");
-                break;
+            datePickerListener.chooseMonth("Feb");
+            setTheCardAndTextColorForMonth("Feb");
 
-            case R.id.mayCardView:
-                datePickerListener.chooseMonth("May");
-                setTheCardAndTextColorForMonth("May");
-                break;
+        } else if (view_id == R.id.janCardView) {
 
-            case R.id.novCardView:
-                datePickerListener.chooseMonth("Nov");
-                setTheCardAndTextColorForMonth("Nov");
-                break;
+            datePickerListener.chooseMonth("Jan");
+            setTheCardAndTextColorForMonth("Jan");
 
-            case R.id.octCardView:
-                datePickerListener.chooseMonth("Oct");
-                setTheCardAndTextColorForMonth("Oct");
-                break;
+        } else if (view_id == R.id.julyCardView) {
 
-            case R.id.okButton:
-                datePickerListener.ok();
-                break;
+            datePickerListener.chooseMonth("July");
+            setTheCardAndTextColorForMonth("July");
 
-            case R.id.rightArrowLayout:
-                datePickerListener.chooseNextYear();
-                break;
+        } else if (view_id == R.id.juneCardView) {
 
-            case R.id.sepCardView:
-                datePickerListener.chooseMonth("Sep");
-                setTheCardAndTextColorForMonth("Sep");
+            datePickerListener.chooseMonth("June");
+            setTheCardAndTextColorForMonth("June");
+
+        } else if (view_id == R.id.leftArrowLayout) {
+
+            datePickerListener.choosePreviousYear();
+
+        } else if (view_id == R.id.marCardView) {
+
+            datePickerListener.chooseMonth("Mar");
+            setTheCardAndTextColorForMonth("Mar");
+
+        } else if (view_id == R.id.mayCardView) {
+
+            datePickerListener.chooseMonth("May");
+            setTheCardAndTextColorForMonth("May");
+
+        } else if (view_id == R.id.novCardView) {
+
+            datePickerListener.chooseMonth("Nov");
+            setTheCardAndTextColorForMonth("Nov");
+
+        } else if (view_id == R.id.octCardView) {
+
+            datePickerListener.chooseMonth("Oct");
+            setTheCardAndTextColorForMonth("Oct");
+
+        } else if (view_id == R.id.okButton) {
+
+            datePickerListener.ok();
+
+        } else if (view_id == R.id.rightArrowLayout) {
+
+            datePickerListener.chooseNextYear();
+
+        } else if (view_id == R.id.sepCardView) {
+
+            datePickerListener.chooseMonth("Sep");
+            setTheCardAndTextColorForMonth("Sep");
 
         }
 
@@ -328,21 +326,5 @@ public class DatePickerDialogBox extends BottomSheetDialogFragment implements Vi
         super.onDetach();
 
         datePickerListener = null;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        if (getDialog() != null && getDialog().getWindow() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            Window window = getDialog().getWindow();
-            window.findViewById(com.google.android.material.R.id.container).setFitsSystemWindows(false);
-            View decorView = window.getDecorView();
-            decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-
-        }
-
     }
 }

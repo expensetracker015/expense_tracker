@@ -43,7 +43,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     private ProgressBar loadingProgressbar;
     private RecyclerView homeScreenFragmentDateRecyclerView;
     private RelativeLayout categoryLayout;
-    private String category, month, userId, year;
+    private final String category, month, year;
+    private String userId;
     private TextView balanceTextView, categoryTextView, expenseTextView, incomeTextView;
 
     HomeScreenFragment(String category, String month, String year) {
@@ -365,19 +366,19 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        int id = v.getId();
 
-            case R.id.expenseCardView:
-                homeScreenFragmentListener.showExpensePercentage();
-                break;
+        if (id == R.id.expenseCardView) {
 
-            case R.id.expenseIncomeFab:
-                homeScreenFragmentListener.goToExpenseIncomeActivity();
-                break;
+            homeScreenFragmentListener.showExpensePercentage();
 
-            case R.id.incomeCardView:
-                homeScreenFragmentListener.showIncomePercentage();
-                break;
+        } else if (id == R.id.expenseIncomeFab) {
+
+            homeScreenFragmentListener.goToExpenseIncomeActivity();
+
+        } else if (id == R.id.incomeCardView) {
+
+            homeScreenFragmentListener.showIncomePercentage();
 
         }
 

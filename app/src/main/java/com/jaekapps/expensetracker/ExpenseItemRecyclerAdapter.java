@@ -19,10 +19,10 @@ import java.util.List;
 public class ExpenseItemRecyclerAdapter extends RecyclerView.Adapter<ExpenseItemRecyclerAdapter.ExpenseItemViewHolder> {
 
     int row_no = -1;
-    private Context context;
+    private final Context context;
     private ExpenseItemClickListener expenseItemClickListener;
-    private List<Integer> expenseCategoryListItemIconId;
-    private List<String> expenseCategoryListItemName;
+    private final List<Integer> expenseCategoryListItemIconId;
+    private final List<String> expenseCategoryListItemName;
 
     ExpenseItemRecyclerAdapter(Context context, List<Integer> expenseCategoryListItemIconId, List<String> expenseCategoryListItemName) {
 

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -638,7 +639,6 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     }
                 });
-
     }
 
     private void updateTheItemAmount(final String category, String date, String itemAmount, String itemName) {
@@ -742,6 +742,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
     }
 
     @Override
+    @SuppressLint("SetTextI18n")
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -753,7 +754,14 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     if (data != null) {
 
-                        itemNameTextView.setText(data.getStringExtra("item_name"));
+                        categorySharedPreferences.writeCategoryName(data.getStringExtra("subcategory"));
+                        subcategoryTextView.setText("Category - " + data.getStringExtra("subcategory"));
+
+                        if (!Objects.equals(data.getStringExtra("item_name"), "")) {
+
+                            itemNameTextView.setText(data.getStringExtra("item_name"));
+
+                        }
 
                     }
 
@@ -1066,164 +1074,61 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        int id = v.getId();
 
-            case R.id.addCardView:
+        if (id == R.id.addCardView) {
 
-                if (checkCategoryAndItemName()) {
+            if (checkCategoryAndItemName()) {
 
-                    addOperatorToTextView("+");
+                addOperatorToTextView("+");
 
-                }
+            }
 
-                break;
+        } else if (id == R.id.cancelCardView) {
 
-            case R.id.cancelCardView:
+            if (!amountTextView.getText().toString().equals("0")) {
 
-                if (!amountTextView.getText().toString().equals("0")) {
+                length = amountTextView.getText().length();
 
-                    length = amountTextView.getText().length();
+                if (length == 1) {
 
-                    if (length == 1) {
-
-                        text = "0";
-
-                    } else {
-
-                        text = "";
-                        StringBuilder stringBuilderText = new StringBuilder();
-                        amount = amountTextView.getText().toString().toCharArray();
-
-                        for (in = 0; in < length - 1; in++) {
-
-                            stringBuilderText = stringBuilderText.append(amount[in]);
-
-                        }
-
-                        text = stringBuilderText.toString();
-
-                    }
-
-                    amountTextView.setText(text);
-
-                }
-
-                break;
-
-            case R.id.dotCardView:
-
-                if (checkCategoryAndItemName()) {
-
-                    text = "";
-
-                    if (amountTextView.getText().toString().equals("0")) {
-
-                        text = "0.";
-                        amountTextView.setText(text);
-
-                    } else {
-
-                        int operatorPos = 0, pos = 0;
-                        amount = amountTextView.getText().toString().toCharArray();
-
-                        for (in = 0; in < amount.length; in++) {
-
-                            if (amount[in] == '+' || amount[in] == '-') {
-
-                                operatorPos = in;
-                                break;
-
-                            }
-
-                        }
-
-                        if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos == amount.length - 1) {
-
-                            text = amountTextView.getText().toString() + "0.";
-                            amountTextView.setText(text);
-
-                        } else if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos < amount.length - 1) {
-
-                            StringBuilder secondNoStringBuilder = new StringBuilder();
-
-                            for (in = operatorPos + 1; in < amount.length; in++) {
-
-                                secondNoStringBuilder = secondNoStringBuilder.append(amount[in]);
-
-                            }
-
-                            String secondNo = secondNoStringBuilder.toString();
-                            char[] secondNoArr = secondNo.toCharArray();
-
-                            for (in = 0; in < secondNoArr.length; in++) {
-
-                                if (secondNoArr[in] == '.') {
-
-                                    pos = in;
-                                    break;
-
-                                }
-
-                            }
-
-                            if (secondNoArr[pos] != '.') {
-
-                                text = amountTextView.getText().toString() + ".";
-                                amountTextView.setText(text);
-
-                            }
-
-                        } else {
-
-                            for (in = 0; in < amount.length; in++) {
-
-                                if (amount[in] == '.') {
-
-                                    pos = in;
-                                    break;
-
-                                }
-
-                            }
-
-                            if (amount[pos] != '.') {
-
-                                text = amountTextView.getText().toString() + ".";
-                                amountTextView.setText(text);
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                break;
-
-            case R.id.eightCardView:
-
-                if (checkCategoryAndItemName()) {
-
-                    addAmountToTextView("8");
-
-                }
-
-                break;
-
-            case R.id.equalOrOkCardView:
-
-                if (amountTextView.getText().toString().equals("0") || amountTextView.getText().toString().equals("0.")
-                        || amountTextView.getText().toString().equals("0.0") || amountTextView.getText().toString().equals("0.00")
-                        || amountTextView.getText().toString().equals("0.000")) {
-
-                    amountTextView.setText("0");
+                    text = "0";
 
                 } else {
 
-                    int operatorPos = 0;
-                    text = amountTextView.getText().toString();
-                    amount = text.toCharArray();
+                    text = "";
+                    StringBuilder stringBuilderText = new StringBuilder();
+                    amount = amountTextView.getText().toString().toCharArray();
+
+                    for (in = 0; in < length - 1; in++) {
+
+                        stringBuilderText = stringBuilderText.append(amount[in]);
+
+                    }
+
+                    text = stringBuilderText.toString();
+
+                }
+
+                amountTextView.setText(text);
+
+            }
+
+        } else if (id == R.id.dotCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                text = "";
+
+                if (amountTextView.getText().toString().equals("0")) {
+
+                    text = "0.";
+                    amountTextView.setText(text);
+
+                } else {
+
+                    int operatorPos = 0, pos = 0;
+                    amount = amountTextView.getText().toString().toCharArray();
 
                     for (in = 0; in < amount.length; in++) {
 
@@ -1236,172 +1141,242 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                     }
 
-                    if (amount[operatorPos] == '+' || amount[operatorPos] == '-') {
+                    if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos == amount.length - 1) {
 
-                        checkIfDotIsPresentBeforeOrAfterOfOperator(amount, operatorPos);
+                        text = amountTextView.getText().toString() + "0.";
+                        amountTextView.setText(text);
 
-                    }
+                    } else if ((amount[operatorPos] == '+' || amount[operatorPos] == '-') && operatorPos < amount.length - 1) {
 
-                }
+                        StringBuilder secondNoStringBuilder = new StringBuilder();
 
-                break;
+                        for (in = operatorPos + 1; in < amount.length; in++) {
 
-            case R.id.expenseCardView:
+                            secondNoStringBuilder = secondNoStringBuilder.append(amount[in]);
 
-                if (categorySharedPreferences.readCategoryName().equals("Income")) {
+                        }
 
-                    itemNameTextView.setText(getResources().getString(R.string.add_item));
+                        String secondNo = secondNoStringBuilder.toString();
+                        char[] secondNoArr = secondNo.toCharArray();
 
-                    if (!amountTextView.getText().toString().equals("0")) {
+                        for (in = 0; in < secondNoArr.length; in++) {
 
-                        amountTextView.setText("0");
+                            if (secondNoArr[in] == '.') {
 
-                    }
+                                pos = in;
+                                break;
 
-                }
+                            }
 
-                categorySharedPreferences.writeCategoryName("Expense");
-                category = "Category - " + categorySharedPreferences.readCategoryName();
-                subcategoryTextView.setText(category);
-                break;
+                        }
 
-            case R.id.fiveCardView:
+                        if (secondNoArr[pos] != '.') {
 
-                if (checkCategoryAndItemName()) {
+                            text = amountTextView.getText().toString() + ".";
+                            amountTextView.setText(text);
 
-                    addAmountToTextView("5");
+                        }
 
-                }
+                    } else {
 
-                break;
+                        for (in = 0; in < amount.length; in++) {
 
-            case R.id.fourCardView:
+                            if (amount[in] == '.') {
 
-                if (checkCategoryAndItemName()) {
+                                pos = in;
+                                break;
 
-                    addAmountToTextView("4");
+                            }
 
-                }
+                        }
 
-                break;
+                        if (amount[pos] != '.') {
 
-            case R.id.incomeCardView:
+                            text = amountTextView.getText().toString() + ".";
+                            amountTextView.setText(text);
 
-                if (categorySharedPreferences.readCategoryName().equals("Expense")) {
-
-                    itemNameTextView.setText(getResources().getString(R.string.add_item));
-
-                    if (!amountTextView.getText().toString().equals("0")) {
-
-                        amountTextView.setText("0");
+                        }
 
                     }
 
                 }
 
-                categorySharedPreferences.writeCategoryName("Income");
-                category = "Category - " + categorySharedPreferences.readCategoryName();
-                subcategoryTextView.setText(category);
-                break;
+            }
 
-            case R.id.nineCardView:
+        } else if (id == R.id.eightCardView) {
 
-                if (checkCategoryAndItemName()) {
+            if (checkCategoryAndItemName()) {
 
-                    addAmountToTextView("9");
+                addAmountToTextView("8");
 
-                }
+            }
 
-                break;
+        } else if (id == R.id.equalOrOkCardView) {
 
-            case R.id.oneCardView:
+            if (amountTextView.getText().toString().equals("0") || amountTextView.getText().toString().equals("0.")
+                    || amountTextView.getText().toString().equals("0.0") || amountTextView.getText().toString().equals("0.00")
+                    || amountTextView.getText().toString().equals("0.000")) {
 
-                if (checkCategoryAndItemName()) {
+                amountTextView.setText("0");
 
-                    addAmountToTextView("1");
+            } else {
 
-                }
+                int operatorPos = 0;
+                text = amountTextView.getText().toString();
+                amount = text.toCharArray();
 
-                break;
+                for (in = 0; in < amount.length; in++) {
 
-            case R.id.sevenCardView:
+                    if (amount[in] == '+' || amount[in] == '-') {
 
-                if (checkCategoryAndItemName()) {
+                        operatorPos = in;
+                        break;
 
-                    addAmountToTextView("7");
-
-                }
-
-                break;
-
-            case R.id.sixCardView:
-
-                if (checkCategoryAndItemName()) {
-
-                    addAmountToTextView("6");
+                    }
 
                 }
 
-                break;
+                if (amount[operatorPos] == '+' || amount[operatorPos] == '-') {
 
-            case R.id.subcategoryCardView:
-
-                if (categorySharedPreferences.readCategoryName().equals("")) {
-
-                    showToast("Please, select Expense or Income.");
-
-                } else if (categorySharedPreferences.readCategoryName().equals("Expense") || categorySharedPreferences.readCategoryName().equals("Income")) {
-
-                    Intent intent = new Intent(this, AddItemCategoryActivity.class);
-                    startActivityForResult(intent, 1);
+                    checkIfDotIsPresentBeforeOrAfterOfOperator(amount, operatorPos);
 
                 }
 
-                break;
+            }
 
-            case R.id.subtractCardView:
+        } else if (id == R.id.expenseCardView) {
 
-                if (checkCategoryAndItemName()) {
+            if (categorySharedPreferences.readCategoryName().equals("Income")) {
 
-                    addOperatorToTextView("-");
+                itemNameTextView.setText(getResources().getString(R.string.add_item));
 
-                }
+                if (!amountTextView.getText().toString().equals("0")) {
 
-                break;
-
-            case R.id.threeCardView:
-
-                if (checkCategoryAndItemName()) {
-
-                    addAmountToTextView("3");
+                    amountTextView.setText("0");
 
                 }
 
-                break;
+            }
 
-            case R.id.todayCardView:
-                datePickerDialog.show();
-                break;
+            categorySharedPreferences.writeCategoryName("Expense");
+            category = "Category - " + categorySharedPreferences.readCategoryName();
+            subcategoryTextView.setText(category);
 
-            case R.id.twoCardView:
+        } else if (id == R.id.fiveCardView) {
 
-                if (checkCategoryAndItemName()) {
+            if (checkCategoryAndItemName()) {
 
-                    addAmountToTextView("2");
+                addAmountToTextView("5");
+
+            }
+
+        } else if (id == R.id.fourCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("4");
+
+            }
+
+        } else if (id == R.id.incomeCardView) {
+
+            if (categorySharedPreferences.readCategoryName().equals("Expense")) {
+
+                itemNameTextView.setText(getResources().getString(R.string.add_item));
+
+                if (!amountTextView.getText().toString().equals("0")) {
+
+                    amountTextView.setText("0");
 
                 }
 
-                break;
+            }
 
-            case R.id.zeroCardView:
+            categorySharedPreferences.writeCategoryName("Income");
+            category = "Category - " + categorySharedPreferences.readCategoryName();
+            subcategoryTextView.setText(category);
 
-                if (checkCategoryAndItemName()) {
+        } else if (id == R.id.nineCardView) {
 
-                    addAmountToTextView("0");
+            if (checkCategoryAndItemName()) {
 
-                }
+                addAmountToTextView("9");
 
-                break;
+            }
+
+        } else if (id == R.id.oneCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("1");
+
+            }
+
+        } else if (id == R.id.sevenCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("7");
+
+            }
+
+        } else if (id == R.id.sixCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("6");
+
+            }
+
+        } else if (id == R.id.subcategoryCardView) {
+
+            if (categorySharedPreferences.readCategoryName().equals("")) {
+
+                showToast("Please, select Expense or Income.");
+
+            } else if (categorySharedPreferences.readCategoryName().equals("Expense") ||
+                    categorySharedPreferences.readCategoryName().equals("Income")) {
+
+                Intent intent = new Intent(this, AddItemCategoryActivity.class);
+                startActivityForResult(intent, 1);
+
+            }
+
+        } else if (id == R.id.subtractCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addOperatorToTextView("-");
+
+            }
+
+        } else if (id == R.id.threeCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("3");
+
+            }
+
+        } else if (id == R.id.todayCardView) {
+
+            datePickerDialog.show();
+
+        } else if (id == R.id.twoCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("2");
+
+            }
+
+        } else if (id == R.id.zeroCardView) {
+
+            if (checkCategoryAndItemName()) {
+
+                addAmountToTextView("0");
+
+            }
 
         }
 

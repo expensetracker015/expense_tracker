@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class UserIdConfigActivity {
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     UserIdConfigActivity(Context context) {
 

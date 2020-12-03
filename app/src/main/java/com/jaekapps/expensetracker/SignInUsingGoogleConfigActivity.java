@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 class SignInUsingGoogleConfigActivity {
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     SignInUsingGoogleConfigActivity(Context context) {
 

@@ -116,15 +116,15 @@ public class ForgotPasswordDialogBox extends AppCompatDialogFragment implements 
     @Override
     public void onClick(View view) {
 
-        switch (view.getId()) {
+        int id = view.getId();
 
-            case R.id.closeDialogBox:
-                forgotPasswordListener.closeTheDialogBox();
-                break;
+        if (id == R.id.closeDialogBox) {
 
-            case R.id.resetPasswordButton:
-                forgotPasswordListener.resetPassword();
-                break;
+            forgotPasswordListener.closeTheDialogBox();
+
+        } else if (id == R.id.resetPasswordButton) {
+
+            forgotPasswordListener.resetPassword();
 
         }
 

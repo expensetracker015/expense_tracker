@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 public class Top5ExpensesRecyclerAdapter extends RecyclerView.Adapter<Top5ExpensesRecyclerAdapter.Top5ExpensesViewHolder> {
 
-    private ArrayList<Integer> itemIconList;
-    private ArrayList<String> amountList;
-    private ArrayList<String> itemList;
-    private Context context;
-    private int[] colors;
+    private final ArrayList<Integer> itemIconList;
+    private final ArrayList<String> amountList;
+    private final ArrayList<String> itemList;
+    private final Context context;
+    private final int[] colors;
 
     Top5ExpensesRecyclerAdapter(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList, Context context, int[] colors) {
 
@@ -59,9 +59,9 @@ public class Top5ExpensesRecyclerAdapter extends RecyclerView.Adapter<Top5Expens
 
     public static class Top5ExpensesViewHolder extends RecyclerView.ViewHolder {
 
-        private AppCompatImageView itemIconImageView;
-        private CardView itemIconCardView;
-        private TextView expenseTypeTextView, itemAmountTextView, itemNameTextView;
+        private final AppCompatImageView itemIconImageView;
+        private final CardView itemIconCardView;
+        private final TextView expenseTypeTextView, itemAmountTextView, itemNameTextView;
 
         public Top5ExpensesViewHolder(@NonNull View itemView) {
             super(itemView);

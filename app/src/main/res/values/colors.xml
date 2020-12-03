@@ -12,6 +12,7 @@
     <color name="colorExpenseIncomeCategoryCardView">#2196F3</color>
     <color name="colorDatePickerDialog">#2196F3</color>
     <color name="colorTabIndicator">#FFFFFF</color>
+    <color name="colorProgressBarBackground">#E0E0E0</color>
     <color name="amber">#FFC107</color>
     <color name="blue">#2196F3</color>
     <color name="blue_gray">#607D8B</color>

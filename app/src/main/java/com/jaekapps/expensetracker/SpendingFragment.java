@@ -44,14 +44,15 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     int currentMonth;
     private AppCompatButton showMoreButton;
     private ArrayList<Float> itemAmountPercentageList;
-    private ArrayList<Integer> indexList, itemIconList, topCategoriesItemPercetageList;
+    private ArrayList<Integer> indexList, itemIconList, topCategoriesItemIndexList, topCategoriesItemPercentageList;
     private ArrayList<PieEntry> expenseItemList;
-    private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList, newAmountList, newItemList;
+    private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList, newAmountList, newItemList,
+            topCategoriesItemAmountList, topCategoriesItemList;
     private BEIAmount beiAmount;
     private CardView monthListCardView, yearListCardView;
     private DatabaseReference userDBReference;
     private int currentYear;
-    private int[] colors;
+    private int[] colors, topCategoriesItemColors;
     private PieChart spendingCategoryPieChart;
     private PieData expensesPieData;
     private PieDataSet expensesPieDataSet;
@@ -115,6 +116,45 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         for (int i = 0; i < 5; i++) {
 
             tempList.add(amount[i].toString());
+
+        }
+
+        return tempList;
+    }
+
+    private ArrayList<String> sortTheTopCategoriesItemAmountList(ArrayList<String> topCategoriesItemAmountList) {
+
+        ArrayList<String> tempList = new ArrayList<>();
+        BigDecimal temp;
+        BigDecimal[] amount = new BigDecimal[topCategoriesItemAmountList.size()];
+
+        for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+            amount[i] = new BigDecimal(topCategoriesItemAmountList.get(i));
+
+        }
+
+        for (int i = 0; i < amount.length; i++) {
+
+            for (int j = i + 1; j < amount.length; j++) {
+
+                if (amount[i].compareTo(amount[j]) < 0) {
+
+                    temp = amount[j];
+                    amount[j] = amount[i];
+                    amount[i] = temp;
+
+                }
+
+            }
+
+        }
+
+        tempList.clear();
+
+        for (BigDecimal bigDecimal : amount) {
+
+            tempList.add(bigDecimal.toString());
 
         }
 
@@ -471,7 +511,30 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         spendingAmountTextView = view.findViewById(R.id.spendingAmountTextView);
         spendingCategoryPieChart = view.findViewById(R.id.spendingCategoryPieChart);
         spendingCurrentMonthTextView = view.findViewById(R.id.spendingCurrentMonthTextView);
-        topCategoriesItemPercetageList = new ArrayList<>();
+        topCategoriesItemColors = new int[] {
+                getResources().getColor(R.color.amber, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.blue, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.blue_gray, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.brown, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.cyan, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.deep_orange, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.deep_purple, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.green, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.indigo, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.light_blue, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.light_green, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.lime, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.orange, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.pink, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.purple, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.red, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.teal, Objects.requireNonNull(getActivity()).getTheme()),
+                getResources().getColor(R.color.yellow, Objects.requireNonNull(getActivity()).getTheme())
+        };
+        topCategoriesItemAmountList = new ArrayList<>();
+        topCategoriesItemIndexList = new ArrayList<>();
+        topCategoriesItemList = new ArrayList<>();
+        topCategoriesItemPercentageList = new ArrayList<>();
         topExpenseCategoriesRecyclerView = view.findViewById(R.id.topExpenseCategoriesRecyclerView);
         topExpenseCategoriesRecyclerView.setHasFixedSize(true);
         topExpenseCategoriesRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -636,23 +699,83 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                                 context,
                                                 colors
                                         );
-                                        topCategoriesItemPercetageList.clear();
-                                        topCategoriesItemPercetageList.add(100);
-                                        topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
-                                                topCategoriesItemPercetageList,
-                                                amountList,
-                                                itemList,
-                                                context
-                                        );
-                                        topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
+                                        topCategoriesItemAmountList.clear();
+                                        topCategoriesItemAmountList.add(amountList.get(0));
+                                        topCategoriesItemList.clear();
+                                        topCategoriesItemList.add(itemList.get(0));
+                                        topCategoriesItemPercentageList.clear();
+                                        topCategoriesItemPercentageList.add(100);
 
                                     } else {
 
                                         modifiedAmountList.clear();
                                         modifiedItemList.clear();
-                                        topCategoriesItemPercetageList.clear();
                                         newAmountList = amountList;
                                         newItemList = itemList;
+                                        topCategoriesItemAmountList.clear();
+                                        topCategoriesItemAmountList = sortTheTopCategoriesItemAmountList(newAmountList);
+                                        topCategoriesItemList.clear();
+                                        topCategoriesItemPercentageList.clear();
+
+                                        for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                            String amount = topCategoriesItemAmountList.get(i);
+
+                                            for (int j = 0; j < newAmountList.size(); j++) {
+
+                                                if (amount.equals(newAmountList.get(j))) {
+
+                                                    if (topCategoriesItemIndexList.size() != 0) {
+
+                                                        if (!topCategoriesItemIndexList.contains(j)) {
+
+                                                            topCategoriesItemIndexList.add(j);
+
+                                                        }
+
+                                                    } else {
+
+                                                        topCategoriesItemIndexList.add(j);
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                        topCategoriesItemAmountList.clear();
+
+                                        for (int i = 0; i < topCategoriesItemIndexList.size(); i++) {
+
+                                            topCategoriesItemAmountList.add(newAmountList.get(topCategoriesItemIndexList.get(i)));
+                                            topCategoriesItemList.add(newItemList.get(topCategoriesItemIndexList.get(i)));
+
+                                        }
+
+                                        BigDecimal percentage;
+                                        BigDecimal total_amount = new BigDecimal(topCategoriesItemAmountList.get(0));
+                                        float[] item_percentage = new float[topCategoriesItemAmountList.size()];
+
+                                        for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                            percentage = new BigDecimal(topCategoriesItemAmountList.get(i)).divide(total_amount, 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
+                                            item_percentage[i] = Float.parseFloat(new DecimalFormat("##.##").format(percentage));
+
+                                        }
+
+                                        for (float f : item_percentage) {
+
+                                            topCategoriesItemPercentageList.add((int) f);
+
+                                        }
+
+                                        for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                            topCategoriesItemAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(topCategoriesItemAmountList.get(i)));
+
+                                        }
 
                                         if (amountList.size() > 5 && itemList.size() > 5) {
 
@@ -695,7 +818,6 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                             }
 
                                             modifiedAmountList.clear();
-                                            sortTheIndexList(indexList);
 
                                             for (int i = 0; i < indexList.size(); i++) {
 
@@ -790,17 +912,18 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                                 context,
                                                 colors
                                         );
-                                        topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
-                                                topCategoriesItemPercetageList,
-                                                amountList,
-                                                itemList,
-                                                context
-                                        );
-                                        topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                                     }
 
                                     expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                                    topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
+                                            topCategoriesItemPercentageList,
+                                            topCategoriesItemAmountList,
+                                            topCategoriesItemList,
+                                            context,
+                                            topCategoriesItemColors
+                                    );
+                                    topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                                 }
 
@@ -1083,19 +1206,19 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        int id = v.getId();
 
-            case R.id.monthListCardView:
-                spendingFragmentListener.showMonthListForSpending(month, year);
-                break;
+        if (id == R.id.monthListCardView) {
 
-            case R.id.showMoreButton:
-                spendingFragmentListener.showMoreExpensesForSpending(newAmountList, newItemList);
-                break;
+            spendingFragmentListener.showMonthListForSpending(month, year);
 
-            case R.id.yearListCardView:
-                spendingFragmentListener.showYearListForSpending(month, year);
-                break;
+        } else if (id == R.id.showMoreButton) {
+
+            spendingFragmentListener.showMoreExpensesForSpending(newAmountList, newItemList);
+
+        } else if (id == R.id.yearListCardView) {
+
+            spendingFragmentListener.showYearListForSpending(month, year);
 
         }
 

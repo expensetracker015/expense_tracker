@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/swap_sub_category"
+        android:title=""
+        android:icon="@drawable/swap_subcategory"
+        app:showAsAction="ifRoom">
+
+    </item>
+
+    <item
+        android:id="@+id/select_item"
+        android:title=""
+        android:icon="@drawable/select_item"
+        app:showAsAction="ifRoom">
+
+    </item>
+
+</menu>

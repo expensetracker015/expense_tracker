@@ -11,8 +11,8 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> fragmentList = new ArrayList<>();
-    private List<String> fragmentTitleList = new ArrayList<>();
+    private final List<Fragment> fragmentList = new ArrayList<>();
+    private final List<String> fragmentTitleList = new ArrayList<>();
 
     ViewPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
