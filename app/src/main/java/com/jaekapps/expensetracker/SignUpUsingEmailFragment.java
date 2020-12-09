@@ -130,7 +130,6 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
         if (Objects.requireNonNull(usernameTextInputEditText.getText()).toString().isEmpty()) {
 
             usernameTextInputEditText.setError("Username is required.");
-
             usernameStatus = false;
 
         } else {
@@ -232,15 +231,13 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
     @Override
     public void onClick(View v) {
 
-        switch (v.getId()) {
+        if (v.getId() == R.id.haveAnAccountCardView) {
 
-            case R.id.haveAnAccountCardView:
-                signUpListener.loadSignInUsingEmailFragment();
-                break;
+            signUpListener.loadSignInUsingEmailFragment();
 
-            case R.id.signUpButton:
-                signUpListener.signUp();
-                break;
+        } else if (v.getId() == R.id.signUpButton) {
+
+            signUpListener.signUp();
 
         }
 

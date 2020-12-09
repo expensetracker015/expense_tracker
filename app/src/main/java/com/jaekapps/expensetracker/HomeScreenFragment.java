@@ -25,17 +25,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class HomeScreenFragment extends Fragment implements View.OnClickListener {
+public class HomeScreenFragment extends Fragment implements DateRecyclerAdapter.DateClickListener, View.OnClickListener {
 
     private BEIAmount beiAmount;
-    private CardView beiAmountCardView, expenseCardView, incomeCardView;
+    private CardView beiAmountCardView;
     private DatabaseReference userDBReference;
-    private DateOfEachMonthRecyclerAdapter dateOfEachMonthRecyclerAdapter;
+    private DateRecyclerAdapter dateRecyclerAdapter;
+    private final String category, month, year;
     private FloatingActionButton expenseIncomeFab;
     private HomeScreenFragmentListener homeScreenFragmentListener;
     private LinearLayout noTransactionLayout;
@@ -43,7 +43,6 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     private ProgressBar loadingProgressbar;
     private RecyclerView homeScreenFragmentDateRecyclerView;
     private RelativeLayout categoryLayout;
-    private final String category, month, year;
     private String userId;
     private TextView balanceTextView, categoryTextView, expenseTextView, incomeTextView;
 
@@ -166,9 +165,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
     private void initializeOnClickListener() {
 
+        categoryLayout.setOnClickListener(this);
         expenseIncomeFab.setOnClickListener(this);
-        expenseCardView.setOnClickListener(this);
-        incomeCardView.setOnClickListener(this);
     }
 
     private void initializeViews(View view) {
@@ -181,13 +179,11 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
         categoryLayout.setVisibility(View.GONE);
         categoryTextView = view.findViewById(R.id.categoryTextView);
         dateList = new ArrayList<>();
-        expenseCardView = view.findViewById(R.id.expenseCardView);
         expenseIncomeFab = view.findViewById(R.id.expenseIncomeFab);
         expenseTextView = view.findViewById(R.id.expenseTextView);
         homeScreenFragmentDateRecyclerView = view.findViewById(R.id.homeScreenFragmentDateRecyclerView);
         homeScreenFragmentDateRecyclerView.setHasFixedSize(true);
         homeScreenFragmentDateRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        incomeCardView = view.findViewById(R.id.incomeCardView);
         incomeTextView = view.findViewById(R.id.incomeTextView);
         loadingProgressbar = view.findViewById(R.id.loadingProgressbar);
         noTransactionLayout = view.findViewById(R.id.noTransactionLayout);
@@ -200,8 +196,8 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     public interface HomeScreenFragmentListener {
 
         void goToExpenseIncomeActivity();
-        void showExpensePercentage();
-        void showIncomePercentage();
+        void goToItemsActivity(String date);
+        void showCategoryMenu();
     }
 
     public void updateTheViews(final Context context, final String category, String month, String year) {
@@ -234,21 +230,19 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
                                     }
 
                                     beiAmount.setBalance("-" + context.getResources()
-                                            .getString(R.string.rupees) + putComma(builder.toString()));
+                                            .getString(R.string.rupees) + " " + putComma(builder.toString()));
 
                                 } else {
 
-                                    Log.i("balance", String.valueOf(Float.parseFloat(beiAmount.getBalance())));
-                                    Log.i("bal", new BigDecimal(beiAmount.getBalance()).toString());
                                     beiAmount.setBalance(context.getResources()
-                                            .getString(R.string.rupees) + putComma(beiAmount.getBalance()));
+                                            .getString(R.string.rupees) + " " + putComma(beiAmount.getBalance()));
 
                                 }
 
-                                beiAmount.setExpense(context.getResources()
-                                        .getString(R.string.rupees) + putComma(beiAmount.getExpense()));
                                 beiAmount.setIncome(context.getResources()
-                                        .getString(R.string.rupees) + putComma(beiAmount.getIncome()));
+                                        .getString(R.string.rupees) + " " + putComma(beiAmount.getIncome()));
+                                beiAmount.setExpense(context.getResources()
+                                        .getString(R.string.rupees) + " " + putComma(beiAmount.getExpense()));
                                 balanceTextView.setText(beiAmount.getBalance());
                                 expenseTextView.setText(beiAmount.getExpense());
                                 incomeTextView.setText(beiAmount.getIncome());
@@ -307,15 +301,16 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
                             }
 
-                            dateOfEachMonthRecyclerAdapter = new DateOfEachMonthRecyclerAdapter(dateList);
-                            homeScreenFragmentDateRecyclerView.setAdapter(dateOfEachMonthRecyclerAdapter);
+                            dateRecyclerAdapter = new DateRecyclerAdapter(dateList);
+                            homeScreenFragmentDateRecyclerView.setAdapter(dateRecyclerAdapter);
+                            dateRecyclerAdapter.setDateClickListener(HomeScreenFragment.this);
 
                         } else {
 
                             categoryLayout.setVisibility(View.GONE);
                             dateList.clear();
-                            dateOfEachMonthRecyclerAdapter = new DateOfEachMonthRecyclerAdapter(dateList);
-                            homeScreenFragmentDateRecyclerView.setAdapter(dateOfEachMonthRecyclerAdapter);
+                            dateRecyclerAdapter = new DateRecyclerAdapter(dateList);
+                            homeScreenFragmentDateRecyclerView.setAdapter(dateRecyclerAdapter);
                             loadingProgressbar.setVisibility(View.GONE);
                             noTransactionLayout.setVisibility(View.VISIBLE);
 
@@ -348,6 +343,11 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
+    public void deleteDate(String date) {
+
+    }
+
+    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
@@ -368,20 +368,22 @@ public class HomeScreenFragment extends Fragment implements View.OnClickListener
 
         int id = v.getId();
 
-        if (id == R.id.expenseCardView) {
+        if (id == R.id.categoryLayout) {
 
-            homeScreenFragmentListener.showExpensePercentage();
+            homeScreenFragmentListener.showCategoryMenu();
 
         } else if (id == R.id.expenseIncomeFab) {
 
             homeScreenFragmentListener.goToExpenseIncomeActivity();
 
-        } else if (id == R.id.incomeCardView) {
-
-            homeScreenFragmentListener.showIncomePercentage();
-
         }
 
+    }
+
+    @Override
+    public void onDateClick(String date) {
+
+        homeScreenFragmentListener.goToItemsActivity(date);
     }
 
     @Override

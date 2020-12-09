@@ -34,9 +34,19 @@
         <item name="android:windowExitAnimation">@anim/slide_up_date_dialog</item>
     </style>
 
+    <style name="ExpenseRadioButtonTheme">
+        <item name="colorAccent">@color/red</item>
+        <item name="android:colorControlNormal">@color/colorWelcomeScreenText</item>
+    </style>
+
     <style name="ForgotPasswordDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up_dialog</item>
         <item name="android:windowExitAnimation">@anim/slide_down_dialog</item>
+    </style>
+
+    <style name="IncomeRadioButtonTheme">
+        <item name="colorAccent">@color/green</item>
+        <item name="android:colorControlNormal">@color/colorWelcomeScreenText</item>
     </style>
 
     <style name="IncomeProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">

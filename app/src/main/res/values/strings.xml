@@ -114,4 +114,11 @@
     <string name="the_nature_of_earning">The Nature of Earning</string>
     <string name="how_am_i_earning">How am I earning?</string>
     <string name="records">Records</string>
+    <string name="choose_category">CHOOSE CATEGORY</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="general">General</string>
+    <string name="money">Money</string>
+    <string name="date">Date</string>
+    <string name="memo">Memo</string>
+    <string name="edit">Edit</string>
 </resources>

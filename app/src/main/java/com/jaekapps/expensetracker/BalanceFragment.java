@@ -378,7 +378,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                     beiAmount.setBalance(putComma(builder.toString()));
                                     balance = "-" + context.getResources()
-                                            .getString(R.string.rupees) + beiAmount.getBalance();
+                                            .getString(R.string.rupees) + " " + beiAmount.getBalance();
                                     balanceStatusTextView.setVisibility(View.VISIBLE);
                                     String status = "NEGATIVE BALANCE";
                                     balanceStatusTextView.setText(status);
@@ -387,7 +387,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                     beiAmount.setBalance(putComma(beiAmount.getBalance()));
                                     balance = context.getResources()
-                                            .getString(R.string.rupees) + beiAmount.getBalance();
+                                            .getString(R.string.rupees) + " " + beiAmount.getBalance();
                                     balanceStatusTextView.setVisibility(View.GONE);
 
                                 }
@@ -413,7 +413,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                         } else {
 
                             balance = context.getResources()
-                                    .getString(R.string.rupees) + "0";
+                                    .getString(R.string.rupees) + " 0";
                             balanceAmountTextView.setText(balance);
                             balanceByCurrenciesProgressBar.setProgress(0);
                             balanceByCurrencyTextView.setText(balance);
@@ -458,7 +458,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                         if (beiAmount.getBalance().equals("0")) {
 
                                             balance = context.getResources()
-                                                    .getString(R.string.rupees) + beiAmount.getBalance();
+                                                    .getString(R.string.rupees) + " " + beiAmount.getBalance();
                                             balAmountTextView.setText(balance);
                                             balancePieChart.setData(null);
                                             balancePieChart.invalidate();
@@ -478,13 +478,13 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
 
                                                 beiAmount.setBalance(putComma(builder.toString()));
                                                 balance = "-" + context.getResources()
-                                                        .getString(R.string.rupees) + beiAmount.getBalance();
+                                                        .getString(R.string.rupees) + " " + beiAmount.getBalance();
 
                                             } else {
 
                                                 beiAmount.setBalance(putComma(beiAmount.getBalance()));
                                                 balance = context.getResources()
-                                                        .getString(R.string.rupees) + beiAmount.getBalance();
+                                                        .getString(R.string.rupees) + " " + beiAmount.getBalance();
 
                                             }
 
@@ -563,7 +563,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                 balance_amount_percentage = new float[balance_amount.length];
                                 balance = String.valueOf(total_balance_amount);
                                 balance = context.getResources()
-                                        .getString(R.string.rupees) + putComma(balance);
+                                        .getString(R.string.rupees) + " " + putComma(balance);
                                 balAmountTextView.setText(balance);
                                 balancePieChart.animateY(1000, Easing.EaseInOutCubic);
                                 balancePieChart.getDescription().setEnabled(false);
@@ -594,7 +594,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                                         int index = (int) h.getX();
                                         String bal = String.valueOf(balance_amount[index]);
                                         bal = context.getResources()
-                                                .getString(R.string.rupees) + putComma(bal);
+                                                .getString(R.string.rupees) + " " + putComma(bal);
                                         balancePieChart.setCenterText(monthList.get(index) + "\n" + bal + "\n" + balance_amount_percentage[index] + "%");
                                     }
 
@@ -610,7 +610,7 @@ public class BalanceFragment extends Fragment implements View.OnClickListener {
                         } else {
 
                             balance = context.getResources()
-                                    .getString(R.string.rupees) + "0";
+                                    .getString(R.string.rupees) + " 0";
                             balAmountTextView.setText(balance);
                             balancePieChart.setData(null);
                             balancePieChart.invalidate();

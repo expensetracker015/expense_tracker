@@ -22,7 +22,6 @@
             android:rowCount="1">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/incomeCardView"
                 android:layout_width="120dp"
                 android:layout_height="80dp"
                 android:layout_column="0"
@@ -78,7 +77,6 @@
             </View>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/expenseCardView"
                 android:layout_width="120dp"
                 android:layout_height="80dp"
                 android:layout_column="2"
@@ -189,12 +187,16 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/category_layout_border"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/categoryTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:fontFamily="@font/comfortaa_bold"
             android:textColor="@color/colorPrimary">
 
@@ -268,6 +270,7 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="20dp"
         android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/add_item"
         android:src="@drawable/add"
         app:borderWidth="0dp">
 

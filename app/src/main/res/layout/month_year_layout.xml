@@ -23,7 +23,7 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#673AB7"
+            app:cardBackgroundColor="@color/teal"
             app:cardCornerRadius="0dp"
             app:cardElevation="0dp">
 
@@ -51,7 +51,7 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#673AB7"
+            app:cardBackgroundColor="@color/teal"
             app:cardCornerRadius="0dp"
             app:cardElevation="0dp">
 

@@ -42,7 +42,7 @@ public class TopExpenseCategoriesRecyclerAdapter extends RecyclerView.Adapter<To
 
         holder.topCategoryItemAmount.setText(amountList.get(position));
         holder.topCategoryItemName.setText(itemList.get(position));
-        holder.topCategoryProgressBar.animateProgress(3000, 0, topCategoriesItemPercentageList.get(position));
+        holder.topCategoryProgressBar.animateProgress(2500, 0, topCategoriesItemPercentageList.get(position));
         holder.topCategoryProgressBar.setProgressColors(context.getResources().getColor(R.color.colorProgressBarBackground, context.getTheme()), colors[position]);
     }
 

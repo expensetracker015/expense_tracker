@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jaekapps.expensetracker">
 
@@ -18,11 +17,12 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".SignInOrSignUpActivity" />
-        <activity
-            android:name=".AddItemCategoryActivity" />
-        <activity
-            android:name=".ExpenseIncomeActivity" />
+            android:name=".ItemDetailsActivity">
+        </activity>
+        <activity android:name=".ItemsActivity" />
+        <activity android:name=".SignInOrSignUpActivity" />
+        <activity android:name=".AddItemCategoryActivity" />
+        <activity android:name=".ExpenseIncomeActivity" />
         <activity
             android:name=".SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreenActivity">

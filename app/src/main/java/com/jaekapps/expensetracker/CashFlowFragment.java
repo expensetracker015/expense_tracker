@@ -484,13 +484,13 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                     beiAmount.setBalance(putComma(builder.toString()));
                                     balance = "-" + context.getResources()
-                                            .getString(R.string.rupees) + beiAmount.getBalance();
+                                            .getString(R.string.rupees) + " " + beiAmount.getBalance();
 
                                 } else {
 
                                     beiAmount.setBalance(putComma(beiAmount.getBalance()));
                                     balance = context.getResources()
-                                            .getString(R.string.rupees) + beiAmount.getBalance();
+                                            .getString(R.string.rupees) + " " +  beiAmount.getBalance();
 
                                 }
 
@@ -501,24 +501,24 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
                                 if (beiAmount.getExpense().equals("0")) {
 
                                     expense = context.getResources()
-                                            .getString(R.string.rupees) + "0";
+                                            .getString(R.string.rupees) + " 0";
 
                                 } else {
 
                                     expense = "-" + context.getResources()
-                                            .getString(R.string.rupees) + beiAmount.getExpense();
+                                            .getString(R.string.rupees) + " " + beiAmount.getExpense();
 
                                 }
 
                                 beiAmount.setIncome(putComma(beiAmount.getIncome()));
                                 income = context.getResources()
-                                        .getString(R.string.rupees) + beiAmount.getIncome();
+                                        .getString(R.string.rupees) + " " + beiAmount.getIncome();
                                 cashFlowBalanceAmountTextView.setText(balance);
                                 cashFlowExpenseAmountTextView.setText(expense);
                                 cashFlowIncomeAmountTextView.setText(income);
                                 expense = context
                                         .getResources()
-                                        .getString(R.string.rupees) + beiAmount.getExpense();
+                                        .getString(R.string.rupees) + " " + beiAmount.getExpense();
                                 expensesAmountTextView.setText(expense);
                                 incomeAmountTextView.setText(income);
 
@@ -616,7 +616,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                             BigDecimal percentage = total_expense_amount.divide(new BigDecimal(String.valueOf(exp)), 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
                                                             expenseAmountList.add(context.getResources()
-                                                                    .getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                                                    .getString(R.string.rupees) + " " + putComma(String.valueOf(total_expense_amount)));
                                                             expense_amount_percentage[i] = Float.parseFloat(percentage.toString());
 
                                                         }
@@ -756,7 +756,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                                                             BigDecimal percentage = total_income_amount.divide(new BigDecimal(String.valueOf(inc)), 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
                                                             incomeAmountList.add(context.getResources()
-                                                                    .getString(R.string.rupees) + putComma(String.valueOf(total_income_amount)));
+                                                                    .getString(R.string.rupees) + " " +putComma(String.valueOf(total_income_amount)));
                                                             income_amount_percentage[i] = Float.parseFloat(decimalFormat.format(percentage));
 
                                                         }
@@ -830,7 +830,7 @@ public class CashFlowFragment extends Fragment implements View.OnClickListener {
 
                             balance = expense = income = context
                                     .getResources()
-                                    .getString(R.string.rupees) + "0";
+                                    .getString(R.string.rupees) + " 0";
                             cashFlowBalanceAmountTextView.setText(balance);
                             cashFlowExpenseProgressBar.setProgress(0);
                             cashFlowExpenseAmountTextView.setText(expense);

@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/subheader_1"
-        android:title="@string/home">
+        android:title="@string/general">
 
         <menu>
 
@@ -15,6 +15,13 @@
                     android:id="@+id/home"
                     android:title="@string/home"
                     android:icon="@drawable/home">
+
+                </item>
+
+                <item
+                    android:id="@+id/records"
+                    android:title="@string/records"
+                    android:icon="@drawable/records">
 
                 </item>
 
@@ -51,13 +58,6 @@
                     android:id="@+id/calendar"
                     android:title="@string/calendar"
                     android:icon="@drawable/calendar">
-
-                </item>
-
-                <item
-                    android:id="@+id/chart"
-                    android:title="@string/chart"
-                    android:icon="@drawable/chart">
 
                 </item>
 

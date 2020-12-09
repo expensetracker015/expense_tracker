@@ -15,8 +15,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -46,15 +44,16 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeScreenActivity extends AppCompatActivity implements BalanceFragment.BalanceFragmentListener,
-        CashFlowFragment.CashFlowFragmentListener, DatePickerDialogBox.DatePickerListener, EarningFragment.EarningFragmentListener,
-        HomeScreenFragment.HomeScreenFragmentListener, NavigationView.OnNavigationItemSelectedListener,
-        SpendingFragment.SpendingFragmentListener {
+        CashFlowFragment.CashFlowFragmentListener, CategoryMenuDialogBox.CategoryPickerListener, DatePickerDialogBox.DatePickerListener,
+        EarningFragment.EarningFragmentListener, HomeScreenFragment.HomeScreenFragmentListener, NavigationView.OnNavigationItemSelectedListener,
+        RecordsFragment.RecordsFragmentListener, SpendingFragment.SpendingFragmentListener {
 
     int currentMonth, dayOfTheWeek;
     private AlertDialog dialog;
     private AlertDialog.Builder builder;
     private BudgetsFragment budgetsFragment;
     private CardView calendarCardView;
+    private CategoryMenuDialogBox categoryMenuDialogBox;
     private CircleImageView profilePicImageView;
     private DatabaseReference userDBReference;
     private DatePickerDialogBox datePickerDialogBox;
@@ -66,8 +65,8 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     private int currentDay,  currentYear;
     private int[] expenses_colors, income_colors;
     private List<String> monthList, yearList;
-    private Menu popupMenu;
     private NavigationView navigationView;
+    private RecordsFragment recordsFragment;
     private SignInUsingEmailConfigActivity signInUsingEmailConfigActivity;
     private SignInUsingGoogleConfigActivity signInUsingGoogleConfigActivity;
     private StatisticsFragment statisticsFragment;
@@ -443,98 +442,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         return month;
     }
 
-    private String putComma(String amount) {
-
-        char[] amt;
-        int flag = 0, i, pos = 0;
-        String new_amount = "";
-        StringBuilder amountBuilder = new StringBuilder(new_amount);
-
-        if (amount.contains(".")) {
-
-            amt = amount.toCharArray();
-
-            for (i = 0; i < amt.length; i++) {
-
-                if (amt[i] == '.') {
-
-                    pos = i;
-                    break;
-
-                } else {
-
-                    amountBuilder.append(amt[i]);
-
-                }
-
-            }
-
-            new_amount = amountBuilder.toString();
-            amountBuilder = new StringBuilder();
-
-            if (new_amount.length() >= 4) {
-
-                amt = new_amount.toCharArray();
-                char[] new_amt = amount.toCharArray();
-
-                for (i = amt.length - 1; i >= 0; i--) {
-
-                    if (flag < 3) {
-
-                        amountBuilder.append(amt[i]);
-                        flag++;
-
-                    } else {
-
-                        amountBuilder.append(',');
-                        amountBuilder.append(amt[i]);
-                        flag = 1;
-
-                    }
-
-                }
-
-                amountBuilder.reverse();
-
-                for (i = pos; i < new_amt.length; i++) {
-
-                    amountBuilder.append(new_amt[i]);
-
-                }
-
-                new_amount = amountBuilder.toString();
-
-            }
-
-        } else {
-
-            amt = amount.toCharArray();
-
-            for (i = amt.length - 1; i >= 0; i--) {
-
-                if (flag < 3) {
-
-                    amountBuilder.append(amt[i]);
-                    flag++;
-
-                } else {
-
-                    amountBuilder.append(",");
-                    amountBuilder.append(amt[i]);
-                    flag = 1;
-
-                }
-
-            }
-
-            amountBuilder.reverse();
-            new_amount = amountBuilder.toString();
-
-        }
-
-        return new_amount;
-    }
-
     private void changeTheActionBarTitle(String title) {
 
         if (getSupportActionBar() != null) {
@@ -543,12 +450,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
         }
 
-    }
-
-    private void hideTheCategoryMenuItems() {
-
-        popupMenu.findItem(R.id.expense).setVisible(false);
-        popupMenu.findItem(R.id.income).setVisible(false);
     }
 
     private void initialization() {
@@ -629,13 +530,18 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         };
         monthList = new ArrayList<>();
         monthNameTextView = findViewById(R.id.monthNameTextView);
-        monthNameTextView.setText(month);
+        monthNameTextView.setText(chosenMonth);
         navigationView = findViewById(R.id.navigationView);
         navigationView.setCheckedItem(R.id.home);
         navigationView.setNavigationItemSelectedListener(this);
+        recordsFragment = new RecordsFragment(
+                "Expense_Category",
+                month,
+                String.valueOf(currentYear)
+        );
         signInUsingEmailConfigActivity = new SignInUsingEmailConfigActivity(this);
         signInUsingGoogleConfigActivity = new SignInUsingGoogleConfigActivity(this);
-        statisticsFragment = new StatisticsFragment(month, String.valueOf(currentYear));
+        statisticsFragment = new StatisticsFragment(chosenMonth, String.valueOf(currentYear));
         tabPosition = new TabPosition(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -750,12 +656,25 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    statisticsFragment.updateTheFragment(
-                                            HomeScreenActivity.this,
-                                            tabPosition.getTabPosition(),
-                                            selected_month,
-                                            current_year
-                                    );
+                                    if (recordsFragment != null && recordsFragment.isVisible()) {
+
+                                        recordsFragment.updateViews(
+                                                HomeScreenActivity.this,
+                                                selected_month,
+                                                current_year
+                                        );
+
+                                    } else if (statisticsFragment != null && statisticsFragment.isVisible()) {
+
+                                        statisticsFragment.updateTheFragment(
+                                                HomeScreenActivity.this,
+                                                tabPosition.getTabPosition(),
+                                                selected_month,
+                                                current_year
+                                        );
+
+                                    }
+
                                 }
                             });
                             builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -777,12 +696,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                         Log.e("database_error", error.getMessage());
                     }
                 });
-    }
-
-    private void showTheCategoryMenuItems() {
-
-        popupMenu.findItem(R.id.expense).setVisible(true);
-        popupMenu.findItem(R.id.income).setVisible(true);
     }
 
     private void showToast(String message) {
@@ -854,12 +767,25 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    statisticsFragment.updateTheFragment(
-                                            HomeScreenActivity.this,
-                                            tabPosition.getTabPosition(),
-                                            current_month,
-                                            selected_year
-                                    );
+                                    if (recordsFragment != null && recordsFragment.isVisible()) {
+
+                                        recordsFragment.updateViews(
+                                                HomeScreenActivity.this,
+                                                current_month,
+                                                selected_year
+                                        );
+
+                                    } else if (statisticsFragment != null && statisticsFragment.isVisible()) {
+
+                                        statisticsFragment.updateTheFragment(
+                                                HomeScreenActivity.this,
+                                                tabPosition.getTabPosition(),
+                                                current_month,
+                                                selected_year
+                                        );
+
+                                    }
+
                                 }
                             });
                             builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -1056,18 +982,8 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 }
 
                 datePickerDialogBox.show(getSupportFragmentManager(), "date picker dialog");
-
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.category_menu, menu);
-        popupMenu = menu;
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -1079,7 +995,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
             calendarCardView.setVisibility(View.GONE);
             changeTheActionBarTitle("Budgets");
-            hideTheCategoryMenuItems();
             loadTheFragmentWithSlideLeftCustomAnimation(budgetsFragment);
 
         } else if (id == R.id.calendar) {
@@ -1087,12 +1002,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
             calendarCardView.setVisibility(View.GONE);
             changeTheActionBarTitle("Calendar");
             Toast.makeText(this, "calendar", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.chart) {
-
-            calendarCardView.setVisibility(View.GONE);
-            changeTheActionBarTitle("Chart");
-            Toast.makeText(this, "chart", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.goals) {
 
@@ -1112,7 +1021,12 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
             changeTheActionBarTitle("");
             loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
             monthNameTextView.setText(month);
-            showTheCategoryMenuItems();
+
+        } else if (id == R.id.records) {
+
+            calendarCardView.setVisibility(View.GONE);
+            changeTheActionBarTitle("Records");
+            loadTheFragmentWithSlideLeftCustomAnimation(recordsFragment);
 
         } else if (id == R.id.settings) {
 
@@ -1165,7 +1079,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
             calendarCardView.setVisibility(View.GONE);
             changeTheActionBarTitle("Statistics");
-            hideTheCategoryMenuItems();
             loadTheFragmentWithSlideLeftCustomAnimation(statisticsFragment);
 
         }
@@ -1175,37 +1088,15 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        if (item.getItemId() == R.id.expense) {
-
-            chosenCategory = "Expense_Category";
-            homeScreenFragment.updateTheViews(
-                    this,
-                    "Expense_Category",
-                    chosenMonth,
-                    chosenYear
-            );
-
-        } else if (item.getItemId() == R.id.income) {
-
-            chosenCategory = "Income_Category";
-            homeScreenFragment.updateTheViews(
-                    this,
-                    "Income_Category",
-                    chosenMonth,
-                    chosenYear
-            );
-
-        }
-
-        return true;
-    }
-
-    @Override
     public void cancel() {
 
         datePickerDialogBox.dismiss();
+    }
+
+    @Override
+    public void cancel_menu() {
+
+        categoryMenuDialogBox.dismiss();
     }
 
     @Override
@@ -1247,9 +1138,43 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
+    public void confirm(String category) {
+
+        if (category.equals("Expense_Category")) {
+
+            chosenCategory = "Expense_Category";
+
+        } else if (category.equals("Income_Category")) {
+
+            chosenCategory = "Income_Category";
+
+        }
+
+        homeScreenFragment.updateTheViews(
+                this,
+                category,
+                chosenMonth,
+                chosenYear
+        );
+
+        categoryMenuDialogBox.dismiss();
+    }
+
+    @Override
     public void goToExpenseIncomeActivity() {
 
         startActivityForResult(new Intent(this, ExpenseIncomeActivity.class), 1);
+    }
+
+    @Override
+    public void goToItemsActivity(String date) {
+
+        Intent intent = new Intent(this, ItemsActivity.class);
+        intent.putExtra("category", chosenCategory);
+        intent.putExtra("date", date);
+        intent.putExtra("month", chosenMonth);
+        intent.putExtra("year", chosenYear);
+        startActivity(intent);
     }
 
     @Override
@@ -1258,16 +1183,20 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
 
             drawerLayout.closeDrawer(GravityCompat.START);
-            showTheCategoryMenuItems();
 
         } else if ((budgetsFragment != null && budgetsFragment.isVisible())
+                || (recordsFragment != null && recordsFragment.isVisible())
                 || (statisticsFragment != null && statisticsFragment.isVisible())) {
 
             changeTheActionBarTitle("");
             calendarCardView.setVisibility(View.VISIBLE);
+            homeScreenFragment = new HomeScreenFragment(
+                    chosenCategory,
+                    chosenMonth,
+                    chosenYear
+            );
             loadTheFragmentWithSlideRightCustomAnimation(homeScreenFragment);
             navigationView.setCheckedItem(R.id.home);
-            showTheCategoryMenuItems();
 
         } else if (homeScreenFragment != null && homeScreenFragment.isVisible()) {
 
@@ -1310,13 +1239,10 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
-    public void showExpensePercentage() {
+    public void showCategoryMenu() {
 
-    }
-
-    @Override
-    public void showIncomePercentage() {
-
+        categoryMenuDialogBox = new CategoryMenuDialogBox(chosenCategory);
+        categoryMenuDialogBox.show(getSupportFragmentManager(), "category menu dialog box");
     }
 
     @Override
@@ -1352,12 +1278,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     @Override
     public void showMoreIncomeForEarning(ArrayList<String> amountList, ArrayList<String> itemList) {
 
-        for (int i = 0; i < amountList.size(); i++) {
-
-            amountList.set(i, getResources().getString(R.string.rupees) + putComma(amountList.get(i)));
-
-        }
-
         IncomeItemsListDialogBox incomeItemsListDialogBox = new IncomeItemsListDialogBox(
                 addIconsToIconList(itemList),
                 amountList,
@@ -1374,6 +1294,18 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
+    public void showMonthListForRecords(String current_month, String current_year) {
+
+        showMonthList(current_month, current_year);
+    }
+
+    @Override
+    public void showYearListForRecords(String current_month, String current_year) {
+
+        showYearList(current_month, current_year);
+    }
+
+    @Override
     public void showMonthListForSpending(String current_month, String current_year) {
 
         showMonthList(current_month, current_year);
@@ -1381,12 +1313,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
     @Override
     public void showMoreExpensesForSpending(ArrayList<String> amountList, ArrayList<String> itemList) {
-
-        for (int i = 0; i < amountList.size(); i++) {
-
-            amountList.set(i, getResources().getString(R.string.rupees) + putComma(amountList.get(i)));
-
-        }
 
         ExpenseItemsListDialogBox expenseItemsListDialogBox = new ExpenseItemsListDialogBox(
                 addIconsToIconList(itemList),

@@ -175,7 +175,7 @@ public class SignInUsingEmailFragment extends Fragment implements View.OnClickLi
 
         } catch (Exception e) {
 
-            throw new ClassCastException(context.toString() + " must implement SignInListener");
+            throw new ClassCastException(context.toString() + " must implement SignInListener!");
 
         }
 

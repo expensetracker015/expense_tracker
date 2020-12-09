@@ -617,7 +617,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 beiAmount.setExpense(putComma(beiAmount.getExpense()));
                                 expense = context.getResources()
-                                        .getString(R.string.rupees) + beiAmount.getExpense();
+                                        .getString(R.string.rupees) + " " + beiAmount.getExpense();
                                 natureOfSpendingAmountTextView.setText(expense);
                                 spendingAmountTextView.setText(expense);
 
@@ -626,7 +626,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                         } else {
 
                             expense = context.getResources()
-                                    .getString(R.string.rupees) + "0";
+                                    .getString(R.string.rupees) + " 0";
                             natureOfSpendingAmountTextView.setText(expense);
                             spendingAmountTextView.setText(expense);
 
@@ -672,7 +672,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                     if (amountList.size() == 1 && itemList.size() == 1) {
 
-                                        amountList.set(0, context.getResources().getString(R.string.rupees) + putComma(amountList.get(0)));
+                                        amountList.set(0, context.getResources().getString(R.string.rupees) + " " + putComma(amountList.get(0)));
                                         expenseItemList.clear();
                                         itemIconList.clear();
                                         itemIconList = addIconsToIconList(itemList);
@@ -773,7 +773,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
 
-                                            topCategoriesItemAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(topCategoriesItemAmountList.get(i)));
+                                            topCategoriesItemAmountList.set(i, context.getResources().getString(R.string.rupees) + " " + putComma(topCategoriesItemAmountList.get(i)));
 
                                         }
 
@@ -861,7 +861,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         for (int i = 0; i < modifiedAmountList.size(); i++) {
 
-                                            modifiedAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(modifiedAmountList.get(i)));
+                                            modifiedAmountList.set(i, context.getResources().getString(R.string.rupees) + " " + putComma(modifiedAmountList.get(i)));
 
                                         }
 
@@ -900,7 +900,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                             @Override
                                             public void onNothingSelected() {
 
-                                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
+                                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n" + context.getResources().getString(R.string.rupees) + " " + putComma(finalTotal_expense_amount.toString()));
                                             }
                                         });
                                         itemIconList.clear();
@@ -930,9 +930,8 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                             } else {
 
                                 amountList.clear();
-                                final ArrayList<String> dateList;
                                 boolean alreadyAdded;
-                                dateList = new ArrayList<>();
+                                final ArrayList<String> dateList = new ArrayList<>();
                                 dateList.clear();
                                 HashMap<String, String> itemHashMap = new HashMap<>();
                                 itemHashMap.clear();
@@ -940,6 +939,9 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                 newAmountList.clear();
                                 newItemList.clear();
                                 String item;
+                                topCategoriesItemAmountList.clear();
+                                topCategoriesItemList.clear();
+                                topCategoriesItemPercentageList.clear();
 
                                 for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
 
@@ -1006,6 +1008,67 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                 }
 
                                 indexList.clear();
+                                topCategoriesItemAmountList = sortTheTopCategoriesItemAmountList(newAmountList);
+
+                                for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                    String amount = topCategoriesItemAmountList.get(i);
+
+                                    for (int j = 0; j < newAmountList.size(); j++) {
+
+                                        if (amount.equals(newAmountList.get(j))) {
+
+                                            if (topCategoriesItemIndexList.size() != 0) {
+
+                                                if (!topCategoriesItemIndexList.contains(j)) {
+
+                                                    topCategoriesItemIndexList.add(j);
+
+                                                }
+
+                                            } else {
+
+                                                topCategoriesItemIndexList.add(j);
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                                topCategoriesItemAmountList.clear();
+
+                                for (int i = 0; i < topCategoriesItemIndexList.size(); i++) {
+
+                                    topCategoriesItemAmountList.add(newAmountList.get(topCategoriesItemIndexList.get(i)));
+                                    topCategoriesItemList.add(newItemList.get(topCategoriesItemIndexList.get(i)));
+
+                                }
+
+                                BigDecimal percentage;
+                                BigDecimal total_amount = new BigDecimal(topCategoriesItemAmountList.get(0));
+                                float[] item_percentage = new float[topCategoriesItemAmountList.size()];
+
+                                for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                    percentage = new BigDecimal(topCategoriesItemAmountList.get(i)).divide(total_amount, 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
+                                    item_percentage[i] = Float.parseFloat(new DecimalFormat("##.##").format(percentage));
+
+                                }
+
+                                for (float f : item_percentage) {
+
+                                    topCategoriesItemPercentageList.add((int) f);
+
+                                }
+
+                                for (int i = 0; i < topCategoriesItemAmountList.size(); i++) {
+
+                                    topCategoriesItemAmountList.set(i, context.getResources().getString(R.string.rupees) + " " + putComma(topCategoriesItemAmountList.get(i)));
+
+                                }
 
                                 if (newAmountList.size() > 5 && newItemList.size() > 5) {
 
@@ -1093,14 +1156,14 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 for (int i = 0; i < modifiedAmountList.size(); i++) {
 
-                                    modifiedAmountList.set(i, context.getResources().getString(R.string.rupees) + putComma(modifiedAmountList.get(i)));
+                                    modifiedAmountList.set(i, context.getResources().getString(R.string.rupees) + " " + putComma(modifiedAmountList.get(i)));
 
                                 }
 
                                 spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                 spendingCategoryPieChart.getDescription().setEnabled(false);
                                 spendingCategoryPieChart.getLegend().setWordWrapEnabled(true);
-                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(String.valueOf(total_expense_amount)));
+                                spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(total_expense_amount)));
                                 spendingCategoryPieChart.setDrawEntryLabels(false);
                                 spendingCategoryPieChart.setDrawHoleEnabled(true);
                                 spendingCategoryPieChart.setHoleRadius(65);
@@ -1132,7 +1195,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                     @Override
                                     public void onNothingSelected() {
 
-                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + putComma(finalTotal_expense_amount.toString()));
+                                        spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + " " + putComma(finalTotal_expense_amount.toString()));
                                     }
                                 });
                                 itemIconList = addIconsToIconList(modifiedItemList);
@@ -1144,6 +1207,14 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         colors
                                 );
                                 expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                                topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
+                                        topCategoriesItemPercentageList,
+                                        topCategoriesItemAmountList,
+                                        topCategoriesItemList,
+                                        context,
+                                        topCategoriesItemColors
+                                );
+                                topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                             }
 
@@ -1163,6 +1234,17 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                     colors
                             );
                             expenseItemRecyclerView.setAdapter(top5ExpensesRecyclerAdapter);
+                            topCategoriesItemAmountList.clear();
+                            topCategoriesItemList.clear();
+                            topCategoriesItemPercentageList.clear();
+                            topExpenseCategoriesRecyclerAdapter = new TopExpenseCategoriesRecyclerAdapter(
+                                    topCategoriesItemPercentageList,
+                                    topCategoriesItemAmountList,
+                                    topCategoriesItemList,
+                                    context,
+                                    topCategoriesItemColors
+                            );
+                            topExpenseCategoriesRecyclerView.setAdapter(topExpenseCategoriesRecyclerAdapter);
 
                         }
 
