@@ -34,14 +34,14 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
     private BEIAmount beiAmount;
     private CardView monthListCardView, yearListCardView;
     private DatabaseReference userDBReference;
-    private final String category, month, year;
+    private final String category;
     private int[] colors;
     private LinearLayout noTransactionLayout;
     private ProgressBar loadingProgressbar;
     private RecordsFragmentListener recordsFragmentListener;
     private RecordsItemRecyclerAdapter recordsItemRecyclerAdapter;
     private RecyclerView recordsRecyclerView;
-    private String userId;
+    private String month, userId, year;
     private TextView monthTitleTextView, recordAmountTextView, recordMonthYearTextView, yearTitleTextView;
 
     RecordsFragment(String category, String month, String year) {
@@ -325,6 +325,12 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
 
     public void updateViews(final Context context, final String month, final String year) {
 
+        itemAmountList.clear();
+        itemDateList.clear();
+        itemIconList.clear();
+        itemNameList.clear();
+        this.month = month;
+        this.year = year;
         monthTitleTextView.setText(month);
         yearTitleTextView.setText(year);
         userDBReference.child(userId)
@@ -342,7 +348,16 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
 
                             if (beiAmount != null) {
 
-                                beiAmount.setExpense("-" + context.getResources().getString(R.string.rupees) + " " + putComma(beiAmount.getExpense()));
+                                if (beiAmount.getExpense().equals("0")) {
+
+                                    beiAmount.setExpense(context.getResources().getString(R.string.rupees) + " " + putComma(beiAmount.getExpense()));
+
+                                } else {
+
+                                    beiAmount.setExpense("-" + context.getResources().getString(R.string.rupees) + " " + putComma(beiAmount.getExpense()));
+
+                                }
+
                                 recordAmountTextView.setText(beiAmount.getExpense());
                                 recordMonthYearTextView.setText(month + " " + year);
 

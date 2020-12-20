@@ -841,6 +841,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
                     }
 
+                    chosenCategory = data.getStringExtra("category");
                     chosenMonth = data.getStringExtra("month");
                     chosenYear = data.getStringExtra("year");
                     homeScreenFragment.updateTheViews(
