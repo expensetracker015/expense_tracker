@@ -44,8 +44,8 @@ public class Top5ExpensesRecyclerAdapter extends RecyclerView.Adapter<Top5Expens
     public void onBindViewHolder(@NonNull Top5ExpensesViewHolder holder, int position) {
 
         holder.expenseTypeTextView.setText("Cash");
-        holder.itemAmountTextView.setTextColor(context.getResources().getColor(R.color.red, context.getTheme()));
         holder.itemAmountTextView.setText(amountList.get(position));
+        holder.itemAmountTextView.setTextColor(context.getResources().getColor(R.color.red, context.getTheme()));
         holder.itemIconCardView.setCardBackgroundColor(colors[position]);
         holder.itemIconImageView.setImageResource(itemIconList.get(position));
         holder.itemNameTextView.setText(itemList.get(position));

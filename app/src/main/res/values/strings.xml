@@ -38,7 +38,8 @@
     <string name="expenses">Expenses</string>
     <string name="balance">Balance</string>
     <string name="icon">Icon</string>
-    <string name="create_budgets">Create Budgets</string>
+    <string name="create_periodic_budgets">Create Periodic Budgets</string>
+    <string name="create_one_time_budgets">Create One-Time Budgets</string>
     <string name="budget_info_1">Keep your business on track and</string>
     <string name="budget_info_2">under control with budgets.</string>
     <string name="category">Category</string>

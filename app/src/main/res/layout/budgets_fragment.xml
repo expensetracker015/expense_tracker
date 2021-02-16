@@ -1,82 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/budgets_fragment_linearLayout"
-        android:layout_width="wrap_content"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/budgetsTabLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="true">
+        android:background="@color/colorPrimary"
+        app:tabGravity="fill"
+        app:tabIndicatorHeight="3.5dp"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="#FFFFFF"
+        app:tabTextColor="#FFFFFF">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/budget"
-            android:layout_gravity="center">
+    </com.google.android.material.tabs.TabLayout>
 
-        </de.hdodenhof.circleimageview.CircleImageView>
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/budgetsViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/budgetsTabLayout">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_budgets"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/comfortaa_bold"
-            android:textSize="20sp"
-            android:textColor="#000000"
-            android:textStyle="bold">
-
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="@string/budget_info_1"
-            android:textSize="16sp">
-
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="@string/budget_info_2"
-            android:textSize="16sp">
-
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/comfortaa_bold"
-            android:text="@string/start_with_to_create_first_one"
-            android:textSize="16sp">
-
-        </TextView>
-
-    </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/budgetFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:src="@drawable/add"
-        app:borderWidth="0dp">
-
-    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+    </androidx.viewpager.widget.ViewPager>
 
 </RelativeLayout>

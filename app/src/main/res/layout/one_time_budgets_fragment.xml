@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/one_time_budgets_linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/budget"
+            android:layout_gravity="center">
+
+        </de.hdodenhof.circleimageview.CircleImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_one_time_budgets"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/comfortaa_bold"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:textStyle="bold">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="@string/budget_info_1"
+            android:textSize="16sp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="@string/budget_info_2"
+            android:textSize="16sp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/comfortaa_bold"
+            android:text="@string/start_with_to_create_first_one"
+            android:textSize="16sp">
+
+        </TextView>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/oneTimeBudgetFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/add_item"
+        android:src="@drawable/add"
+        app:borderWidth="0dp">
+
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+
+</RelativeLayout>
