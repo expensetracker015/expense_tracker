@@ -8,7 +8,7 @@
     android:background="@drawable/splash_screen_image"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".view.MainActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -20,11 +20,12 @@
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="10dp">
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/app_logo"
                 android:layout_gravity="center">
 
@@ -40,7 +41,7 @@
             android:fontFamily="@font/comfortaa_bold"
             android:text="@string/loginScreenAppName"
             android:textColor="#FFFFFF"
-            android:textSize="23sp">
+            android:textSize="20sp">
 
         </TextView>
 
@@ -51,11 +52,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
         android:layout_gravity="center"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="350dp"
-            android:layout_height="200dp"
+            android:layout_width="340dp"
+            android:layout_height="190dp"
             android:layout_gravity="center"
             android:src="@drawable/welcome_screen_logo">
 
@@ -79,11 +81,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/comfortaa_bold"
         android:gravity="center"
         android:text="@string/you_just_took_the_first_step_towards"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textColor="#FFFFFF">
 
     </TextView>
@@ -94,7 +98,8 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
-        app:cardCornerRadius="10dp">
+        app:cardCornerRadius="10dp"
+        app:cardElevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -117,8 +122,10 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_margin="7dp"
                     android:layout_gravity="start"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="7dp"
                     android:src="@drawable/sign_in_using_email">
 
                 </androidx.appcompat.widget.AppCompatImageView>
@@ -127,6 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginStart="15dp"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/signInButtonText"
                     android:textColor="@color/colorAllButtonText"
@@ -167,8 +175,10 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_margin="7dp"
                     android:layout_gravity="start"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="7dp"
                     android:src="@drawable/sign_up_using_email">
 
                 </androidx.appcompat.widget.AppCompatImageView>
@@ -177,6 +187,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginStart="15dp"
                     android:fontFamily="@font/comfortaa_bold"
                     android:text="@string/signUpUsingEmailButtonText"
                     android:textColor="@color/colorAllButtonText"

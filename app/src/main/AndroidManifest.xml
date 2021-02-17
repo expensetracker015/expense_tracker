@@ -17,14 +17,14 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".ItemDetailsActivity">
+            android:name=".view.ItemDetailsActivity">
         </activity>
-        <activity android:name=".ItemsActivity" />
-        <activity android:name=".SignInOrSignUpActivity" />
-        <activity android:name=".AddItemCategoryActivity" />
-        <activity android:name=".ExpenseIncomeActivity" />
+        <activity android:name=".view.ItemsActivity" />
+        <activity android:name=".view.SignInOrSignUpActivity" />
+        <activity android:name=".view.AddItemCategoryActivity" />
+        <activity android:name=".view.ExpenseIncomeActivity" />
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".view.SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,10 +33,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HomeScreenActivity"
+            android:name=".view.HomeScreenActivity"
             android:theme="@style/AppTheme.HomeScreenActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:theme="@style/AppTheme.MainActivity" />
 
         <meta-data

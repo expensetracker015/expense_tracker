@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/splash_screen_image"
     android:fitsSystemWindows="true"
-    tools:context="com.jaekapps.expensetracker.SplashScreenActivity">
+    tools:context="com.jaekapps.expensetracker.view.SplashScreenActivity">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/app_logo_cardView"

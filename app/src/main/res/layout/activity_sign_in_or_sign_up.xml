@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.jaekapps.expensetracker.SignInOrSignUpActivity">
+    tools:context="com.jaekapps.expensetracker.view.SignInOrSignUpActivity">
 
     <include
-        layout="@layout/toolbar_layout">
+        layout="@layout/layout_toolbar_2"
+        android:id="@+id/backButtonLayout">
 
     </include>
 
@@ -15,7 +16,7 @@
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar">
+        android:layout_below="@id/backButtonLayout">
 
     </FrameLayout>
 

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.jaekapps.expensetracker.AddItemCategoryActivity">
+    tools:context="com.jaekapps.expensetracker.view.AddItemCategoryActivity">
 
     <include
-        layout="@layout/toolbar_layout">
+        layout="@layout/layout_toolbar">
 
     </include>
 
