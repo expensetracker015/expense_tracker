@@ -46,7 +46,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 } else {
 
-                    startTheActivity(new MainActivity());
+                    startTheActivity(new OnBoardingScreenActivity());
 
                 }
 

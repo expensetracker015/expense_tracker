@@ -122,4 +122,5 @@
     <string name="date">Date</string>
     <string name="memo">Memo</string>
     <string name="edit">Edit</string>
+    <string name="on_boarding_screen_image">On-boarding screen image</string>
 </resources>

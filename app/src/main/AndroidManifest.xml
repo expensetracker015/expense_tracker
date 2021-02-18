@@ -17,8 +17,11 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".view.ItemDetailsActivity">
+            android:name=".view.OnBoardingScreenActivity"
+            android:theme="@style/AppTheme.OnBoardingScreenActivityTheme">
+
         </activity>
+        <activity android:name=".view.ItemDetailsActivity" />
         <activity android:name=".view.ItemsActivity" />
         <activity android:name=".view.SignInOrSignUpActivity" />
         <activity android:name=".view.AddItemCategoryActivity" />
