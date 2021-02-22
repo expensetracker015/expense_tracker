@@ -28,4 +28,28 @@
 
     </me.relex.circleindicator.CircleIndicator>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/nextButtonFab"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="50dp"
+        app:cardElevation="0dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/next_button_image">
+
+        </de.hdodenhof.circleimageview.CircleImageView>
+
+    </androidx.cardview.widget.CardView>
+
 </RelativeLayout>

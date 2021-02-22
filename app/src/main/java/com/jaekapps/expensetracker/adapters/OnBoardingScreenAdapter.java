@@ -9,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.jaekapps.expensetracker.R;
@@ -29,21 +28,10 @@ public class OnBoardingScreenAdapter extends PagerAdapter {
             "Know where your money goes.",
             "Learn how to manage your finances."
     };
-    private NextPageListener nextPageListener;
 
     public OnBoardingScreenAdapter(Context context) {
 
         this.context = context;
-    }
-
-    public interface NextPageListener {
-
-        void changeNextSlide(int position);
-    }
-
-    public void setNextPageListener(NextPageListener nextPageListener) {
-
-        this.nextPageListener = nextPageListener;
     }
 
     @Override
@@ -58,14 +46,6 @@ public class OnBoardingScreenAdapter extends PagerAdapter {
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.layout_on_boarding_screen, container, false);
-        CardView nextButtonFab = view.findViewById(R.id.nextButtonFab);
-        nextButtonFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                nextPageListener.changeNextSlide(position);
-            }
-        });
         ImageView imageView = view.findViewById(R.id.imageView);
         imageView.setImageResource(on_boarding_images[position]);
         TextView onBoardingScreenTextView = view.findViewById(R.id.onBoardingScreenTextView);
