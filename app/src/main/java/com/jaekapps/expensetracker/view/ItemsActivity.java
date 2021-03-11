@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,14 +18,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaekapps.expensetracker.model.BEIAmount;
-import com.jaekapps.expensetracker.adapters.ItemRecyclerAdapter;
+import com.jaekapps.expensetracker.model.SubItem;
+import com.jaekapps.expensetracker.view.adapters.ItemRecyclerAdapter;
 import com.jaekapps.expensetracker.R;
 import com.jaekapps.expensetracker.sharedpreferences.UserIdPreferences;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
-public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdapter.ExpenseItemClickListener {
+public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdapter.ItemClickListener {
 
     private ArrayList<Integer> itemIconList;
     private ArrayList<String> amountList, itemList;
@@ -34,7 +36,6 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
     private DatabaseReference userDBReference;
     private int[] colors;
     private RecyclerView itemRecyclerView;
-    private TextView amountTextView, dateTextView;
     private String amount_category, category, date, month, year, userId;
 
     private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
@@ -169,6 +170,19 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
         return icon_id;
     }
 
+    private String calculateAmountForEachItem(SubItem[] subItems) {
+
+        BigDecimal total_amount = new BigDecimal(0);
+
+        for (SubItem subItem : subItems) {
+
+            total_amount = total_amount.add(new BigDecimal(subItem.getAmount()));
+
+        }
+
+        return total_amount.toString();
+    }
+
     private String putComma(String amount) {
 
         char[] amt;
@@ -282,28 +296,27 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
     private void initialization() {
 
         amountList = new ArrayList<>();
-        amountTextView = findViewById(R.id.amountTextView);
         beiAmount = new BEIAmount();
         colors = new int[] {
-                getResources().getColor(R.color.amber, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.blue, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.blue_gray, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.brown, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.cyan, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.deep_orange, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.deep_purple, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.gray, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.green, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.indigo, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.light_blue, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.light_green, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.lime, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.orange, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.pink, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.purple, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.red, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.teal, Objects.requireNonNull(getTheme())),
-                getResources().getColor(R.color.yellow, Objects.requireNonNull(getTheme()))
+                getResources().getColor(R.color.amber),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.blue_gray),
+                getResources().getColor(R.color.brown),
+                getResources().getColor(R.color.cyan),
+                getResources().getColor(R.color.deep_orange),
+                getResources().getColor(R.color.deep_purple),
+                getResources().getColor(R.color.gray),
+                getResources().getColor(R.color.green),
+                getResources().getColor(R.color.indigo),
+                getResources().getColor(R.color.light_blue),
+                getResources().getColor(R.color.light_green),
+                getResources().getColor(R.color.lime),
+                getResources().getColor(R.color.orange),
+                getResources().getColor(R.color.pink),
+                getResources().getColor(R.color.purple),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.teal),
+                getResources().getColor(R.color.yellow)
         };
         Intent intent = getIntent();
 
@@ -319,7 +332,6 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
 
         category = intent.getStringExtra("category");
         date = intent.getStringExtra("date");
-        dateTextView = findViewById(R.id.dateTextView);
         itemRecyclerView = findViewById(R.id.itemRecyclerView);
         itemRecyclerView.setHasFixedSize(true);
         itemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -366,16 +378,16 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
                                 if (amount_category.equals("Expense")) {
 
                                     beiAmount.setExpense(getResources().getString(R.string.rupees) + " " + putComma(beiAmount.getExpense()));
-                                    amountTextView.setText(amount_category + " : " + beiAmount.getExpense());
+                                    //amountTextView.setText(amount_category + " : " + beiAmount.getExpense());
 
                                 } else if (amount_category.equals("Income")) {
 
                                     beiAmount.setIncome(getResources().getString(R.string.rupees) + " " + putComma(beiAmount.getIncome()));
-                                    amountTextView.setText(amount_category + " : " + beiAmount.getIncome());
+                                    //amountTextView.setText(amount_category + " : " + beiAmount.getIncome());
 
                                 }
 
-                                dateTextView.setText(date);
+                                //dateTextView.setText(date);
 
                             }
 
@@ -403,37 +415,89 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
 
                             for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-                                amountList.add(dataSnapshot.getValue(String.class));
                                 itemList.add(dataSnapshot.getKey());
+
+                            }
+
+                            itemIconList = addIconsToIconList(itemList);
+                            HashMap<String, SubItem[]> subItemHashMap = new HashMap<>();
+                            HashMap<String, SubItem[]> tempSubItemHashMap = new HashMap<>();
+
+                            for (int i = 0; i < itemList.size(); i++) {
+
+                                String item = itemList.get(i);
+                                SubItem[] subItems = new SubItem[(int) snapshot.child(item).getChildrenCount()];
+                                int j = 0;
+
+                                for (DataSnapshot ds : snapshot.child(item).getChildren()) {
+
+                                    subItems[j] = new SubItem();
+                                    subItems[j].setAmount(ds.getValue(String.class));
+                                    subItems[j].setItem_name(ds.getKey());
+                                    j++;
+
+                                }
+
+                                tempSubItemHashMap.put(item, subItems);
+
+                            }
+
+                            for (int i = 0; i < itemList.size(); i++) {
+
+                                SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
+                                amountList.add(calculateAmountForEachItem(subItems));
 
                             }
 
                             if (category.equals("Expense_Category")) {
 
-                                for (int i = 0; i < amountList.size(); i++) {
+                                for (int i = 0; i < itemList.size(); i++) {
 
-                                    amountList.set(i, "-" + getResources().getString(R.string.rupees) + " " + putComma(amountList.get(i)));
+                                    amountList.set(i, "Expense: -" + getResources().getString(R.string.rupees) + " " + putComma(amountList.get(i)));
+                                    SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
+                                    int j = 0;
+
+                                    for (SubItem subItem : subItems) {
+
+                                        subItems[j].setAmount("-" + getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
+                                        j++;
+
+                                    }
+
+                                    subItemHashMap.put(itemList.get(i), subItems);
 
                                 }
 
                             } else if (category.equals("Income_Category")) {
 
-                                for (int i = 0; i < amountList.size(); i++) {
+                                for (int i = 0; i < itemList.size(); i++) {
 
-                                    amountList.set(i, getResources().getString(R.string.rupees) + " " + putComma(amountList.get(i)));
+                                    amountList.set(i, "Income: " + getResources().getString(R.string.rupees) + " " + putComma(amountList.get(i)));
+                                    SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
+                                    int j = 0;
+
+                                    for (SubItem subItem : subItems) {
+
+                                        subItems[j].setAmount(getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
+                                        j++;
+
+                                    }
+
+                                    subItemHashMap.put(itemList.get(i), subItems);
 
                                 }
 
                             }
 
-                            itemIconList = addIconsToIconList(itemList);
                             ItemRecyclerAdapter itemRecyclerAdapter = new ItemRecyclerAdapter(
                                     itemIconList,
                                     amountList,
                                     itemList,
                                     ItemsActivity.this,
                                     colors,
-                                    category
+                                    category,
+                                    date,
+                                    subItemHashMap
                             );
                             itemRecyclerView.setAdapter(itemRecyclerAdapter);
                             itemRecyclerAdapter.setExpenseItemClickListener(ItemsActivity.this);
@@ -463,7 +527,7 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
     }
 
     @Override
-    public void onExpenseItemClick(int color, int icon, String amount, String name) {
+    public void onItemClick(int color, int icon, String amount, String memo, String name) {
 
         Intent intent = new Intent(this, ItemDetailsActivity.class);
         intent.putExtra("amount", amount);
@@ -471,6 +535,7 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
         intent.putExtra("color", color);
         intent.putExtra("date", date);
         intent.putExtra("icon", icon);
+        intent.putExtra("memo", memo);
         intent.putExtra("name", name);
         startActivity(intent);
     }

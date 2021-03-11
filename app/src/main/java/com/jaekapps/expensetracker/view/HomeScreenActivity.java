@@ -35,20 +35,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.jaekapps.expensetracker.fragments.BalanceFragment;
-import com.jaekapps.expensetracker.fragments.BudgetsFragment;
-import com.jaekapps.expensetracker.fragments.CashFlowFragment;
-import com.jaekapps.expensetracker.dialogs.CategoryMenuDialogBox;
+import com.jaekapps.expensetracker.view.fragments.BalanceFragment;
+import com.jaekapps.expensetracker.view.fragments.BudgetsFragment;
+import com.jaekapps.expensetracker.view.fragments.CashFlowFragment;
+import com.jaekapps.expensetracker.view.dialogs.CategoryMenuDialogBox;
 import com.jaekapps.expensetracker.model.CreateNewUser;
-import com.jaekapps.expensetracker.dialogs.DatePickerDialogBox;
-import com.jaekapps.expensetracker.fragments.EarningFragment;
-import com.jaekapps.expensetracker.dialogs.ExpenseItemsListDialogBox;
-import com.jaekapps.expensetracker.fragments.HomeScreenFragment;
-import com.jaekapps.expensetracker.dialogs.IncomeItemsListDialogBox;
+import com.jaekapps.expensetracker.view.dialogs.DatePickerDialogBox;
+import com.jaekapps.expensetracker.view.fragments.EarningFragment;
+import com.jaekapps.expensetracker.view.dialogs.ExpenseItemsListDialogBox;
+import com.jaekapps.expensetracker.view.fragments.HomeScreenFragment;
+import com.jaekapps.expensetracker.view.dialogs.IncomeItemsListDialogBox;
 import com.jaekapps.expensetracker.R;
-import com.jaekapps.expensetracker.fragments.RecordsFragment;
-import com.jaekapps.expensetracker.fragments.SpendingFragment;
-import com.jaekapps.expensetracker.fragments.StatisticsFragment;
+import com.jaekapps.expensetracker.view.fragments.RecordsFragment;
+import com.jaekapps.expensetracker.view.fragments.SpendingFragment;
+import com.jaekapps.expensetracker.view.fragments.StatisticsFragment;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingEmailPreferences;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingGooglePreferences;
 import com.jaekapps.expensetracker.sharedpreferences.TabPositionPreferences;
@@ -493,25 +493,25 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         );
         drawerLayout = findViewById(R.id.drawerLayout);
         expenses_colors = new int[] {
-                getResources().getColor(R.color.amber, getTheme()),
-                getResources().getColor(R.color.blue, getTheme()),
-                getResources().getColor(R.color.blue_gray, getTheme()),
-                getResources().getColor(R.color.brown, getTheme()),
-                getResources().getColor(R.color.cyan, getTheme()),
-                getResources().getColor(R.color.deep_orange, getTheme()),
-                getResources().getColor(R.color.deep_purple, getTheme()),
-                getResources().getColor(R.color.gray, getTheme()),
-                getResources().getColor(R.color.green, getTheme()),
-                getResources().getColor(R.color.indigo, getTheme()),
-                getResources().getColor(R.color.light_blue, getTheme()),
-                getResources().getColor(R.color.light_green, getTheme()),
-                getResources().getColor(R.color.lime, getTheme()),
-                getResources().getColor(R.color.orange, getTheme()),
-                getResources().getColor(R.color.pink, getTheme()),
-                getResources().getColor(R.color.purple, getTheme()),
-                getResources().getColor(R.color.red, getTheme()),
-                getResources().getColor(R.color.teal, getTheme()),
-                getResources().getColor(R.color.yellow, getTheme())
+                getResources().getColor(R.color.amber),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.blue_gray),
+                getResources().getColor(R.color.brown),
+                getResources().getColor(R.color.cyan),
+                getResources().getColor(R.color.deep_orange),
+                getResources().getColor(R.color.deep_purple),
+                getResources().getColor(R.color.gray),
+                getResources().getColor(R.color.green),
+                getResources().getColor(R.color.indigo),
+                getResources().getColor(R.color.light_blue),
+                getResources().getColor(R.color.light_green),
+                getResources().getColor(R.color.lime),
+                getResources().getColor(R.color.orange),
+                getResources().getColor(R.color.pink),
+                getResources().getColor(R.color.purple),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.teal),
+                getResources().getColor(R.color.yellow)
         };
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         fragment_container = findViewById(R.id.fragment_container);
@@ -526,25 +526,25 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 String.valueOf(currentYear)
         );
         income_colors = new int[] {
-                getResources().getColor(R.color.teal, getTheme()),
-                getResources().getColor(R.color.red, getTheme()),
-                getResources().getColor(R.color.purple, getTheme()),
-                getResources().getColor(R.color.pink, getTheme()),
-                getResources().getColor(R.color.orange, getTheme()),
-                getResources().getColor(R.color.light_green, getTheme()),
-                getResources().getColor(R.color.lime, getTheme()),
-                getResources().getColor(R.color.light_blue, getTheme()),
-                getResources().getColor(R.color.indigo, getTheme()),
-                getResources().getColor(R.color.green, getTheme()),
-                getResources().getColor(R.color.gray, getTheme()),
-                getResources().getColor(R.color.amber, getTheme()),
-                getResources().getColor(R.color.blue, getTheme()),
-                getResources().getColor(R.color.blue_gray, getTheme()),
-                getResources().getColor(R.color.brown, getTheme()),
-                getResources().getColor(R.color.cyan, getTheme()),
-                getResources().getColor(R.color.deep_orange, getTheme()),
-                getResources().getColor(R.color.deep_purple, getTheme()),
-                getResources().getColor(R.color.yellow, getTheme())
+                getResources().getColor(R.color.teal),
+                getResources().getColor(R.color.red),
+                getResources().getColor(R.color.purple),
+                getResources().getColor(R.color.pink),
+                getResources().getColor(R.color.orange),
+                getResources().getColor(R.color.light_green),
+                getResources().getColor(R.color.lime),
+                getResources().getColor(R.color.light_blue),
+                getResources().getColor(R.color.indigo),
+                getResources().getColor(R.color.green),
+                getResources().getColor(R.color.gray),
+                getResources().getColor(R.color.amber),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.blue_gray),
+                getResources().getColor(R.color.brown),
+                getResources().getColor(R.color.cyan),
+                getResources().getColor(R.color.deep_orange),
+                getResources().getColor(R.color.deep_purple),
+                getResources().getColor(R.color.yellow)
         };
         monthList = new ArrayList<>();
         monthNameTextView = findViewById(R.id.monthNameTextView);

@@ -2,28 +2,122 @@ package com.jaekapps.expensetracker.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.jaekapps.expensetracker.fragments.ExpenseFragment;
-import com.jaekapps.expensetracker.fragments.IncomeFragment;
+import com.jaekapps.expensetracker.view.fragments.ExpenseFragment;
+import com.jaekapps.expensetracker.view.fragments.IncomeFragment;
 import com.jaekapps.expensetracker.R;
 import com.jaekapps.expensetracker.sharedpreferences.CategorySharedPreferences;
+
+import java.util.Objects;
 
 public class AddItemCategoryActivity extends AppCompatActivity implements ExpenseFragment.ExpenseFragmentListener,
         IncomeFragment.IncomeFragmentListener {
 
+    private AppCompatEditText memoEditText;
+    private CardView itemIconCardView, memoCardView;
     private CategorySharedPreferences categorySharedPreferences;
     private ExpenseFragment expenseFragment;
+    private final int[] expenseItemColor = {
+            Color.parseColor("#FFB74D"),
+            Color.parseColor("#64B5F6"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#FFB74D"),
+            Color.parseColor("#BA68C8"),
+            Color.parseColor("#7986CB"),
+            Color.parseColor("#F06292"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#BA68C8"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#81C784"),
+            Color.parseColor("#E57373"),
+            Color.parseColor("#81C784"),
+            Color.parseColor("#FF8A65"),
+            Color.parseColor("#BA68C8"),
+            Color.parseColor("#E57373"),
+            Color.parseColor("#F06292"),
+            Color.parseColor("#64B5F6"),
+            Color.parseColor("#7986CB"),
+            Color.parseColor("#81C784"),
+            Color.parseColor("#E57373"),
+            Color.parseColor("#BA68C8"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#FFB74D"),
+            Color.parseColor("#7986CB"),
+            Color.parseColor("#FF8A65"),
+            Color.parseColor("#E57373")
+    };
+    private final int[] expenseCategoryItemIconId = {
+            R.drawable.food_light,
+            R.drawable.bills_light,
+            R.drawable.transportation_light,
+            R.drawable.home_light,
+            R.drawable.car_light,
+            R.drawable.entertainment_light,
+            R.drawable.shopping_light,
+            R.drawable.cloth_light,
+            R.drawable.insurance_light,
+            R.drawable.tax_light,
+            R.drawable.phone_light,
+            R.drawable.cigarette_light,
+            R.drawable.health_light,
+            R.drawable.sports_light,
+            R.drawable.baby_light,
+            R.drawable.pet_light,
+            R.drawable.beauty_light,
+            R.drawable.electronics_light,
+            R.drawable.wine_light,
+            R.drawable.vegetables_light,
+            R.drawable.gift_light,
+            R.drawable.social_light,
+            R.drawable.travel_light,
+            R.drawable.education_light,
+            R.drawable.book_light,
+            R.drawable.office_light,
+            R.drawable.others_light,
+    };
+    private final int[] incomeItemColor = {
+            Color.parseColor("#E57373"),
+            Color.parseColor("#FFB74D"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#7986CB"),
+            Color.parseColor("#64B5F6"),
+            Color.parseColor("#BA68C8"),
+            Color.parseColor("#F06292"),
+            Color.parseColor("#81C784"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#FF8A65"),
+            Color.parseColor("#E57373"),
+    };
+    private final int[] incomeCategoryItemIconId = {
+            R.drawable.salary_light,
+            R.drawable.awards_light,
+            R.drawable.gift_light,
+            R.drawable.sale_light,
+            R.drawable.home_light,
+            R.drawable.refunds_light,
+            R.drawable.coupons_light,
+            R.drawable.lottery_light,
+            R.drawable.dividends_light,
+            R.drawable.investments_light,
+            R.drawable.others_light,
+    };
     private FrameLayout categoryFragmentContainer;
+    private ImageView itemIconImageView;
     private IncomeFragment incomeFragment;
     private String item_name = "", subcategory = "";
     String toolbar_title;
@@ -34,6 +128,12 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
         categorySharedPreferences = new CategorySharedPreferences(this);
         expenseFragment = new ExpenseFragment();
         incomeFragment = new IncomeFragment();
+        itemIconCardView = findViewById(R.id.itemIconCardView);
+        itemIconImageView = findViewById(R.id.itemIconImageView);
+        memoCardView = findViewById(R.id.memoCardView);
+        memoCardView.setTranslationY(3000f);
+        memoCardView.setVisibility(View.GONE);
+        memoEditText = findViewById(R.id.memoEditText);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -45,10 +145,11 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
     }
 
-    private void goToExpenseIncomeActivity(String item_name, String subcategory) {
+    private void goToExpenseIncomeActivity(String item_name, String memo, String subcategory) {
 
         Intent intent = new Intent();
         intent.putExtra("item_name", item_name);
+        intent.putExtra("memo", memo);
         intent.putExtra("subcategory", subcategory);
         setResult(RESULT_OK, intent);
         finish();
@@ -129,7 +230,8 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
         if (item.getItemId() == android.R.id.home) {
 
-            goToExpenseIncomeActivity(item_name, subcategory);
+            //goToExpenseIncomeActivity(item_name, subcategory);
+            finish();
 
         } else if (item.getItemId() == R.id.select_item) {
 
@@ -143,7 +245,27 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
             } else {
 
-                goToExpenseIncomeActivity(item_name, subcategory);
+                String memo;
+
+                if (Objects.requireNonNull(memoEditText.getText()).toString().isEmpty()) {
+
+                    memo = item_name;
+                    goToExpenseIncomeActivity(item_name, memo, subcategory);
+
+                } else if (memoEditText.getText().toString().length() > 20) {
+
+                    Toast.makeText(
+                            this,
+                            "Memo is too long. Please, write a short memo!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                } else {
+
+                    memo = memoEditText.getText().toString();
+                    goToExpenseIncomeActivity(item_name, memo, subcategory);
+
+                }
 
             }
 
@@ -183,18 +305,48 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     @Override
     public void onBackPressed() {
 
-        goToExpenseIncomeActivity(item_name, subcategory);
+        if (memoCardView.getVisibility() == View.VISIBLE) {
+
+            memoCardView.setTranslationY(3000f);
+            memoCardView.setVisibility(View.GONE);
+
+        } else {
+
+            super.onBackPressed();
+
+        }
+
     }
 
     @Override
-    public void selectItemFromExpenseCategory(String item_name) {
+    public void selectItemFromExpenseCategory(int position, String item_name) {
 
         this.item_name = item_name;
+
+        if (memoCardView.getVisibility() != View.VISIBLE) {
+
+            memoCardView.animate().translationYBy(-3000f).setDuration(100);
+            memoCardView.setVisibility(View.VISIBLE);
+
+        }
+
+        itemIconCardView.setCardBackgroundColor(expenseItemColor[position]);
+        itemIconImageView.setImageResource(expenseCategoryItemIconId[position]);
     }
 
     @Override
-    public void selectItemFromIncomeCategory(String item_name) {
+    public void selectItemFromIncomeCategory(int position, String item_name) {
 
         this.item_name = item_name;
+
+        if (memoCardView.getVisibility() != View.VISIBLE) {
+
+            memoCardView.animate().translationYBy(-3000f).setDuration(100);
+            memoCardView.setVisibility(View.VISIBLE);
+
+        }
+
+        itemIconCardView.setCardBackgroundColor(incomeItemColor[position]);
+        itemIconImageView.setImageResource(incomeCategoryItemIconId[position]);
     }
 }

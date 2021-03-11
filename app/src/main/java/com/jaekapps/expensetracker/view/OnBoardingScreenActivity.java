@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.jaekapps.expensetracker.R;
-import com.jaekapps.expensetracker.adapters.OnBoardingScreenAdapter;
+import com.jaekapps.expensetracker.view.adapters.OnBoardingScreenAdapter;
 
 import me.relex.circleindicator.CircleIndicator;
 

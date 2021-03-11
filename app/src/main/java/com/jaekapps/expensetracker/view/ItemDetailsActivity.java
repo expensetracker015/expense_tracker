@@ -23,7 +23,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
     private CardView itemIconCardView;
     private FloatingActionButton editFab;
     private int color, icon;
-    private String amount, category, date, name;
+    private String amount, category, date, memo, name;
     private TextView amountTextView, categoryTypeTextView, dateTextView, itemNameTextView, memoTextView;
 
     private void initialization() {
@@ -38,6 +38,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         color = intent.getIntExtra("color", 0);
         date = intent.getStringExtra("date");
         icon = intent.getIntExtra("icon", 0);
+        memo = intent.getStringExtra("memo");
         name = intent.getStringExtra("name");
         itemIconCardView = findViewById(R.id.itemIconCardView);
         itemIconImageView = findViewById(R.id.itemIconImageView);
@@ -67,7 +68,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
         itemIconCardView.setCardBackgroundColor(color);
         itemIconImageView.setImageResource(icon);
         itemNameTextView.setText(name);
-        memoTextView.setText(name);
+        memoTextView.setText(memo);
         editFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

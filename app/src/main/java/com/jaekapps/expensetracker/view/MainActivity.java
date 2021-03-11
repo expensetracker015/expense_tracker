@@ -29,7 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.jaekapps.expensetracker.model.BEIAmount;
 import com.jaekapps.expensetracker.model.CreateNewUser;
 import com.jaekapps.expensetracker.R;
-import com.jaekapps.expensetracker.dialogs.SignInUsingEmailOrGoogleDialogBox;
+import com.jaekapps.expensetracker.view.dialogs.SignInUsingEmailOrGoogleDialogBox;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingEmailPreferences;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingGooglePreferences;
 import com.jaekapps.expensetracker.sharedpreferences.UserIdPreferences;

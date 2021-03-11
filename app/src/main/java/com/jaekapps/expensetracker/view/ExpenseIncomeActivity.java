@@ -37,7 +37,6 @@ import java.util.Objects;
 
 public class ExpenseIncomeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
-    int length;
     private BEIAmount beiAmount;
     private boolean itemFound;
     private CardView addCardView, cancelCardView, dotCardView, eightCardView, equalOrOkCardView, expenseCardView, fiveCardView,
@@ -48,7 +47,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
     private DatabaseReference userDBReference;
     private DatePickerDialog datePickerDialog;
     private int currentDay, currentMonth, currentYear, in, selectedDay, selectedMonth, selectedYear;
-    private String balance, currentItemAmount, date, expense, income, month, previousItemAmount, text, totalAmount, userId;
+    private String balance, currentItemAmount, date, expense, income, item_name, memo, month, previousItemAmount, text, totalAmount, userId;
     private TextView amountTextView, itemNameTextView, labelTextView, subcategoryTextView, todaysDateTextView;
     String category;
 
@@ -594,7 +593,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         month = findMonth(selectedMonth);
         final String category = categorySharedPreferences.readCategoryName() + "_Category";
         final String date;
-        final String itemName = itemNameTextView.getText().toString();
+        //final String itemName = itemNameTextView.getText().toString();
 
         if (String.valueOf(selectedDay).length() == 1) {
 
@@ -633,7 +632,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
                         if (task.isSuccessful()) {
 
-                            updateTheItemCategoryAmount(category, date, itemName, month);
+                            updateTheItemCategoryAmount(category, date, item_name, memo, month);
 
                         } else {
 
@@ -645,7 +644,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 });
     }
 
-    private void updateTheItemAmount(final String category, String date, String itemAmount, String itemName) {
+    private void updateTheItemAmount(final String category, String date, String itemAmount, String itemName, String memo) {
 
         userDBReference.child(userId)
                 .child(category)
@@ -653,6 +652,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 .child(month)
                 .child(date)
                 .child(itemName)
+                .child(memo)
                 .setValue(itemAmount)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -677,7 +677,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 });
     }
 
-    private void updateTheItemCategoryAmount(final String category, final String date, final String itemName, String month) {
+    private void updateTheItemCategoryAmount(final String category, final String date, final String itemName, final String memo, String month) {
 
         currentItemAmount = amountTextView.getText().toString();
         userDBReference.child(userId)
@@ -685,11 +685,61 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                 .child(String.valueOf(selectedYear))
                 .child(month)
                 .child(date)
+                .child(itemName)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         if (snapshot.exists()) {
+
+                            for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
+
+                                if (Objects.equals(itemSnapshot.getKey(), memo)) {
+
+                                    itemFound = true;
+                                    previousItemAmount = itemSnapshot.getValue(String.class);
+                                    break;
+
+                                }
+
+                            }
+
+                            if (itemFound) {
+
+                                totalAmount = calculateTotalAmount(currentItemAmount, previousItemAmount);
+                                updateTheItemAmount(
+                                        category,
+                                        date,
+                                        totalAmount,
+                                        itemName,
+                                        memo
+                                );
+
+                            } else {
+
+                                updateTheItemAmount(
+                                        category,
+                                        date,
+                                        amountTextView.getText().toString(),
+                                        itemName,
+                                        memo
+                                );
+
+                            }
+
+                        } else {
+
+                            updateTheItemAmount(
+                                    category,
+                                    date,
+                                    amountTextView.getText().toString(),
+                                    itemName,
+                                    memo
+                            );
+
+                        }
+
+                        /*if (snapshot.exists()) {
 
                             for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
 
@@ -733,7 +783,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
                                     itemName
                             );
 
-                        }
+                        }*/
 
                     }
 
@@ -754,24 +804,22 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (resultCode == RESULT_OK) {
 
-                try {
+                if (data != null) {
 
-                    if (data != null) {
+                    item_name = data.getStringExtra("item_name");
+                    memo = data.getStringExtra("memo");
+                    categorySharedPreferences.writeCategoryName(data.getStringExtra("subcategory"));
+                    subcategoryTextView.setText("Category - " + data.getStringExtra("subcategory"));
 
-                        categorySharedPreferences.writeCategoryName(data.getStringExtra("subcategory"));
-                        subcategoryTextView.setText("Category - " + data.getStringExtra("subcategory"));
+                    if (item_name.equals(memo)) {
 
-                        if (!Objects.equals(data.getStringExtra("item_name"), "")) {
+                        itemNameTextView.setText(item_name);
 
-                            itemNameTextView.setText(data.getStringExtra("item_name"));
+                    } else {
 
-                        }
+                        itemNameTextView.setText(memo);
 
                     }
-
-                } catch (NullPointerException e) {
-
-                    e.printStackTrace();
 
                 }
 
@@ -1092,7 +1140,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
             if (!amountTextView.getText().toString().equals("0")) {
 
-                length = amountTextView.getText().length();
+                int length = amountTextView.getText().length();
 
                 if (length == 1) {
 
