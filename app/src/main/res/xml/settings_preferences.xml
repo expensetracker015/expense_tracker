@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:icon="@drawable/profile"
+        android:key="user_profile_settings"
+        android:title="@string/user_profile_settings"
+        android:summary="@string/user_profile_settings_summary">
+
+    </Preference>
+
+    <SwitchPreference
+        android:icon="@drawable/pin"
+        android:key="user_profile_settings"
+        android:title="@string/set_pin"
+        android:summary="@string/set_pin_summary">
+
+    </SwitchPreference>
+
+    <SwitchPreference
+        android:icon="@drawable/fingerprint"
+        android:key="user_profile_settings"
+        android:title="@string/use_fingerprint"
+        android:summary="@string/use_fingerprint_summary">
+
+    </SwitchPreference>
+
+    <Preference
+        android:icon="@drawable/about"
+        android:key="user_profile_settings"
+        android:title="@string/about"
+        android:summary="@string/about_summary">
+
+    </Preference>
+
+</PreferenceScreen>

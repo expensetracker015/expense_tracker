@@ -12,7 +12,7 @@
     <string name="emailAddressInformation">Please, provide email address to reset the password</string>
     <string name="email">Email</string>
     <string name="send_confirmation">SEND CONFIRMATION TO EMAIL</string>
-    <string name="username">Username</string>
+    <string name="name">Name</string>
     <string name="password">Password</string>
     <string name="emailAddress">Email Address</string>
     <string name="secured_field">Secured Field</string>
@@ -124,4 +124,12 @@
     <string name="edit">Edit</string>
     <string name="on_boarding_screen_image">On-boarding screen image</string>
     <string name="edit_memo">Edit Memo</string>
+    <string name="user_profile_settings">User profile settings</string>
+    <string name="user_profile_settings_summary">You can change your name or password, logout or delete you data.</string>
+    <string name="set_pin">Set PIN</string>
+    <string name="set_pin_summary">Set a PIN to protect your records.</string>
+    <string name="use_fingerprint">Use Fingerprint</string>
+    <string name="use_fingerprint_summary">Set up fingerprint to protect your records.</string>
+    <string name="about">About</string>
+    <string name="about_summary">Find out more about us.</string>
 </resources>

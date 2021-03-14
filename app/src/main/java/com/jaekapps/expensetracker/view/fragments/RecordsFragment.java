@@ -33,19 +33,20 @@ import java.util.ArrayList;
 public class RecordsFragment extends Fragment implements View.OnClickListener {
 
     private ArrayList<Integer> itemIconList;
-    private ArrayList<String> itemAmountList, itemDateList, itemNameList;
+    private ArrayList<String> itemAmountList, itemCategoryList, itemDateList, itemNameList;
     private BEIAmount beiAmount;
-    private CardView monthListCardView, yearListCardView;
+    private CardView monthListCardView, monthYearCardView, yearListCardView;
     private DatabaseReference userDBReference;
-    private final String category;
     private int[] colors;
     private LinearLayout noTransactionLayout;
     private ProgressBar loadingProgressbar;
     private RecordsFragmentListener recordsFragmentListener;
     private RecordsItemRecyclerAdapter recordsItemRecyclerAdapter;
     private RecyclerView recordsRecyclerView;
-    private String month, userId, year;
+    private String category, month, userId, year;
     private TextView monthTitleTextView, recordAmountTextView, recordMonthYearTextView, yearTitleTextView;
+
+    public RecordsFragment() {}
 
     public RecordsFragment(String category, String month, String year) {
 
@@ -54,13 +55,13 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
         this.year = year;
     }
 
-    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemCategoryList) {
 
         ArrayList<Integer> itemIconList = new ArrayList<>();
 
-        for (int i = 0; i < itemList.size(); i++) {
+        for (int i = 0; i < itemCategoryList.size(); i++) {
 
-            itemIconList.add(findTheIcon(itemList.get(i)));
+            itemIconList.add(findTheIcon(itemCategoryList.get(i)));
 
         }
 
@@ -300,12 +301,14 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
                 getResources().getColor(R.color.yellow)
         };
         itemAmountList = new ArrayList<>();
+        itemCategoryList = new ArrayList<>();
         itemDateList = new ArrayList<>();
         itemIconList = new ArrayList<>();
         itemNameList = new ArrayList<>();
         loadingProgressbar = view.findViewById(R.id.loadingProgressbar);
         monthListCardView = view.findViewById(R.id.monthListCardView);
         monthTitleTextView = view.findViewById(R.id.monthTitleTextView);
+        monthYearCardView = view.findViewById(R.id.monthYearCardView);
         noTransactionLayout = view.findViewById(R.id.noTransactionLayout);
         noTransactionLayout.setVisibility(View.GONE);
         recordAmountTextView = view.findViewById(R.id.recordAmountTextView);
@@ -368,8 +371,7 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
 
                         } else {
 
-                            recordAmountTextView.setText("");
-                            recordMonthYearTextView.setText("");
+                            monthYearCardView.setVisibility(View.GONE);
 
                         }
 
@@ -391,22 +393,31 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
 
                         if (snapshot.exists()) {
 
+                            itemAmountList.clear();
+                            itemCategoryList.clear();
+                            itemDateList.clear();
+                            itemIconList.clear();
+                            itemNameList.clear();
                             loadingProgressbar.setVisibility(View.GONE);
 
-                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
 
-                                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                for (DataSnapshot itemSnapshot : dateSnapshot.getChildren()) {
 
-                                    itemAmountList.add(childSnapshot.getValue(String.class));
-                                    itemDateList.add(dataSnapshot.getKey());
-                                    itemNameList.add(childSnapshot.getKey());
+                                    for (DataSnapshot subItemSnapshot : itemSnapshot.getChildren()) {
+
+                                        itemAmountList.add(subItemSnapshot.getValue(String.class));
+                                        itemCategoryList.add(itemSnapshot.getKey());
+                                        itemDateList.add(dateSnapshot.getKey());
+                                        itemNameList.add(subItemSnapshot.getKey());
+
+                                    }
 
                                 }
 
                             }
 
-
-                            itemIconList = addIconsToIconList(itemNameList);
+                            itemIconList = addIconsToIconList(itemCategoryList);
 
                             for (int i = 0; i < itemAmountList.size(); i++) {
 
@@ -423,6 +434,7 @@ public class RecordsFragment extends Fragment implements View.OnClickListener {
                         } else {
 
                             itemAmountList.clear();
+                            itemCategoryList.clear();
                             itemDateList.clear();
                             itemIconList.clear();
                             itemNameList.clear();

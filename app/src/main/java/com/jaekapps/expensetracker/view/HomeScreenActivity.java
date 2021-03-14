@@ -47,6 +47,7 @@ import com.jaekapps.expensetracker.view.fragments.HomeScreenFragment;
 import com.jaekapps.expensetracker.view.dialogs.IncomeItemsListDialogBox;
 import com.jaekapps.expensetracker.R;
 import com.jaekapps.expensetracker.view.fragments.RecordsFragment;
+import com.jaekapps.expensetracker.view.fragments.SettingsFragment;
 import com.jaekapps.expensetracker.view.fragments.SpendingFragment;
 import com.jaekapps.expensetracker.view.fragments.StatisticsFragment;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingEmailPreferences;
@@ -85,6 +86,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     private List<String> monthList, yearList;
     private NavigationView navigationView;
     private RecordsFragment recordsFragment;
+    private SettingsFragment settingsFragment;
     private SignInUsingEmailPreferences signInUsingEmailPreferences;
     private SignInUsingGooglePreferences signInUsingGooglePreferences;
     private StatisticsFragment statisticsFragment;
@@ -425,6 +427,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 month,
                 String.valueOf(currentYear)
         );
+        settingsFragment = new SettingsFragment();
         signInUsingEmailPreferences = new SignInUsingEmailPreferences(this);
         signInUsingGooglePreferences = new SignInUsingGooglePreferences(this);
         statisticsFragment = new StatisticsFragment(chosenMonth, String.valueOf(currentYear));
@@ -907,7 +910,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
             calendarCardView.setVisibility(View.VISIBLE);
             changeTheActionBarTitle("");
             loadTheFragmentWithSlideLeftCustomAnimation(homeScreenFragment);
-            monthNameTextView.setText(month);
+            monthNameTextView.setText(chosenMonth);
 
         } else if (id == R.id.records) {
 
@@ -919,7 +922,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
             calendarCardView.setVisibility(View.GONE);
             changeTheActionBarTitle("Settings");
-            Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
+            loadTheFragmentWithSlideLeftCustomAnimation(settingsFragment);
 
         } else if (id == R.id.shopping_lists) {
 
@@ -1073,6 +1076,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
         } else if ((budgetsFragment != null && budgetsFragment.isVisible())
                 || (recordsFragment != null && recordsFragment.isVisible())
+                || (settingsFragment != null && settingsFragment.isVisible())
                 || (statisticsFragment != null && statisticsFragment.isVisible())) {
 
             changeTheActionBarTitle("");
