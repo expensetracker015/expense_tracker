@@ -93,138 +93,6 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     private TabPositionPreferences tabPositionPreferences;
     private TextView monthNameTextView, usernameTextView, emailAddressTextView;
 
-    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
-
-        ArrayList<Integer> itemIconList = new ArrayList<>();
-
-        for (int i = 0; i < itemList.size(); i++) {
-
-            itemIconList.add(findTheIcon(itemList.get(i)));
-
-        }
-
-        return itemIconList;
-    }
-
-    private int findTheIcon(String item_name) {
-
-        int icon_id = 0;
-
-        switch (item_name) {
-
-            case "Food":
-                icon_id = R.drawable.food_light;
-                break;
-            case "Bills":
-                icon_id = R.drawable.bills_light;
-                break;
-            case "Transportation":
-                icon_id = R.drawable.transportation_light;
-                break;
-            case "Home":
-            case "Rental":
-                icon_id = R.drawable.home_light;
-                break;
-            case "Car":
-                icon_id = R.drawable.car_light;
-                break;
-            case "Entertainment":
-                icon_id = R.drawable.entertainment_light;
-                break;
-            case "Shopping":
-                icon_id = R.drawable.shopping_light;
-                break;
-            case "Clothing":
-                icon_id = R.drawable.cloth_light;
-                break;
-            case "Insurance":
-                icon_id = R.drawable.insurance_light;
-                break;
-            case "Tax":
-                icon_id = R.drawable.tax_light;
-                break;
-            case "Telephone":
-                icon_id = R.drawable.phone_light;
-                break;
-            case "Cigarette":
-                icon_id = R.drawable.cigarette_light;
-                break;
-            case "Health":
-                icon_id = R.drawable.health_light;
-                break;
-            case "Sports":
-                icon_id = R.drawable.sports_light;
-                break;
-            case "Baby":
-                icon_id = R.drawable.baby_light;
-                break;
-            case "Pet":
-                icon_id = R.drawable.pet_light;
-                break;
-            case "Beauty":
-                icon_id = R.drawable.beauty_light;
-                break;
-            case "Electronics":
-                icon_id = R.drawable.electronics_light;
-                break;
-            case "Wine":
-                icon_id = R.drawable.wine_light;
-                break;
-            case "Vegetables":
-                icon_id = R.drawable.vegetables_light;
-                break;
-            case "Gift":
-            case "Grants":
-                icon_id = R.drawable.gift_light;
-                break;
-            case "Social":
-                icon_id = R.drawable.social_light;
-                break;
-            case "Travel":
-                icon_id = R.drawable.travel_light;
-                break;
-            case "Education":
-                icon_id = R.drawable.education_light;
-                break;
-            case "Book":
-                icon_id = R.drawable.book_light;
-                break;
-            case "Office":
-                icon_id = R.drawable.office_light;
-                break;
-            case "Salary":
-                icon_id = R.drawable.salary_light;
-                break;
-            case "Awards":
-                icon_id = R.drawable.awards_light;
-                break;
-            case "Sale":
-                icon_id = R.drawable.sale_light;
-                break;
-            case "Refunds":
-                icon_id = R.drawable.refunds_light;
-                break;
-            case "Coupons":
-                icon_id = R.drawable.coupons_light;
-                break;
-            case "Lottery":
-                icon_id = R.drawable.lottery_light;
-                break;
-            case "Dividends":
-                icon_id = R.drawable.dividends_light;
-                break;
-            case "Investments":
-                icon_id = R.drawable.investments_light;
-                break;
-            case "Others":
-                icon_id = R.drawable.others_light;
-                break;
-
-        }
-
-        return icon_id;
-    }
-
     private List<String> sortTheMonths(List<String> monthList) {
 
         int i, month_no, pos = 0;
@@ -1295,10 +1163,10 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
-    public void showMoreIncomeForEarning(ArrayList<String> amountList, ArrayList<String> itemList) {
+    public void showMoreIncomeForEarning(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList) {
 
         IncomeItemsListDialogBox incomeItemsListDialogBox = new IncomeItemsListDialogBox(
-                addIconsToIconList(itemList),
+                itemIconList,
                 amountList,
                 itemList,
                 income_colors
@@ -1331,10 +1199,10 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
-    public void showMoreExpensesForSpending(ArrayList<String> amountList, ArrayList<String> itemList) {
+    public void showMoreExpensesForSpending(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList) {
 
         ExpenseItemsListDialogBox expenseItemsListDialogBox = new ExpenseItemsListDialogBox(
-                addIconsToIconList(itemList),
+                itemIconList,
                 amountList,
                 itemList,
                 expenses_colors

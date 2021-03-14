@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaekapps.expensetracker.model.BEIAmount;
 import com.jaekapps.expensetracker.R;
+import com.jaekapps.expensetracker.model.SubItem;
 import com.jaekapps.expensetracker.sharedpreferences.UserIdPreferences;
 import com.jaekapps.expensetracker.view.adapters.Top5ExpensesRecyclerAdapter;
 import com.jaekapps.expensetracker.view.adapters.TopExpenseCategoriesRecyclerAdapter;
@@ -48,7 +49,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     int currentMonth;
     private AppCompatButton showMoreButton;
     private ArrayList<Float> itemAmountPercentageList;
-    private ArrayList<Integer> indexList, itemIconList, topCategoriesItemIndexList, topCategoriesItemPercentageList;
+    private ArrayList<Integer> indexList, itemIconList, itemIconList2, topCategoriesItemIndexList, topCategoriesItemPercentageList;
     private ArrayList<PieEntry> expenseItemList;
     private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList, newAmountList, newItemList,
             topCategoriesItemAmountList, topCategoriesItemList;
@@ -74,13 +75,102 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         this.year = year;
     }
 
-    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
+    private ArrayList<Integer> addIconsToIconList(int listSize) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0 ; i < listSize; i++) {
+
+            itemIconList.add(R.drawable.app_logo_white);
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0; i < itemCategoryList.size(); i++) {
+
+            SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(i));
+
+            if (subItems != null) {
+
+                for (int j = 0; j < subItems.length; j++) {
+
+                    itemIconList.add(findTheIcon(itemCategoryList.get(i)));
+
+                }
+
+            }
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList, ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
 
         ArrayList<Integer> itemIconList = new ArrayList<>();
 
         for (int i = 0; i < itemList.size(); i++) {
 
-            itemIconList.add(findTheIcon(itemList.get(i)));
+            String sub_item = itemList.get(i);
+
+            for (int j = 0; j < itemCategoryList.size(); j++) {
+
+                SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(j));
+
+                if (subItems != null) {
+
+                    for (SubItem subItem : subItems) {
+
+                        if (sub_item.equals(subItem.getItem_name())) {
+
+                            itemIconList.add(findTheIcon(itemCategoryList.get(j)));
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList2(ArrayList<String> itemList, ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0; i < itemList.size(); i++) {
+
+            String sub_item = itemList.get(i);
+
+            for (int j = 0; j < itemCategoryList.size(); j++) {
+
+                SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(j));
+
+                if (subItems != null) {
+
+                    for (SubItem subItem : subItems) {
+
+                        if (sub_item.equals(subItem.getItem_name())) {
+
+                            itemIconList.add(findTheIcon(itemCategoryList.get(j)));
+
+                        }
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -502,6 +592,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         indexList = new ArrayList<>();
         itemAmountPercentageList = new ArrayList<>();
         itemIconList = new ArrayList<>();
+        itemIconList2 = new ArrayList<>();
         itemList = new ArrayList<>();
         modifiedAmountList = new ArrayList<>();
         modifiedItemList = new ArrayList<>();
@@ -573,7 +664,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
     public interface SpendingFragmentListener {
 
         void showMonthListForSpending(String current_month, String current_year);
-        void showMoreExpensesForSpending(ArrayList<String> amountList, ArrayList<String> itemList);
+        void showMoreExpensesForSpending(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList);
         void showYearListForSpending(String current_month, String current_year);
     }
 
@@ -666,15 +757,28 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                     amountList.clear();
                                     itemList.clear();
+                                    ArrayList<String> itemCategoryList = new ArrayList<>();
+                                    HashMap<String, SubItem[]> subItemHashMap = new HashMap<>();
 
                                     for (DataSnapshot itemSnapshot : snapshot.child(date).getChildren()) {
+
+                                        int j = 0;
+                                        String item = itemSnapshot.getKey();
+                                        itemCategoryList.add(item);
+                                        SubItem[] subItems = new SubItem[(int) itemSnapshot.getChildrenCount()];
 
                                         for (DataSnapshot subItemSnapshot : itemSnapshot.getChildren()) {
 
                                             amountList.add(subItemSnapshot.getValue(String.class));
                                             itemList.add(subItemSnapshot.getKey());
+                                            subItems[j] = new SubItem();
+                                            subItems[j].setAmount(subItemSnapshot.getValue(String.class));
+                                            subItems[j].setItem_name(subItemSnapshot.getKey());
+                                            j++;
 
                                         }
+
+                                        subItemHashMap.put(item, subItems);
 
                                     }
 
@@ -683,7 +787,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         amountList.set(0, context.getResources().getString(R.string.rupees) + " " + putComma(amountList.get(0)));
                                         expenseItemList.clear();
                                         itemIconList.clear();
-                                        itemIconList = addIconsToIconList(itemList);
+                                        itemIconList = addIconsToIconList(itemCategoryList, subItemHashMap);
                                         showMoreButton.setVisibility(View.GONE);
                                         spendingCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                         spendingCategoryPieChart.getDescription().setEnabled(false);
@@ -912,7 +1016,17 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                             }
                                         });
                                         itemIconList.clear();
-                                        itemIconList = addIconsToIconList(modifiedItemList);
+                                        itemIconList2.clear();
+                                        itemIconList = addIconsToIconList(
+                                                modifiedItemList,
+                                                itemCategoryList,
+                                                subItemHashMap
+                                        );
+                                        itemIconList2 = addIconsToIconList2(
+                                                newItemList,
+                                                itemCategoryList,
+                                                subItemHashMap
+                                        );
                                         top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
                                                 itemIconList,
                                                 modifiedAmountList,
@@ -1210,7 +1324,10 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
                                         spendingCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + " " + putComma(finalTotal_expense_amount.toString()));
                                     }
                                 });
-                                itemIconList = addIconsToIconList(modifiedItemList);
+                                itemIconList.clear();
+                                itemIconList2.clear();
+                                itemIconList = addIconsToIconList(modifiedItemList.size());
+                                itemIconList2 = addIconsToIconList(newItemList.size());
                                 top5ExpensesRecyclerAdapter = new Top5ExpensesRecyclerAdapter(
                                         itemIconList,
                                         modifiedAmountList,
@@ -1308,7 +1425,7 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
         } else if (id == R.id.showMoreButton) {
 
-            spendingFragmentListener.showMoreExpensesForSpending(newAmountList, newItemList);
+            spendingFragmentListener.showMoreExpensesForSpending(itemIconList2, newAmountList, newItemList);
 
         } else if (id == R.id.yearListCardView) {
 

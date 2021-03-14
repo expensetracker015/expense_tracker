@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jaekapps.expensetracker.model.BEIAmount;
 import com.jaekapps.expensetracker.R;
+import com.jaekapps.expensetracker.model.SubItem;
 import com.jaekapps.expensetracker.sharedpreferences.UserIdPreferences;
 import com.jaekapps.expensetracker.view.adapters.Top5IncomeRecyclerAdapter;
 import com.jaekapps.expensetracker.view.adapters.TopIncomeCategoriesRecyclerAdapter;
@@ -48,7 +49,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
     int currentMonth;
     private AppCompatButton showMoreButton;
     private ArrayList<Float> itemAmountPercentageList;
-    private ArrayList<Integer> indexList, itemIconList, topCategoriesItemIndexList, topCategoriesItemPercentageList;
+    private ArrayList<Integer> indexList, itemIconList, itemIconList2, topCategoriesItemIndexList, topCategoriesItemPercentageList;
     private ArrayList<PieEntry> incomeItemList;
     private ArrayList<String> amountList, itemList, modifiedAmountList, modifiedItemList, newAmountList, newItemList,
             topCategoriesItemAmountList, topCategoriesItemList;
@@ -74,13 +75,102 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
         this.year = year;
     }
 
-    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList) {
+    private ArrayList<Integer> addIconsToIconList(int listSize) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0 ; i < listSize; i++) {
+
+            itemIconList.add(R.drawable.app_logo_white);
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0; i < itemCategoryList.size(); i++) {
+
+            SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(i));
+
+            if (subItems != null) {
+
+                for (int j = 0; j < subItems.length; j++) {
+
+                    itemIconList.add(findTheIcon(itemCategoryList.get(i)));
+
+                }
+
+            }
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList(ArrayList<String> itemList, ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
 
         ArrayList<Integer> itemIconList = new ArrayList<>();
 
         for (int i = 0; i < itemList.size(); i++) {
 
-            itemIconList.add(findTheIcon(itemList.get(i)));
+            String sub_item = itemList.get(i);
+
+            for (int j = 0; j < itemCategoryList.size(); j++) {
+
+                SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(j));
+
+                if (subItems != null) {
+
+                    for (SubItem subItem : subItems) {
+
+                        if (sub_item.equals(subItem.getItem_name())) {
+
+                            itemIconList.add(findTheIcon(itemCategoryList.get(j)));
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return itemIconList;
+    }
+
+    private ArrayList<Integer> addIconsToIconList2(ArrayList<String> itemList, ArrayList<String> itemCategoryList, HashMap<String, SubItem[]> subItemHashMap) {
+
+        ArrayList<Integer> itemIconList = new ArrayList<>();
+
+        for (int i = 0; i < itemList.size(); i++) {
+
+            String sub_item = itemList.get(i);
+
+            for (int j = 0; j < itemCategoryList.size(); j++) {
+
+                SubItem[] subItems = subItemHashMap.get(itemCategoryList.get(j));
+
+                if (subItems != null) {
+
+                    for (SubItem subItem : subItems) {
+
+                        if (sub_item.equals(subItem.getItem_name())) {
+
+                            itemIconList.add(findTheIcon(itemCategoryList.get(j)));
+
+                        }
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -457,6 +547,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
         indexList = new ArrayList<>();
         itemAmountPercentageList = new ArrayList<>();
         itemIconList = new ArrayList<>();
+        itemIconList2 = new ArrayList<>();
         itemList = new ArrayList<>();
         modifiedAmountList = new ArrayList<>();
         modifiedItemList = new ArrayList<>();
@@ -525,7 +616,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
     public interface EarningFragmentListener {
 
         void showMonthListForEarning(String current_month, String current_year);
-        void showMoreIncomeForEarning(ArrayList<String> amountList, ArrayList<String> itemList);
+        void showMoreIncomeForEarning(ArrayList<Integer> itemIconList, ArrayList<String> amountList, ArrayList<String> itemList);
         void showYearListForEarning(String current_month, String current_year);
     }
 
@@ -618,15 +709,28 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
 
                                     amountList.clear();
                                     itemList.clear();
+                                    ArrayList<String> itemCategoryList = new ArrayList<>();
+                                    HashMap<String, SubItem[]> subItemHashMap = new HashMap<>();
 
                                     for (DataSnapshot itemSnapshot : snapshot.child(date).getChildren()) {
+
+                                        int j = 0;
+                                        String item = itemSnapshot.getKey();
+                                        itemCategoryList.add(item);
+                                        SubItem[] subItems = new SubItem[(int) itemSnapshot.getChildrenCount()];
 
                                         for (DataSnapshot subItemSnapshot : itemSnapshot.getChildren()) {
 
                                             amountList.add(subItemSnapshot.getValue(String.class));
                                             itemList.add(subItemSnapshot.getKey());
+                                            subItems[j] = new SubItem();
+                                            subItems[j].setAmount(subItemSnapshot.getValue(String.class));
+                                            subItems[j].setItem_name(subItemSnapshot.getKey());
+                                            j++;
 
                                         }
+
+                                        subItemHashMap.put(item, subItems);
 
                                     }
 
@@ -635,7 +739,8 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
                                         amountList.set(0, context.getResources().getString(R.string.rupees) + " " + putComma(amountList.get(0)));
                                         incomeItemList.clear();
                                         itemIconList.clear();
-                                        itemIconList = addIconsToIconList(itemList);
+                                        //itemIconList = addIconsToIconList(itemList);
+                                        itemIconList = addIconsToIconList(itemCategoryList, subItemHashMap);
                                         earningCategoryPieChart.animateY(1000, Easing.EaseInOutCubic);
                                         earningCategoryPieChart.getDescription().setEnabled(false);
                                         earningCategoryPieChart.setCenterText(itemList.get(0) + "\n" + amountList.get(0) + "\n" + "100%");
@@ -864,7 +969,17 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
                                             }
                                         });
                                         itemIconList.clear();
-                                        itemIconList = addIconsToIconList(modifiedItemList);
+                                        itemIconList2.clear();
+                                        itemIconList = addIconsToIconList(
+                                                modifiedItemList,
+                                                itemCategoryList,
+                                                subItemHashMap
+                                        );
+                                        itemIconList2 = addIconsToIconList2(
+                                                newItemList,
+                                                itemCategoryList,
+                                                subItemHashMap
+                                        );
                                         top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                                 itemIconList,
                                                 modifiedAmountList,
@@ -1163,7 +1278,10 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
                                         earningCategoryPieChart.setCenterText("All\n" + month + "\n"  + context.getResources().getString(R.string.rupees) + " " + putComma(finalTotal_expense_amount.toString()));
                                     }
                                 });
-                                itemIconList = addIconsToIconList(modifiedItemList);
+                                itemIconList.clear();
+                                itemIconList2.clear();
+                                itemIconList = addIconsToIconList(modifiedItemList.size());
+                                itemIconList2 = addIconsToIconList(newItemList.size());
                                 top5IncomeRecyclerAdapter = new Top5IncomeRecyclerAdapter(
                                         itemIconList,
                                         modifiedAmountList,
@@ -1260,7 +1378,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
 
         } else if (id == R.id.showMoreButton) {
 
-            earningFragmentListener.showMoreIncomeForEarning(newAmountList, newItemList);
+            earningFragmentListener.showMoreIncomeForEarning(itemIconList2, newAmountList, newItemList);
 
         } else if (id == R.id.yearListCardView) {
 
