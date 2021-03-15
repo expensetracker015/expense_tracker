@@ -38,7 +38,7 @@ public class StatisticsFragment extends Fragment {
         balanceFragment = new BalanceFragment(month, year);
         cashFlowFragment = new CashFlowFragment(month, year);
         earningFragment = new EarningFragment(month, year);
-        reportsFragment = new ReportsFragment();
+        reportsFragment = new ReportsFragment(month, year);
         spendingFragment = new SpendingFragment(month, year);
         tabLayout = view.findViewById(R.id.tabLayout);
         ViewPager viewPager = view.findViewById(R.id.viewPager);

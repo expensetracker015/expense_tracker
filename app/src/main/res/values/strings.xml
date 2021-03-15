@@ -132,4 +132,12 @@
     <string name="use_fingerprint_summary">Set up fingerprint to protect your records.</string>
     <string name="about">About</string>
     <string name="about_summary">Find out more about us.</string>
+    <string name="expense_report">Expense Report</string>
+    <string name="cash_flow_table">Cash Flow Table</string>
+    <string name="do_i_need_any_chart">Do I need any chart?</string>
+    <string name="quick_overview">Quick overview</string>
+    <string name="count">Count</string>
+    <string name="average_day">Average (Day)</string>
+    <string name="average_records">Average (Records)</string>
+    <string name="total">Total</string>
 </resources>

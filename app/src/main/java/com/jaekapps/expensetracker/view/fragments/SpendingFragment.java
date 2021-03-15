@@ -525,6 +525,10 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                 new_amount = amountBuilder.toString();
 
+            } else {
+
+                new_amount = amount;
+
             }
 
         } else {

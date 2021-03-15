@@ -116,6 +116,10 @@ public class HomeScreenFragment extends Fragment implements DateRecyclerAdapter.
 
                 new_amount = amountBuilder.toString();
 
+            } else {
+
+                new_amount = amount;
+
             }
 
         } else {

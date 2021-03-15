@@ -63,7 +63,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
     private PieData incomePieData;
     private PieDataSet incomePieDataSet;
     private RecyclerView incomeItemRecyclerView, topIncomeCategoriesRecyclerView;
-    private String current_month, date, income, month, year, userId;
+    private String current_month, date, income, month, userId, year;
     private TextView monthTitleTextView, natureOfEarningAmountTextView, natureOfEarningMonthTextView, earningAmountTextView,
             earningCurrentMonthTextView, yearTitleTextView;
     private Top5IncomeRecyclerAdapter top5IncomeRecyclerAdapter;
@@ -477,6 +477,10 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
 
                 new_amount = amountBuilder.toString();
 
+            } else {
+
+                new_amount = amount;
+
             }
 
         } else {
@@ -664,7 +668,7 @@ public class EarningFragment extends Fragment implements View.OnClickListener {
 
                                 beiAmount.setIncome(putComma(beiAmount.getIncome()));
                                 income = context.getResources()
-                                        .getString(R.string.rupees) + " " +beiAmount.getIncome();
+                                        .getString(R.string.rupees) + " " + beiAmount.getIncome();
                                 earningAmountTextView.setText(income);
                                 natureOfEarningAmountTextView.setText(income);
 
