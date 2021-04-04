@@ -346,8 +346,8 @@ public class ReportsFragment extends Fragment {
                                                             double inc = Double.parseDouble(tempIncome);
                                                             double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / getNoOfDaysInAMonth(month, year)));
                                                             double average_records = Double.parseDouble(new DecimalFormat("##.##").format(inc / incomeItemList.size()));
-                                                            String average_day_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
-                                                            String average_records_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
+                                                            String average_day_income = context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
+                                                            String average_records_income = context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
                                                             avgDayIncomeTextView.setText(average_day_income);
                                                             avgRecordsIncomeTextView.setText(average_records_income);
                                                             incomeItemCountTextView.setText(String.valueOf(incomeItemList.size()));
@@ -382,8 +382,8 @@ public class ReportsFragment extends Fragment {
                                                         double inc = Double.parseDouble(tempIncome);
                                                         double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / getNoOfDaysInAMonth(month, year)));
                                                         double average_records = Double.parseDouble(new DecimalFormat("##.##").format(inc / incomeItemList.size()));
-                                                        String average_day_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
-                                                        String average_records_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
+                                                        String average_day_income = context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
+                                                        String average_records_income = context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
                                                         avgDayIncomeTextView.setText(average_day_income);
                                                         avgRecordsIncomeTextView.setText(average_records_income);
                                                         incomeItemCountTextView.setText(String.valueOf(incomeItemList.size()));
