@@ -33,7 +33,7 @@ public class ReportsFragment extends Fragment {
     private List<String> dateList, expenseItemList, incomeItemList;
     private String cash_flow, date, expense, income, userId;
     private TextView avgDayExpenseTextView, avgDayIncomeTextView, avgRecordsExpenseTextView, avgRecordsIncomeTextView,
-            cashFlowTextView, expenseItemCountTextView, incomeItemCountTextView, totalExpenseTextView, totalIncomeTextView;
+            cashFlowTextView, cashFlowMonthTextView, expenseItemCountTextView, incomeItemCountTextView, totalExpenseTextView, totalIncomeTextView;
 
     public ReportsFragment(String month, String year) {
 
@@ -191,6 +191,7 @@ public class ReportsFragment extends Fragment {
         avgRecordsIncomeTextView = view.findViewById(R.id.avgRecordsIncomeTextView);
         beiAmount = new BEIAmount();
         cashFlowTextView = view.findViewById(R.id.cashFlowTextView);
+        cashFlowMonthTextView = view.findViewById(R.id.cashFlowMonthTextView);
         dateList = new ArrayList<>();
         expenseItemCountTextView = view.findViewById(R.id.expenseItemCountTextView);
         expenseItemList = new ArrayList<>();
@@ -205,6 +206,8 @@ public class ReportsFragment extends Fragment {
 
     public void updateTheViews(final Context context, final String month, final String year) {
 
+        String m = month + ", " + year;
+        cashFlowMonthTextView.setText(m);
         userDBReference.child(userId)
                 .child("BEIAmount")
                 .child(year)

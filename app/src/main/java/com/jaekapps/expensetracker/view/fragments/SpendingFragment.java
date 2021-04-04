@@ -644,27 +644,6 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
         yearTitleTextView = view.findViewById(R.id.yearTitleTextView);
     }
 
-    private void sortTheIndexList(ArrayList<Integer> indexList) {
-
-        int temp;
-
-        for (int i = 0; i < indexList.size(); i++) {
-
-            for (int j = i + 1; j < indexList.size(); j++) {
-
-                if (indexList.get(i) > indexList.get(j)) {
-
-                    temp = indexList.get(i);
-                    indexList.set(i, indexList.get(j));
-                    indexList.set(j, temp);
-
-                }
-
-            }
-
-        }
-    }
-
     public interface SpendingFragmentListener {
 
         void showMonthListForSpending(String current_month, String current_year);
@@ -944,9 +923,47 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                         } else {
 
-                                            modifiedAmountList = newAmountList;
-                                            modifiedItemList = newItemList;
+                                            modifiedAmountList = sortTheTopCategoriesItemAmountList(newAmountList);
+                                            modifiedItemList.clear();
                                             showMoreButton.setVisibility(View.GONE);
+                                            topCategoriesItemIndexList.clear();
+
+                                            for (int i = 0; i < modifiedAmountList.size(); i++) {
+
+                                                String amount = modifiedAmountList.get(i);
+
+                                                for (int j = 0; j < newAmountList.size(); j++) {
+
+                                                    if (amount.equals(newAmountList.get(j))) {
+
+                                                        if (topCategoriesItemIndexList.size() != 0) {
+
+                                                            if (!topCategoriesItemIndexList.contains(j)) {
+
+                                                                topCategoriesItemIndexList.add(j);
+
+                                                            }
+
+                                                        } else {
+
+                                                            topCategoriesItemIndexList.add(j);
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            modifiedAmountList.clear();
+
+                                            for (int i = 0; i < topCategoriesItemIndexList.size(); i++) {
+
+                                                modifiedAmountList.add(newAmountList.get(topCategoriesItemIndexList.get(i)));
+                                                modifiedItemList.add(newItemList.get(topCategoriesItemIndexList.get(i)));
+
+                                            }
 
                                         }
 
@@ -1242,7 +1259,6 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                     modifiedAmountList.clear();
                                     modifiedItemList.clear();
-                                    sortTheIndexList(indexList);
 
                                     for (int i = 0; i < indexList.size(); i++) {
 
@@ -1253,9 +1269,47 @@ public class SpendingFragment extends Fragment implements View.OnClickListener {
 
                                 } else {
 
-                                    modifiedAmountList = newAmountList;
-                                    modifiedItemList = newItemList;
+                                    modifiedAmountList = sortTheTopCategoriesItemAmountList(newAmountList);
+                                    modifiedItemList.clear();
                                     showMoreButton.setVisibility(View.GONE);
+                                    topCategoriesItemIndexList.clear();
+
+                                    for (int i = 0; i < modifiedAmountList.size(); i++) {
+
+                                        String amount = modifiedAmountList.get(i);
+
+                                        for (int j = 0; j < newAmountList.size(); j++) {
+
+                                            if (amount.equals(newAmountList.get(j))) {
+
+                                                if (topCategoriesItemIndexList.size() != 0) {
+
+                                                    if (!topCategoriesItemIndexList.contains(j)) {
+
+                                                        topCategoriesItemIndexList.add(j);
+
+                                                    }
+
+                                                } else {
+
+                                                    topCategoriesItemIndexList.add(j);
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                    modifiedAmountList.clear();
+
+                                    for (int i = 0; i < topCategoriesItemIndexList.size(); i++) {
+
+                                        modifiedAmountList.add(newAmountList.get(topCategoriesItemIndexList.get(i)));
+                                        modifiedItemList.add(newItemList.get(topCategoriesItemIndexList.get(i)));
+
+                                    }
 
                                 }
 
