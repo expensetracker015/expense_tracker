@@ -41,6 +41,52 @@ public class ReportsFragment extends Fragment {
         this.year = year;
     }
 
+    private int getNoOfDaysInAMonth(String month, String year) {
+
+        int noOfDays;
+
+        switch (month) {
+            case "Jan":
+            case "Mar":
+            case "May":
+            case "July":
+            case "Aug":
+            case "Oct":
+            case "Dec":
+                noOfDays = 31;
+                break;
+
+            case "Apr":
+            case "June":
+            case "Sep":
+            case "Nov":
+                noOfDays = 30;
+                break;
+
+            case "Feb":
+
+                int y = Integer.parseInt(year);
+
+                if (((y % 4 == 0) && (y % 100 != 0)) || (y % 400 == 0)) {
+
+                    noOfDays = 29;
+
+                } else {
+
+                    noOfDays = 28;
+
+                }
+
+                break;
+
+            default:
+                noOfDays = 0;
+                break;
+        }
+
+        return noOfDays;
+    }
+
     private String putComma(String amount) {
 
         char[] amt;
@@ -213,7 +259,7 @@ public class ReportsFragment extends Fragment {
                                                             }
 
                                                             double exp = Double.parseDouble(tempExpense);
-                                                            double average_day = Double.parseDouble(new DecimalFormat("##.##").format(exp / 31));
+                                                            double average_day = Double.parseDouble(new DecimalFormat("##.##").format(exp / getNoOfDaysInAMonth(month, year)));
                                                             double average_records = Double.parseDouble(new DecimalFormat("##.##").format(exp / expenseItemList.size()));
                                                             String average_day_expense = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
                                                             String average_records_expense = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
@@ -249,7 +295,7 @@ public class ReportsFragment extends Fragment {
                                                         }
 
                                                         double exp = Double.parseDouble(tempExpense);
-                                                        double average_day = Double.parseDouble(new DecimalFormat("##.##").format(exp / 31));
+                                                        double average_day = Double.parseDouble(new DecimalFormat("##.##").format(exp / getNoOfDaysInAMonth(month, year)));
                                                         double average_records = Double.parseDouble(new DecimalFormat("##.##").format(exp / expenseItemList.size()));
                                                         String average_day_expense = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
                                                         String average_records_expense = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
@@ -298,7 +344,7 @@ public class ReportsFragment extends Fragment {
                                                             }
 
                                                             double inc = Double.parseDouble(tempIncome);
-                                                            double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / 31));
+                                                            double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / getNoOfDaysInAMonth(month, year)));
                                                             double average_records = Double.parseDouble(new DecimalFormat("##.##").format(inc / incomeItemList.size()));
                                                             String average_day_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
                                                             String average_records_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));
@@ -334,7 +380,7 @@ public class ReportsFragment extends Fragment {
                                                         }
 
                                                         double inc = Double.parseDouble(tempIncome);
-                                                        double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / 31));
+                                                        double average_day = Double.parseDouble(new DecimalFormat("##.##").format(inc / getNoOfDaysInAMonth(month, year)));
                                                         double average_records = Double.parseDouble(new DecimalFormat("##.##").format(inc / incomeItemList.size()));
                                                         String average_day_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_day));
                                                         String average_records_income = "-" + context.getResources().getString(R.string.rupees) + " " + putComma(String.valueOf(average_records));

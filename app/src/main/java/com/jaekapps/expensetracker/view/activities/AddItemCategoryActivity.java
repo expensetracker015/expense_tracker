@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -121,6 +123,19 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     private IncomeFragment incomeFragment;
     private String item_name = "", subcategory = "";
     String toolbar_title;
+
+    private void hideTheKeyboard() {
+
+        View view = getCurrentFocus();
+
+        if (view != null) {
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+        }
+
+    }
 
     private void initialization() {
 
@@ -230,7 +245,6 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
         if (item.getItemId() == android.R.id.home) {
 
-            //goToExpenseIncomeActivity(item_name, subcategory);
             finish();
 
         } else if (item.getItemId() == R.id.select_item) {
@@ -249,6 +263,7 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
                 if (Objects.requireNonNull(memoEditText.getText()).toString().isEmpty()) {
 
+                    hideTheKeyboard();
                     memo = item_name;
                     goToExpenseIncomeActivity(item_name, memo, subcategory);
 
@@ -262,6 +277,7 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
 
                 } else {
 
+                    hideTheKeyboard();
                     memo = memoEditText.getText().toString();
                     goToExpenseIncomeActivity(item_name, memo, subcategory);
 
