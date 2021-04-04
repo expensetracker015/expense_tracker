@@ -313,22 +313,7 @@ public class HomeScreenFragment extends Fragment implements DateRecyclerAdapter.
 
                         } else {
 
-                            String category_title = "";
-
-                            if (category.equals("Expense_Category")) {
-
-                                category_title = context
-                                        .getString(R.string.category) + " - " + context.getString(R.string.expenses);
-
-                            } else if (category.equals("Income_Category")) {
-
-                                category_title = context
-                                        .getString(R.string.category) + " - " + context.getString(R.string.income);
-
-                            }
-
-                            categoryTextView.setText(category_title);
-
+                            categoryCardView.setVisibility(View.GONE);
                             dateList.clear();
                             dateRecyclerAdapter = new DateRecyclerAdapter(dateList);
                             homeScreenFragmentDateRecyclerView.setAdapter(dateRecyclerAdapter);

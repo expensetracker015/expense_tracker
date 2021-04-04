@@ -18,8 +18,9 @@ public class CategoryMenuDialogBox extends BottomSheetDialogFragment implements 
 
     private AppCompatButton cancelButton, confirmButton;
     private CategoryPickerListener categoryPickerListener;
+    private final String chosenCategory;
     private RadioGroup categoryRadioGroup;
-    private String category, chosenCategory;
+    private String category = "";
 
     public CategoryMenuDialogBox(String category) {
 

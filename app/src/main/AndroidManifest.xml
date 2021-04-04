@@ -17,17 +17,17 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".view.OnBoardingScreenActivity"
+            android:name=".view.activities.OnBoardingScreenActivity"
             android:theme="@style/AppTheme.OnBoardingScreenActivityTheme">
 
         </activity>
-        <activity android:name=".view.ItemDetailsActivity" />
-        <activity android:name=".view.ItemsActivity" />
-        <activity android:name=".view.SignInOrSignUpActivity" />
-        <activity android:name=".view.AddItemCategoryActivity" />
-        <activity android:name=".view.ExpenseIncomeActivity" />
+        <activity android:name=".view.activities.ItemDetailsActivity" />
+        <activity android:name=".view.activities.ItemsActivity" />
+        <activity android:name=".view.activities.SignInOrSignUpActivity" />
+        <activity android:name=".view.activities.AddItemCategoryActivity" />
+        <activity android:name=".view.activities.ExpenseIncomeActivity" />
         <activity
-            android:name=".view.SplashScreenActivity"
+            android:name=".view.activities.SplashScreenActivity"
             android:theme="@style/AppTheme.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,10 +36,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.HomeScreenActivity"
+            android:name=".view.activities.HomeScreenActivity"
             android:theme="@style/AppTheme.HomeScreenActivity" />
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.activities.MainActivity"
             android:theme="@style/AppTheme.MainActivity" />
 
         <meta-data

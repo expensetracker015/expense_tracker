@@ -1,4 +1,4 @@
-package com.jaekapps.expensetracker.view;
+package com.jaekapps.expensetracker.view.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

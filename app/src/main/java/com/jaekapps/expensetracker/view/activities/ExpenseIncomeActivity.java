@@ -1,4 +1,4 @@
-package com.jaekapps.expensetracker.view;
+package com.jaekapps.expensetracker.view.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -503,7 +503,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         currentDay = calendar.get(Calendar.DAY_OF_MONTH);
         currentMonth = calendar.get(Calendar.MONTH);
         currentYear = calendar.get(Calendar.YEAR);
-        datePickerDialog = new android.app.DatePickerDialog(
+        datePickerDialog = new DatePickerDialog(
                 this,
                 this,
                 currentYear,

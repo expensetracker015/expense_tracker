@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.jaekapps.expensetracker.view.SignInOrSignUpActivity">
+    tools:context="com.jaekapps.expensetracker.view.activities.SignInOrSignUpActivity">
 
     <include
         layout="@layout/layout_toolbar_2"
