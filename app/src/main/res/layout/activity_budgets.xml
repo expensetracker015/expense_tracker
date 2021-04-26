@@ -48,6 +48,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/cancelCardView"
+                android:fontFamily="@font/comfortaa"
                 android:text="@string/new_budget"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
