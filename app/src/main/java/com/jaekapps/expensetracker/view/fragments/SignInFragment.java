@@ -19,47 +19,19 @@ import com.jaekapps.expensetracker.R;
 
 import java.util.Objects;
 
-public class SignUpUsingEmailFragment extends Fragment implements View.OnClickListener {
+public class SignInFragment extends Fragment implements View.OnClickListener {
 
-    private boolean emailAddressStatus = false;
-    private boolean passwordStatus = false;
-    private CardView haveAnAccountCardView, signUpButton;
-    private SignUpListener signUpListener;
-    private TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText, usernameTextInputEditText;
+    private boolean passwordStatus;
+    private CardView createAccountCardView, forgotPasswordButton, signInButton;
+    private SignInListener signInListener;
+    private TextInputEditText emailAddressTextInputEditText, passwordTextInputEditText;
     private TextInputLayout passwordTextInputLayout;
 
-    public SignUpUsingEmailFragment() {}
+    public SignInFragment() {}
 
     private boolean checkIfEmailAddressIsValid(String email) {
 
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    private void checkEmailAddress() {
-
-        if (Objects.requireNonNull(emailAddressTextInputEditText.getText()).toString().isEmpty()) {
-
-            checkPassword();
-            emailAddressTextInputEditText.setError("Email address is required.");
-            emailAddressStatus = false;
-
-        } else {
-
-            checkPassword();
-
-            if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
-
-                emailAddressTextInputEditText.setError("Please, provide a valid email address.");
-                emailAddressStatus = false;
-
-            } else if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
-
-                emailAddressStatus = true;
-
-            }
-
-        }
-
     }
 
     private void checkPassword() {
@@ -89,7 +61,7 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
                 } else if (passwordTextInputEditText.getText().toString().length() > 15) {
 
                     passwordTextInputLayout.setPasswordVisibilityToggleEnabled(false);
-                    passwordTextInputEditText.setError("Password can not be more than 15 characters.");
+                    passwordTextInputEditText.setError("Password length can not be more than 15.");
                     passwordStatus = false;
 
                 } else {
@@ -107,68 +79,54 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
 
     private void initializeOnClickListener() {
 
-        haveAnAccountCardView.setOnClickListener(this);
-        signUpButton.setOnClickListener(this);
+        createAccountCardView.setOnClickListener(this);
+        forgotPasswordButton.setOnClickListener(this);
+        signInButton.setOnClickListener(this);
     }
 
-    private void initializeViews(View view) {
+    private void initializeView(View view) {
 
+        createAccountCardView = view.findViewById(R.id.createAccountCardView);
         emailAddressTextInputEditText = view.findViewById(R.id.emailAddressTextInputEditText);
-        haveAnAccountCardView = view.findViewById(R.id.haveAnAccountCardView);
+        forgotPasswordButton = view.findViewById(R.id.forgotPasswordButton);
         passwordTextInputEditText = view.findViewById(R.id.passwordTextInputEditText);
         passwordTextInputLayout = view.findViewById(R.id.passwordTextInputLayout);
         passwordTextInputLayout.setCounterEnabled(true);
         passwordTextInputLayout.setCounterMaxLength(15);
-        signUpButton = view.findViewById(R.id.signUpButton);
-        usernameTextInputEditText = view.findViewById(R.id.usernameTextInputEditText);
+        signInButton = view.findViewById(R.id.signInButton);
     }
 
-    public boolean checkUsername() {
+    public boolean checkEmailAddress() {
 
-        boolean usernameStatus;
-        checkEmailAddress();
+        boolean emailAddressStatus = false;
+        checkPassword();
 
-        if (Objects.requireNonNull(usernameTextInputEditText.getText()).toString().isEmpty()) {
+        if (Objects.requireNonNull(emailAddressTextInputEditText.getText()).toString().isEmpty()) {
 
-            usernameTextInputEditText.setError("Username is required.");
-            usernameStatus = false;
+            emailAddressTextInputEditText.setError("Email address is required.");
 
         } else {
 
-            boolean specialCharFound = false;
+            if (!checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
-            for (Character character : usernameTextInputEditText.getText().toString().toCharArray()) {
+                emailAddressTextInputEditText.setError("Please, provide a valid email address.");
 
-                if ((character >= 33 && character <= 47) || (character >= 58 && character <= 64) ||
-                        (character >= 91 && character <= 96) || (character >= 123 && character <= 126)) {
+            } else if (checkIfEmailAddressIsValid(emailAddressTextInputEditText.getText().toString())) {
 
-                    specialCharFound = true;
-                    break;
-
-                }
-
-            }
-
-            if (specialCharFound) {
-
-                usernameTextInputEditText.setError("Username can not contain special characters.");
-                usernameStatus = false;
-
-            } else {
-
-                usernameStatus = emailAddressStatus && passwordStatus;
+                emailAddressStatus = passwordStatus;
 
             }
 
         }
 
-        return usernameStatus;
+        return emailAddressStatus;
     }
 
-    public interface SignUpListener {
+    public interface SignInListener {
 
-        void loadSignInUsingEmailFragment();
-        void signUp();
+        void forgotPassword();
+        void loadSignUpUsingEmailFragment();
+        void signIn();
     }
 
     public String getEmailId() {
@@ -181,17 +139,12 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
         return Objects.requireNonNull(passwordTextInputEditText.getText()).toString();
     }
 
-    public String getUsername() {
-
-        return Objects.requireNonNull(usernameTextInputEditText.getText()).toString();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_sign_up_using_email, container, false);
-        initializeViews(view);
+        View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
+        initializeView(view);
         initializeOnClickListener();
         passwordTextInputEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -219,26 +172,32 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
 
         try {
 
-            signUpListener = (SignUpListener) context;
+            signInListener = (SignInListener) context;
 
         } catch (Exception e) {
 
-            throw new ClassCastException(context.toString() + " must implement SignUpListener.");
+            throw new ClassCastException(context.toString() + " must implement SignInListener!");
 
         }
 
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(View view) {
 
-        if (v.getId() == R.id.haveAnAccountCardView) {
+        int id = view.getId();
 
-            signUpListener.loadSignInUsingEmailFragment();
+        if (id == R.id.createAccountCardView) {
 
-        } else if (v.getId() == R.id.signUpButton) {
+            signInListener.loadSignUpUsingEmailFragment();
 
-            signUpListener.signUp();
+        } else if (id == R.id.forgotPasswordButton) {
+
+            signInListener.forgotPassword();
+
+        } else if (id == R.id.signInButton) {
+
+            signInListener.signIn();
 
         }
 
@@ -248,6 +207,6 @@ public class SignUpUsingEmailFragment extends Fragment implements View.OnClickLi
     public void onDetach() {
         super.onDetach();
 
-        signUpListener = null;
+        signInListener = null;
     }
 }

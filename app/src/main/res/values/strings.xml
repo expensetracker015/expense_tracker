@@ -140,4 +140,10 @@
     <string name="average_day">Average (Day)</string>
     <string name="average_records">Average (Records)</string>
     <string name="total">Total</string>
+    <string name="new_budget">New Budget</string>
+    <string name="period">Period</string>
+    <string name="amount">Amount</string>
+    <string name="categories">Categories</string>
+    <string name="accounts">Accounts</string>
+    <string name="all">All</string>
 </resources>

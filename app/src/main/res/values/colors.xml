@@ -38,5 +38,6 @@
     <color name="fab_color_1">#FF5722</color>
     <color name="fab_color_2">#E91E63</color>
     <color name="fab_color_3">#9C27B0</color>
+    <color name="gray_200">#E0E0E0</color>
 </resources>
 

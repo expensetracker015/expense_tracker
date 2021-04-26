@@ -445,7 +445,12 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
                             for (int i = 0; i < itemList.size(); i++) {
 
                                 SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
-                                amountList.add(calculateAmountForEachItem(subItems));
+
+                                if (subItems != null) {
+
+                                    amountList.add(calculateAmountForEachItem(subItems));
+
+                                }
 
                             }
 
@@ -457,10 +462,14 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
                                     SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
                                     int j = 0;
 
-                                    for (SubItem subItem : subItems) {
+                                    if (subItems != null) {
 
-                                        subItems[j].setAmount("-" + getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
-                                        j++;
+                                        for (SubItem subItem : subItems) {
+
+                                            subItems[j].setAmount("-" + getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
+                                            j++;
+
+                                        }
 
                                     }
 
@@ -476,10 +485,14 @@ public class ItemsActivity extends AppCompatActivity implements ItemRecyclerAdap
                                     SubItem[] subItems = tempSubItemHashMap.get(itemList.get(i));
                                     int j = 0;
 
-                                    for (SubItem subItem : subItems) {
+                                    if (subItems != null) {
 
-                                        subItems[j].setAmount(getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
-                                        j++;
+                                        for (SubItem subItem : subItems) {
+
+                                            subItems[j].setAmount(getResources().getString(R.string.rupees) + " " + putComma(subItem.getAmount()));
+                                            j++;
+
+                                        }
 
                                     }
 

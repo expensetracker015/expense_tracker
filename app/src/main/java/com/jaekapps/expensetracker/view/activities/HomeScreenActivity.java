@@ -46,6 +46,8 @@ import com.jaekapps.expensetracker.view.dialogs.ExpenseItemsListDialogBox;
 import com.jaekapps.expensetracker.view.fragments.HomeScreenFragment;
 import com.jaekapps.expensetracker.view.dialogs.IncomeItemsListDialogBox;
 import com.jaekapps.expensetracker.R;
+import com.jaekapps.expensetracker.view.fragments.OneTimeBudgetsFragment;
+import com.jaekapps.expensetracker.view.fragments.PeriodicBudgetsFragment;
 import com.jaekapps.expensetracker.view.fragments.RecordsFragment;
 import com.jaekapps.expensetracker.view.fragments.SettingsFragment;
 import com.jaekapps.expensetracker.view.fragments.SpendingFragment;
@@ -65,6 +67,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class HomeScreenActivity extends AppCompatActivity implements BalanceFragment.BalanceFragmentListener,
         CashFlowFragment.CashFlowFragmentListener, CategoryMenuDialogBox.CategoryPickerListener, DatePickerDialogBox.DatePickerListener,
         EarningFragment.EarningFragmentListener, HomeScreenFragment.HomeScreenFragmentListener, NavigationView.OnNavigationItemSelectedListener,
+        OneTimeBudgetsFragment.OneTimeBudgetsListener, PeriodicBudgetsFragment.PeriodicBudgetsListener,
         RecordsFragment.RecordsFragmentListener, SpendingFragment.SpendingFragmentListener {
 
     int currentMonth, dayOfTheWeek;
@@ -340,9 +343,15 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
     }
 
+    private void goToBudgetsActivity(int position) {
+
+        Intent intent = new Intent(this, BudgetsActivity.class);
+        intent.putExtra("position", position);
+        startActivityForResult(intent, 2);
+    }
+
     private void initialization() {
 
-        budgetsFragment = new BudgetsFragment();
         Calendar calendar = Calendar.getInstance();
         calendarCardView = findViewById(R.id.calendarCardView);
         chosenCategory = "Expense_Category";
@@ -390,6 +399,7 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        budgetsFragment = new BudgetsFragment(month, String.valueOf(currentYear));
         homeScreenFragment = new HomeScreenFragment(
                 "Expense_Category",
                 month,
@@ -745,6 +755,21 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
             }
 
+        } else if (requestCode == 2) {
+
+            if (resultCode == RESULT_OK) {
+
+                if (data != null) {
+
+                    int position = data.getIntExtra("position", 0);
+                    String month = data.getStringExtra("month");
+                    String year = data.getStringExtra("year");
+                    budgetsFragment.updateTheFragment(position, month, year);
+
+                }
+
+            }
+
         }
 
     }
@@ -1048,6 +1073,18 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
         );
 
         categoryMenuDialogBox.dismiss();
+    }
+
+    @Override
+    public void goToBudgetsActivityFromOTBF() {
+
+        goToBudgetsActivity(0);
+    }
+
+    @Override
+    public void goToBudgetsActivityFromPBF(int position) {
+
+        goToBudgetsActivity(position);
     }
 
     @Override

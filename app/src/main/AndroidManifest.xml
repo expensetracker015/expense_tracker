@@ -16,15 +16,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
+        <activity android:name=".view.activities.BudgetsActivity"></activity>
         <activity
             android:name=".view.activities.OnBoardingScreenActivity"
-            android:theme="@style/AppTheme.OnBoardingScreenActivityTheme">
-
-        </activity>
+            android:theme="@style/AppTheme.OnBoardingScreenActivityTheme"></activity>
         <activity android:name=".view.activities.ItemDetailsActivity" />
         <activity android:name=".view.activities.ItemsActivity" />
         <activity android:name=".view.activities.SignInOrSignUpActivity" />
-        <activity android:name=".view.activities.AddItemCategoryActivity" />
+        <activity android:name=".view.activities.ItemCategoryActivity" />
         <activity android:name=".view.activities.ExpenseIncomeActivity" />
         <activity
             android:name=".view.activities.SplashScreenActivity"

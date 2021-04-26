@@ -25,10 +25,10 @@ import com.jaekapps.expensetracker.model.BEIAmount;
 import com.jaekapps.expensetracker.model.CreateNewUser;
 import com.jaekapps.expensetracker.view.dialogs.ForgotPasswordDialogBox;
 import com.jaekapps.expensetracker.R;
-import com.jaekapps.expensetracker.view.fragments.SignInUsingEmailFragment;
+import com.jaekapps.expensetracker.view.fragments.SignInFragment;
 import com.jaekapps.expensetracker.view.dialogs.SignInUsingEmailOrGoogleDialogBox;
 import com.jaekapps.expensetracker.view.dialogs.SignUpUsingEmailDialogBox;
-import com.jaekapps.expensetracker.view.fragments.SignUpUsingEmailFragment;
+import com.jaekapps.expensetracker.view.fragments.SignUpFragment;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingEmailPreferences;
 import com.jaekapps.expensetracker.sharedpreferences.SignInUsingGooglePreferences;
 import com.jaekapps.expensetracker.sharedpreferences.UserIdPreferences;
@@ -37,7 +37,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotPasswordDialogBox.ForgotPasswordListener,
-        SignInUsingEmailFragment.SignInListener, SignUpUsingEmailFragment.SignUpListener {
+        SignInFragment.SignInListener, SignUpFragment.SignUpListener {
 
     private BEIAmount beiAmount;
     private CardView backButtonCardView;
@@ -49,11 +49,11 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     private FrameLayout fragmentContainer;
     private int currentYear;
     private SignInUsingEmailPreferences signInUsingEmailPreferences;
-    private SignInUsingEmailFragment signInUsingEmailFragment;
+    private SignInFragment signInFragment;
     private SignInUsingEmailOrGoogleDialogBox signInUsingEmailOrGoogleDialogBox;
     private SignInUsingGooglePreferences signInUsingGooglePreferences;
     private SignUpUsingEmailDialogBox signUpUsingEmailDialogBox;
-    private SignUpUsingEmailFragment signUpUsingEmailFragment;
+    private SignUpFragment signUpFragment;
     private String mode_of_sign_in, month, userId;
     private TextView titleTextView;
     private UserIdPreferences userIdPreferences;
@@ -239,10 +239,10 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
         mode_of_sign_in = intent.getStringExtra("mode_of_sign_in");
         signInUsingEmailPreferences = new SignInUsingEmailPreferences(this);
         signInUsingGooglePreferences = new SignInUsingGooglePreferences(this);
-        signInUsingEmailFragment = new SignInUsingEmailFragment();
+        signInFragment = new SignInFragment();
         signInUsingEmailOrGoogleDialogBox = new SignInUsingEmailOrGoogleDialogBox();
         signUpUsingEmailDialogBox = new SignUpUsingEmailDialogBox();
-        signUpUsingEmailFragment = new SignUpUsingEmailFragment();
+        signUpFragment = new SignUpFragment();
         titleTextView = findViewById(R.id.titleTextView);
         userDBReference = FirebaseDatabase.getInstance().getReference("User");
         userIdPreferences = new UserIdPreferences(this);
@@ -304,12 +304,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
             if (mode_of_sign_in.equals("Sign In")) {
 
                 changeTheToolbarTitle("Sign In Using Email");
-                loadTheFragment(signInUsingEmailFragment);
+                loadTheFragment(signInFragment);
 
             } else if (mode_of_sign_in.equals("Sign Up")) {
 
                 changeTheToolbarTitle("Sign Up Using Email");
-                loadTheFragment(signUpUsingEmailFragment);
+                loadTheFragment(signUpFragment);
 
             }
 
@@ -333,14 +333,14 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
     public void loadSignInUsingEmailFragment() {
 
         changeTheToolbarTitle("Sign In Using Email");
-        loadTheFragmentWithSlideLeftCustomAnimation(signInUsingEmailFragment);
+        loadTheFragmentWithSlideLeftCustomAnimation(signInFragment);
     }
 
     @Override
     public void loadSignUpUsingEmailFragment() {
 
         changeTheToolbarTitle("Sign Up Using Email");
-        loadTheFragmentWithSlideLeftCustomAnimation(signUpUsingEmailFragment);
+        loadTheFragmentWithSlideLeftCustomAnimation(signUpFragment);
     }
 
     @Override
@@ -376,11 +376,11 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
         if (checkInternetConnection()) {
 
-            if (signInUsingEmailFragment.checkEmailAddress()) {
+            if (signInFragment.checkEmailAddress()) {
 
                 signInUsingEmailOrGoogleDialogBox.show(getSupportFragmentManager(), "sign_in");
-                String email_address = signInUsingEmailFragment.getEmailId();
-                String password = signInUsingEmailFragment.getPassword();
+                String email_address = signInFragment.getEmailId();
+                String password = signInFragment.getPassword();
                 userId = extractUserId(email_address.toCharArray());
 
                 if (checkIfUserIdContainsSpecChar(userId)) {
@@ -426,12 +426,12 @@ public class SignInOrSignUpActivity extends AppCompatActivity implements ForgotP
 
         if (checkInternetConnection()) {
 
-            if (signUpUsingEmailFragment.checkUsername()) {
+            if (signUpFragment.checkUsername()) {
 
                 signUpUsingEmailDialogBox.show(getSupportFragmentManager(), "sign_up");
-                String email_address = signUpUsingEmailFragment.getEmailId();
-                String password = signUpUsingEmailFragment.getPassword();
-                String username = signUpUsingEmailFragment.getUsername();
+                String email_address = signUpFragment.getEmailId();
+                String password = signUpFragment.getPassword();
+                String username = signUpFragment.getUsername();
                 createNewUser.setEmail_address(email_address);
                 createNewUser.setUsername(username);
                 beiAmount.setBalance("0");

@@ -27,7 +27,7 @@ import com.jaekapps.expensetracker.sharedpreferences.CategorySharedPreferences;
 
 import java.util.Objects;
 
-public class AddItemCategoryActivity extends AppCompatActivity implements ExpenseFragment.ExpenseFragmentListener,
+public class ItemCategoryActivity extends AppCompatActivity implements ExpenseFragment.ExpenseFragmentListener,
         IncomeFragment.IncomeFragmentListener {
 
     private AppCompatEditText memoEditText;
@@ -188,7 +188,7 @@ public class AddItemCategoryActivity extends AppCompatActivity implements Expens
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item_category);
+        setContentView(R.layout.activity_item_category);
 
         initialization();
 

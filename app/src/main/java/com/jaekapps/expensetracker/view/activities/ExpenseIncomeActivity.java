@@ -388,6 +388,91 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     }
 
+    private void initializeOnClickListener() {
+
+        addCardView.setOnClickListener(this);
+        cancelCardView.setOnClickListener(this);
+        dotCardView.setOnClickListener(this);
+        eightCardView.setOnClickListener(this);
+        equalOrOkCardView.setOnClickListener(this);
+        expenseCardView.setOnClickListener(this);
+        fiveCardView.setOnClickListener(this);
+        fourCardView.setOnClickListener(this);
+        incomeCardView.setOnClickListener(this);
+        nineCardView.setOnClickListener(this);
+        oneCardView.setOnClickListener(this);
+        sevenCardView.setOnClickListener(this);
+        sixCardView.setOnClickListener(this);
+        subcategoryCardView.setOnClickListener(this);
+        subtractCardView.setOnClickListener(this);
+        threeCardView.setOnClickListener(this);
+        todayCardView.setOnClickListener(this);
+        twoCardView.setOnClickListener(this);
+        zeroCardView.setOnClickListener(this);
+    }
+
+    private void initialization() {
+
+        addCardView = findViewById(R.id.addCardView);
+        amountTextView = findViewById(R.id.amountTextView);
+        beiAmount = new BEIAmount();
+        Calendar calendar = Calendar.getInstance();
+        cancelCardView = findViewById(R.id.cancelCardView);
+        categorySharedPreferences = new CategorySharedPreferences(this);
+        categorySharedPreferences.writeCategoryName("");
+        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentYear = calendar.get(Calendar.YEAR);
+        datePickerDialog = new DatePickerDialog(
+                this,
+                this,
+                currentYear,
+                currentMonth,
+                currentDay
+        );
+        currentMonth = currentMonth + 1;
+        date = currentMonth + "/" + currentDay;
+        dotCardView = findViewById(R.id.dotCardView);
+        eightCardView = findViewById(R.id.eightCardView);
+        equalOrOkCardView = findViewById(R.id.equalOrOkCardView);
+        expenseCardView = findViewById(R.id.expenseCardView);
+        fiveCardView = findViewById(R.id.fiveCardView);
+        fourCardView = findViewById(R.id.fourCardView);
+        incomeCardView = findViewById(R.id.incomeCardView);
+        itemNameTextView = findViewById(R.id.itemNameTextView);
+        labelTextView = findViewById(R.id.labelTextView);
+        month = findMonth(currentMonth);
+        nineCardView = findViewById(R.id.nineCardView);
+        oneCardView = findViewById(R.id.oneCardView);
+        selectedDay = currentDay;
+        selectedMonth = currentMonth;
+        selectedYear = currentYear;
+        sevenCardView = findViewById(R.id.sevenCardView);
+        sixCardView = findViewById(R.id.sixCardView);
+        subcategoryCardView = findViewById(R.id.subcategoryCardView);
+        subcategoryTextView = findViewById(R.id.subcategoryTextView);
+        subtractCardView = findViewById(R.id.subtractCardView);
+        threeCardView = findViewById(R.id.threeCardView);
+        todayCardView = findViewById(R.id.todayCardView);
+        todaysDateTextView = findViewById(R.id.todaysDateTextView);
+        todaysDateTextView.setText(date);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Expense-Income");
+
+        }
+
+        twoCardView = findViewById(R.id.twoCardView);
+        userDBReference = FirebaseDatabase.getInstance().getReference("User");
+        UserIdPreferences userIdPreferences = new UserIdPreferences(this);
+        userId = userIdPreferences.getUserID();
+        zeroCardView = findViewById(R.id.zeroCardView);
+    }
+
     private void performTheOperation(int operatorPos, String operatorSign) {
 
         StringBuilder firstNoStringBuilder = new StringBuilder();
@@ -491,91 +576,6 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
 
     }
 
-    private void initialization() {
-
-        addCardView = findViewById(R.id.addCardView);
-        amountTextView = findViewById(R.id.amountTextView);
-        beiAmount = new BEIAmount();
-        Calendar calendar = Calendar.getInstance();
-        cancelCardView = findViewById(R.id.cancelCardView);
-        categorySharedPreferences = new CategorySharedPreferences(this);
-        categorySharedPreferences.writeCategoryName("");
-        currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-        currentMonth = calendar.get(Calendar.MONTH);
-        currentYear = calendar.get(Calendar.YEAR);
-        datePickerDialog = new DatePickerDialog(
-                this,
-                this,
-                currentYear,
-                currentMonth,
-                currentDay
-        );
-        currentMonth = currentMonth + 1;
-        date = currentMonth + "/" + currentDay;
-        dotCardView = findViewById(R.id.dotCardView);
-        eightCardView = findViewById(R.id.eightCardView);
-        equalOrOkCardView = findViewById(R.id.equalOrOkCardView);
-        expenseCardView = findViewById(R.id.expenseCardView);
-        fiveCardView = findViewById(R.id.fiveCardView);
-        fourCardView = findViewById(R.id.fourCardView);
-        incomeCardView = findViewById(R.id.incomeCardView);
-        itemNameTextView = findViewById(R.id.itemNameTextView);
-        labelTextView = findViewById(R.id.labelTextView);
-        month = findMonth(currentMonth);
-        nineCardView = findViewById(R.id.nineCardView);
-        oneCardView = findViewById(R.id.oneCardView);
-        selectedDay = currentDay;
-        selectedMonth = currentMonth;
-        selectedYear = currentYear;
-        sevenCardView = findViewById(R.id.sevenCardView);
-        sixCardView = findViewById(R.id.sixCardView);
-        subcategoryCardView = findViewById(R.id.subcategoryCardView);
-        subcategoryTextView = findViewById(R.id.subcategoryTextView);
-        subtractCardView = findViewById(R.id.subtractCardView);
-        threeCardView = findViewById(R.id.threeCardView);
-        todayCardView = findViewById(R.id.todayCardView);
-        todaysDateTextView = findViewById(R.id.todaysDateTextView);
-        todaysDateTextView.setText(date);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        if (getSupportActionBar() != null) {
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Expense-Income");
-
-        }
-
-        twoCardView = findViewById(R.id.twoCardView);
-        userDBReference = FirebaseDatabase.getInstance().getReference("User");
-        UserIdPreferences userIdPreferences = new UserIdPreferences(this);
-        userId = userIdPreferences.getUserID();
-        zeroCardView = findViewById(R.id.zeroCardView);
-    }
-
-    private void initializeOnClickListener() {
-
-        addCardView.setOnClickListener(this);
-        cancelCardView.setOnClickListener(this);
-        dotCardView.setOnClickListener(this);
-        eightCardView.setOnClickListener(this);
-        equalOrOkCardView.setOnClickListener(this);
-        expenseCardView.setOnClickListener(this);
-        fiveCardView.setOnClickListener(this);
-        fourCardView.setOnClickListener(this);
-        incomeCardView.setOnClickListener(this);
-        nineCardView.setOnClickListener(this);
-        oneCardView.setOnClickListener(this);
-        sevenCardView.setOnClickListener(this);
-        sixCardView.setOnClickListener(this);
-        subcategoryCardView.setOnClickListener(this);
-        subtractCardView.setOnClickListener(this);
-        threeCardView.setOnClickListener(this);
-        todayCardView.setOnClickListener(this);
-        twoCardView.setOnClickListener(this);
-        zeroCardView.setOnClickListener(this);
-    }
-
     private void showToast(String message) {
 
         Toast.makeText(
@@ -593,7 +593,6 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
         month = findMonth(selectedMonth);
         final String category = categorySharedPreferences.readCategoryName() + "_Category";
         final String date;
-        //final String itemName = itemNameTextView.getText().toString();
 
         if (String.valueOf(selectedDay).length() == 1) {
 
@@ -1389,7 +1388,7 @@ public class ExpenseIncomeActivity extends AppCompatActivity implements DatePick
             } else if (categorySharedPreferences.readCategoryName().equals("Expense") ||
                     categorySharedPreferences.readCategoryName().equals("Income")) {
 
-                Intent intent = new Intent(this, AddItemCategoryActivity.class);
+                Intent intent = new Intent(this, ItemCategoryActivity.class);
                 startActivityForResult(intent, 1);
 
             }
