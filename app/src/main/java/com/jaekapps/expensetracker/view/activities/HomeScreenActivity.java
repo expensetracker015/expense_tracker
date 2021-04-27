@@ -343,9 +343,10 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
 
     }
 
-    private void goToBudgetsActivity(int position) {
+    private void goToBudgetsActivity(int position, String budgetCategory) {
 
         Intent intent = new Intent(this, BudgetsActivity.class);
+        intent.putExtra("category", budgetCategory);
         intent.putExtra("position", position);
         startActivityForResult(intent, 2);
     }
@@ -1076,15 +1077,15 @@ public class HomeScreenActivity extends AppCompatActivity implements BalanceFrag
     }
 
     @Override
-    public void goToBudgetsActivityFromOTBF() {
+    public void goToBudgetsActivityFromOTBF(int position, String budgetCategory) {
 
-        goToBudgetsActivity(0);
+        goToBudgetsActivity(position, budgetCategory);
     }
 
     @Override
-    public void goToBudgetsActivityFromPBF(int position) {
+    public void goToBudgetsActivityFromPBF(int position, String budgetCategory) {
 
-        goToBudgetsActivity(position);
+        goToBudgetsActivity(position, budgetCategory);
     }
 
     @Override

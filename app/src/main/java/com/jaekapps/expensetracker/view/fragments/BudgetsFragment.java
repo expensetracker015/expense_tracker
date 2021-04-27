@@ -32,7 +32,7 @@ public class BudgetsFragment extends Fragment {
     private void initializeViews(View view) {
 
         budgetsTabLayout = view.findViewById(R.id.budgetsTabLayout);
-        oneTimeBudgetsFragment = new OneTimeBudgetsFragment();
+        oneTimeBudgetsFragment = new OneTimeBudgetsFragment(month, year);
         periodicBudgetsFragment = new PeriodicBudgetsFragment(month, year);
         ViewPager budgetsViewPager = view.findViewById(R.id.budgetsViewPager);
         BudgetsViewPagerAdapter budgetsViewPagerAdapter = new BudgetsViewPagerAdapter(getChildFragmentManager(), 1);
@@ -53,7 +53,7 @@ public class BudgetsFragment extends Fragment {
 
         } else if (position == 1) {
 
-            //cashFlowFragment.updateTheViews(context, month, year);
+            oneTimeBudgetsFragment.updateTheViews(month, year);
 
         }
 

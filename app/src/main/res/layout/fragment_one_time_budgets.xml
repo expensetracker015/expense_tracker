@@ -16,12 +16,21 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <LinearLayout
-        android:id="@+id/one_time_budgets_linearLayout"
+    <ProgressBar
+        android:id="@+id/loadingProgressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_centerInParent="true">
+
+    </ProgressBar>
+
+    <LinearLayout
+        android:id="@+id/oneTimeBudgetsLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="100dp"

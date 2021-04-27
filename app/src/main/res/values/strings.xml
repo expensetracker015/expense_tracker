@@ -146,4 +146,6 @@
     <string name="categories">Categories</string>
     <string name="accounts">Accounts</string>
     <string name="all">All</string>
+    <string name="start_date">Start date</string>
+    <string name="end_date">End date</string>
 </resources>

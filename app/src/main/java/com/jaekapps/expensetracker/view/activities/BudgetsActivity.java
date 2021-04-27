@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -34,19 +36,23 @@ import java.util.Objects;
 public class BudgetsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Calendar calendar;
-    private CardView cancelCardView, saveCardView;
+    private CardView cancelCardView, endDateCardView, saveCardView, startDateCardView;
     private DatabaseReference userDBReference;
     private final List<String> dateList = new ArrayList<>();
-    private final String[] periodList = new String[] {
+    private final String[] oneTimeBudgetList = new String[] {
+            "One Time"
+    };
+    private final String[] periodicBudgetList = new String[] {
             "Week",
             "Month",
-            "Year",
-            "One TIme"
+            "Year"
     };
-    private int dayOfTheWeek, position;
+    private GridLayout dateGridLayout;
+    private int currentMonth, currentYear, dayOfTheWeek, dd, position;
     private Spinner periodSpinner;
-    private String amount= "", endDate, name = "", period = "", startDate, userId;
+    private String amount= "", budgetCategory, endDate, month, name = "", period = "", startDate, userId;
     private TextInputEditText amountTextInputEditText, nameTextInputEditText;
+    private TextView endDateTextView, startDateTextView;
 
     private boolean checkAmount() {
 
@@ -175,22 +181,47 @@ public class BudgetsActivity extends AppCompatActivity implements View.OnClickLi
     private void initializeOnClickListener() {
 
         cancelCardView.setOnClickListener(this);
+        endDateCardView.setOnClickListener(this);
         saveCardView.setOnClickListener(this);
+        startDateCardView.setOnClickListener(this);
     }
 
     private void initializeViews() {
 
         amountTextInputEditText = findViewById(R.id.amountTextInputEditText);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, periodList);
+        ArrayAdapter<String> arrayAdapter = null;
+        budgetCategory = getIntent().getStringExtra("category");
+        dateGridLayout = findViewById(R.id.dateGridLayout);
+
+        if (budgetCategory.equals("PERIODIC")) {
+
+            arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, periodicBudgetList);
+
+        } else if (budgetCategory.equals("ONE TIME")) {
+
+            arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, oneTimeBudgetList);
+            dateGridLayout.setVisibility(View.VISIBLE);
+
+        }
+
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         calendar = Calendar.getInstance();
-        dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
         cancelCardView = findViewById(R.id.cancelCardView);
+        currentMonth = calendar.get(Calendar.MONTH);
+        currentMonth = currentMonth + 1;
+        currentYear = calendar.get(Calendar.YEAR);
+        dayOfTheWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        dd = calendar.get(Calendar.DAY_OF_MONTH);
+        endDateCardView = findViewById(R.id.endDateCardView);
+        endDateTextView = findViewById(R.id.endDateTextView);
+        month = findMonth(currentMonth);
         nameTextInputEditText = findViewById(R.id.nameTextInputEditText);
         periodSpinner = findViewById(R.id.periodSpinner);
         periodSpinner.setAdapter(arrayAdapter);
         position = getIntent().getIntExtra("position", 0);
         saveCardView = findViewById(R.id.saveCardView);
+        startDateCardView = findViewById(R.id.startDateCardView);
+        startDateTextView = findViewById(R.id.startDateTextView);
         userDBReference = FirebaseDatabase.getInstance().getReference("User");
         UserIdPreferences userIdPreferences = new UserIdPreferences(this);
         userId = userIdPreferences.getUserID();
@@ -213,7 +244,17 @@ public class BudgetsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                period = periodList[position];
+                if (budgetCategory.equals("PERIODIC")) {
+
+                    period = periodicBudgetList[position];
+
+                } else if (budgetCategory.equals("ONE TIME")) {
+
+                    period = oneTimeBudgetList[position];
+
+                }
+
+
             }
 
             @Override
@@ -229,6 +270,10 @@ public class BudgetsActivity extends AppCompatActivity implements View.OnClickLi
         if (v.getId() == R.id.cancelCardView) {
 
             finish();
+
+        } else if (v.getId() == R.id.endDateCardView) {
+
+
 
         } else if (v.getId() == R.id.saveCardView) {
 
@@ -376,6 +421,10 @@ public class BudgetsActivity extends AppCompatActivity implements View.OnClickLi
                 }
 
             }
+
+        } else if (v.getId() == R.id.startDateCardView) {
+
+
 
         }
 

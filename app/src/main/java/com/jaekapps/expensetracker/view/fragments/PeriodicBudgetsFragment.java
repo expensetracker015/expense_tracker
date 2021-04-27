@@ -185,7 +185,7 @@ public class PeriodicBudgetsFragment extends Fragment {
 
     public interface PeriodicBudgetsListener {
 
-        void goToBudgetsActivityFromPBF(int position);
+        void goToBudgetsActivityFromPBF(int position, String budgetCategory);
     }
 
     public void updateTheViews(final String month, final String year) {
@@ -480,7 +480,7 @@ public class PeriodicBudgetsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                periodicBudgetsListener.goToBudgetsActivityFromPBF(0);
+                periodicBudgetsListener.goToBudgetsActivityFromPBF(0, "PERIODIC");
             }
         });
         return view;
